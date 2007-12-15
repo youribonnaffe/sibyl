@@ -1,4 +1,4 @@
-#summary Index page
+#summary Main page
 
 = Project =
 
