@@ -2,12 +2,12 @@
 
 = Project =
 
-== About ==
-== Features ==
-== Supported formats ==
+  * About 
+  * Features
+  * Supported formats
 
 = Development =
 
-== Roadmap ==
+ * Roadmap
 
  
