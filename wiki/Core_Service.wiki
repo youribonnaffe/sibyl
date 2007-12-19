@@ -1,1 +1,6 @@
 #summary Core Service Description.
+
+  Core Service is an Android Service. It is the main service of the Sibyl Music Player. Il est chargé de lire une chanson. Il passe directement à la chanson suivant en fonction de la liste de lecture en cours. Il interagit avec l'interface utilisateur :
+  * Changement de musique (Si fin de la playlist atteinte, renvoi vide)
+  * Erreurs
+  * 
