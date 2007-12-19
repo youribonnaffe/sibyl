@@ -1,8 +1,11 @@
 #summary Tasks
 
-  * [Core_Service] : service to play tracks in the background
-  * Communication between UI and Core Service
-  * *UI* : Player, Playlist Browser, Library Browser
-  * SQLite Administration (table structure)
-  * SQLite Interaction
-  * i18n
+  * [Core_Service] : service to play tracks in the background (I)
+  * Communication between UI and Core Service (L)(I)
+  * *UI* : 
+    * Player (B)
+    * Playlist Browser (B)
+    * Library Browser (S)
+  * SQLite Administration (table structure) (Y)
+  * SQLite Interaction (Y)
+  * i18n (S)(I)
