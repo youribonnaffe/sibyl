@@ -2,6 +2,8 @@
 
   * Features (Done)
 
+  * Features (Started)
+
   * Features (To Do)
     * Supported formats: mp3, AAC ...
     * Playlist management: 
