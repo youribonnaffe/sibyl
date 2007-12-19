@@ -2,7 +2,7 @@
 
   * Features (Done)
 
-  * Features (ToDo)
+  * Features (To Do)
     * Supported formats: mp3, AAC ...
     * Playlist management: 
       * import/export m3u files
