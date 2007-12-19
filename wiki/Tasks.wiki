@@ -1,6 +1,6 @@
 #summary Tasks
 
-  * Core Service : service to play tracks in the background
+  * [Core_Service] : service to play tracks in the background
   * Communication between UI and Core Service
   * *UI* : Player, Playlist Browser, Library Browser
   * SQLite Administration (table structure)
