@@ -1,5 +1,1 @@
 #summary Roadmap
-
-
-|| N° de version || Date || Principales modifications ||
-|| 0.1 || xx-xx-200x || Première version||
