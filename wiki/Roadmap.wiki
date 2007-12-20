@@ -9,8 +9,8 @@ _Premiere release avec un Core Service et une UI basiques_
 
 _== xx-xx-2008 ==_
 _Seconde release : _
-_  * Nouvelle mouture du Core Service_
-_  * Amélioration de l'UI_
-_  * Bibliothéque SQLite_
+  * _Nouvelle mouture du Core Service_
+  * _Amélioration de l'UI_
+  * _Bibliothéque SQLite_
 
 _..._
