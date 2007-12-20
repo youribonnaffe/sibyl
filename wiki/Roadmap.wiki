@@ -1,3 +1,5 @@
 #summary Roadmap
 
-version 0.1 : _date à définir_
+
+|| N° de version || Date || Principales modification||
+|| 0.1 || xx-xx-200x || Première version||
