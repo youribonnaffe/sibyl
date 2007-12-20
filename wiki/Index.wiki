@@ -8,7 +8,7 @@
 
 = Development =
   * [Roadmap]
-  * [Task]
+  * [Tasks]
 
 = Les composants principaux de l'applicaiton =
   * [Core_Service]
