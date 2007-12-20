@@ -2,7 +2,7 @@
 
 = Project =
 
-  * About 
+  * [About]
   * [Features]
   * Supported formats
 
