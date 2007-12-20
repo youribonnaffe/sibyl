@@ -1,14 +1,14 @@
 #summary Roadmap
 
-_
-*Exemple*
 
-== xx-xx-2008 ==
+_*Exemple*_
 
-Premiere release avec un Core Service et une UI basiques
+_== xx-xx-2008 ==_
 
-== xx-xx-2008 ==
-Seconde release : 
+_Premiere release avec un Core Service et une UI basiques_
+
+_== xx-xx-2008 ==_
+_Seconde release : 
   * Nouvelle mouture du Core Service
   * Amélioration de l'UI
   * Bibliothéque SQLite
