@@ -10,6 +10,6 @@
   * [Roadmap]
   * [Task]
 
-= Les différentes parties majeures de l'applicaiton =
+= Les composants principaux de l'applicaiton =
   * [Core_Service]
  
