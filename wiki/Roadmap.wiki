@@ -3,16 +3,14 @@
 _
 *Exemple*
 
-= xx-xx-2008 =
+== xx-xx-2008 ==
 
 Premiere release avec un Core Service et une UI basiques
 
-= xx-xx-2008 =
+== xx-xx-2008 ==
 Seconde release : 
   * Nouvelle mouture du Core Service
   * Amélioration de l'UI
   * Bibliothéque SQLite
 
-...
-
-_
+..._
