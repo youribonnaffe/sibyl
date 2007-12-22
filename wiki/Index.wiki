@@ -1,7 +1,5 @@
 #summary Main page
 
-http://sibyl.googlecode.com/files/sibyl.jpg
-
 = Project =
 
   * [About]
