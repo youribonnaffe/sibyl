@@ -1,5 +1,7 @@
 #summary Main page
 
+[http://code.google.com/p/sibyl/wiki/sibyl.jpg]
+
 = Project =
 
   * [About]
