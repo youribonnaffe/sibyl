@@ -2,7 +2,7 @@
 
 = Project =
 
-  * [About About Sibyl]
+  * [About]
   * [Features]
   * Supported formats
 
