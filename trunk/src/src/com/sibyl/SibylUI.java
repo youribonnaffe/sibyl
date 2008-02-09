@@ -1,42 +1,94 @@
 package com.sibyl;
 
-
 import android.app.Activity;
-import android.content.Intent;
-import android.content.Context;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.content.ComponentName;
-import android.os.DeadObjectException;
-
 import android.app.NotificationManager;
-
-
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.DeadObjectException;
+import android.os.IBinder;
+import android.view.Menu;
 import android.view.View;
+import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-
-public class SibylUI extends Activity
-{
+public class SibylUI extends Activity {
+	
     ISibylservice mService = null;
     
-    /** Called with the activity is first created. */
+	private static final int QUIT_ID = Menu.FIRST;
+	private static final int PLAYLIST_ID = Menu.FIRST +1;
+	private static final int OPTION_ID = Menu.FIRST +2;
+	
+	private TextView artiste;
+	private TextView titre;
+	private TextView tempsEcoule;
+	private TextView tempsTotal;
+	private Button lecture;
+	
+    /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle icicle)
-    {
+    public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.main);
+        //launch the service.
+        launchService();
+        //get the views
+        artiste = (TextView) findViewById(R.id.artiste);
+        titre = (TextView) findViewById(R.id.titre);
+        tempsEcoule = (TextView) findViewById(R.id.tpsEcoule);
+        tempsTotal = (TextView) findViewById(R.id.tpsTotal);
+        lecture = (Button) findViewById(R.id.lecture);
+        ImageView cover = (ImageView) findViewById(R.id.cover);
+        cover.setImageDrawable(Drawable.createFromPath("/tmp/cover.jpg"));  
 
-        Button button = (Button)findViewById(R.id.start);
-        button.setOnClickListener(mStartListener);
-        
-        Button button2 = (Button)findViewById(R.id.play);
-        button2.setOnClickListener(mPlayListener);
-
-
+        lecture.setOnClickListener(mPlayListener);
     }
+    
+    
+    public void launchService()	{
+        Bundle args = new Bundle();
+        args.putString("filename", "test.mp3");
+        bindService(new Intent(SibylUI.this,
+                    Sibylservice.class),
+                    null, mConnection, Context.BIND_AUTO_CREATE);
+    	
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, QUIT_ID, R.string.menu_quit);
+        menu.add(0, PLAYLIST_ID, R.string.menu_playList);
+        menu.add(0, OPTION_ID, R.string.menu_option);
+        return true;
+    }
+    
+    @Override
+    public boolean onMenuItemSelected(int featureId, Item item) {
+        super.onMenuItemSelected(featureId, item);
+        switch(item.getId()) {
+        case QUIT_ID:
+            //kill Sibyl (and the Core Service?)
+            break;
+        case PLAYLIST_ID:
+            //launch the playlist's activity
+            break;
+        case OPTION_ID:
+        	//launch the option's activity
+        	break;
+        }
+        
+        return true;
+    }
+
+
     
     private ServiceConnection mConnection = new ServiceConnection()
     {
@@ -50,11 +102,11 @@ public class SibylUI extends Activity
             mService = ISibylservice.Stub.asInterface((IBinder)service);
             
             NotificationManager nm = (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
+                    getSystemService(NOTIFICATION_SERVICE);
             nm.notifyWithText(100,
-                      ("Connexion au service reussie"),
-                      NotificationManager.LENGTH_SHORT,
-                      null);
+                              ("Connexion au service reussie"),
+                               NotificationManager.LENGTH_SHORT,
+                               null);
 
         }
 
@@ -65,11 +117,11 @@ public class SibylUI extends Activity
             mService = null;
             
             NotificationManager nm = (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
+                    getSystemService(NOTIFICATION_SERVICE);
             nm.notifyWithText(100,
-                      ("Deconnexion du service"),
-                      NotificationManager.LENGTH_SHORT,
-                      null);
+                              ("Deconnexion du service"),
+                               NotificationManager.LENGTH_SHORT,
+                               null);
         }
     };
 
@@ -82,8 +134,8 @@ public class SibylUI extends Activity
             Bundle args = new Bundle();
             args.putString("filename", "test.mp3");
             bindService(new Intent(SibylUI.this,
-                    Sibylservice.class), 
-                    null, mConnection, Context.BIND_AUTO_CREATE);
+                        Sibylservice.class),
+                        null, mConnection, Context.BIND_AUTO_CREATE);
 
         }
     };
@@ -92,8 +144,17 @@ public class SibylUI extends Activity
     {
         public void onClick(View v)
         {
+        	String text = new String(getText(R.string.play).toString());
+            if( lecture.getText().toString().equals(text))
+            {
+            	lecture.setText(R.string.stop);
+            }
+            else
+            {
+            	lecture.setText(R.string.play);
+            }
             try {
-                    mService.start();
+                mService.start();
             }//lors de l'appel de fonction de interface (fichier aidl)
             //il faut catcher les DeadObjectException
             catch (DeadObjectException ex) {

@@ -1,24 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Sibyl"
-    />
-<Button id="@+id/start"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" 
-        android:text="Launch Service!">
-        <requestFocus />
-    </Button>
-    
-<Button id="@+id/play"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" 
-        android:text="Play!">
-    </Button>
+    android:layout_height="fill_parent">
+	    
+	<View         
+    	android:layout_width="fill_parent"
+    	android:layout_height="10dip"/>
+        
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:stretchColumns="1"
+	    android:shrinkColumns="1">
+	    
+	    <TableRow>
+	        <TextView  id="@+id/titre"
+                android:layout_column="1"
+                android:minHeight="40sp"
+                android:textSize="25sp"
+				android:text="@string/titre" />
+	    </TableRow>
+	
+		<TableRow>
+			<TextView id="@+id/artiste"
+                android:layout_column="1"
+				android:textSize="16sp"
+				android:textStyle="italic"
+				android:text="@string/artiste"/>
+	    </TableRow>
+	    
+	    <TableRow>
+			<Button
+	            android:text="@string/short_text"
+	            android:visibility="invisible" />
+	    	<TextView/>
 
+	    </TableRow>
+	</TableLayout>
+	
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:stretchColumns="1">
+	    
+		<TableRow>
+			<Button id="@+id/prec"
+				android:text="P"
+				android:focusable="false"
+				android:layout_height="wrap_content"/>
+				
+			<ImageView	id="@+id/cover" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"/>
+
+			<Button id="@+id/next"
+				android:text="N"
+				android:focusable="false"
+				android:layout_height="wrap_content" />
+		</TableRow>
+	</TableLayout>
+				
+	
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:stretchColumns="1"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
+	    android:gravity="bottom">
+	    
+		<TableRow>
+			<Button	id="@+id/lecture"
+				android:text="@string/play" />
+			<TextView id="@+id/tpsEcoule"
+				android:text="@string/time_zero"
+				android:textAlign="end" />
+			<TextView
+				android:text="@string/separateur"/>
+			<TextView id="@+id/tpsTotal"
+				android:text="@string/time_total"/>
+		</TableRow>
+	</TableLayout>
+	
 </LinearLayout>
-
