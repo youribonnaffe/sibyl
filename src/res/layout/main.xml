@@ -7,6 +7,18 @@
 <TextView  
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="Hello World, MusicDB"
+    android:text="Sibyl"
     />
+<Button id="@+id/start"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" 
+        android:text="Launch Service!">
+        <requestFocus />
+    </Button>
+    
+<Button id="@+id/play"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" 
+        android:text="Play!">
+    </Button>
+
 </LinearLayout>
+
