@@ -140,7 +140,7 @@ public class MusicDB {
 		    (artist != 0 ? artist : "(SELECT max(id) FROM artist)")+","+
 		    (album != 0 ? album : "(SELECT max(id) FROM album)")+","+
 		    (genre != 0 ? genre : "(SELECT max(id) FROM genre)")+")");
-	    // + 1 ˆ cause du commit
+	    // + 1 a cause du commit
 	    mDb.execSQL("COMMIT TRANSACTION");
 
 	}catch(SQLiteException e){
