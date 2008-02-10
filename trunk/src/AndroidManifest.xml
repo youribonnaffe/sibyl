@@ -4,7 +4,7 @@
     <application android:icon="@drawable/icon">
         <service class=".Sibylservice" android:process=":remote" />
 
-        <activity class=".SibylUI" android:label="@string/app_name" android:theme="@android:style/Theme.Dark" >
+        <activity class=".PlayerUI" android:label="@string/app_name" android:theme="@android:style/Theme.Dark" >
             <intent-filter>
                 <action android:value="android.intent.action.MAIN" />
                 <category android:value="android.intent.category.LAUNCHER" />
