@@ -16,7 +16,7 @@
 	    android:shrinkColumns="1">
 	    
 	    <TableRow>
-	        <TextView  id="@+id/titre"
+	        <TextView  android:id="@+id/titre"
                 android:layout_column="1"
                 android:minHeight="40sp"
                 android:textSize="25sp"
@@ -24,7 +24,7 @@
 	    </TableRow>
 	
 		<TableRow>
-			<TextView id="@+id/artiste"
+			<TextView android:id="@+id/artiste"
                 android:layout_column="1"
 				android:textSize="16sp"
 				android:textStyle="italic"
@@ -46,17 +46,17 @@
 	    android:stretchColumns="1">
 	    
 		<TableRow>
-			<Button id="@+id/prec"
+			<Button android:id="@+id/prec"
 				android:text="P"
 				android:focusable="false"
 				android:layout_height="wrap_content"/>
 				
-			<ImageView	id="@+id/cover" 
+			<ImageView	android:id="@+id/cover" 
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"/>
 
-			<Button id="@+id/next"
+			<Button android:id="@+id/next"
 				android:text="N"
 				android:focusable="false"
 				android:layout_height="wrap_content" />
@@ -72,14 +72,14 @@
 	    android:gravity="bottom">
 	    
 		<TableRow>
-			<Button	id="@+id/lecture"
+			<Button	android:id="@+id/lecture"
 				android:text="@string/play" />
-			<TextView id="@+id/tpsEcoule"
+			<TextView android:id="@+id/tpsEcoule"
 				android:text="@string/time_zero"
 				android:textAlign="end" />
 			<TextView
 				android:text="@string/separateur"/>
-			<TextView id="@+id/tpsTotal"
+			<TextView android:id="@+id/tpsTotal"
 				android:text="@string/time_total"/>
 		</TableRow>
 	</TableLayout>
