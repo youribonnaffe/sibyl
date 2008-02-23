@@ -93,7 +93,7 @@ public class MusicDB {
 		    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+cv.getAsString(Music.ARTIST.NAME)+"')");
 		    artist = 0;
 		}catch(SQLiteException sqle){
-		    Cursor c = mDb.query("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
+		    Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
 		    if(c.next()){
 			artist = c.getInt(0);
 		    }
@@ -108,7 +108,7 @@ public class MusicDB {
 		    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+cv.getAsString(Music.ALBUM.NAME)+"')");
 		    album = 0;
 		}catch(SQLiteException sqle){
-		    Cursor c = mDb.query("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
+		    Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
 		    if(c.next()){
 			album = c.getInt(0);
 		    }
@@ -123,7 +123,7 @@ public class MusicDB {
 		    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+cv.getAsString(Music.GENRE.NAME)+"')");
 		    genre = 0;
 		}catch(SQLiteException sqle){
-		    Cursor c = mDb.query("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
+		    Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
 		    if(c.next()){
 			genre = c.getInt(0);
 		    }
@@ -153,13 +153,13 @@ public class MusicDB {
 	try{
         	mDb.execSQL("BEGIN TRANSACTION");
         
-        	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE url='"+url+"')",null).count()==1){
+        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE url='"+url+"')",null).count()==1){
         	    mDb.execSQL("DELETE FROM artist WHERE id=(SELECT artist FROM song WHERE url='"+url+"')");
         	}
-        	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE url='"+url+"')",null).count()==1){
+        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE url='"+url+"')",null).count()==1){
         	    mDb.execSQL("DELETE FROM album WHERE id=(SELECT album FROM song WHERE url='"+url+"')");
         	}
-        	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE url='"+url+"')",null).count()==1){
+        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE url='"+url+"')",null).count()==1){
         	    mDb.execSQL("DELETE FROM genre WHERE id=(SELECT genre FROM song WHERE url='"+url+"')");
         	}
         	mDb.execSQL("DELETE FROM song WHERE url='"+url+"'");
@@ -175,13 +175,13 @@ public class MusicDB {
 	try{
     	mDb.execSQL("BEGIN TRANSACTION");
     
-    	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE id='"+id+"')",null).count()==1){
+    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE id='"+id+"')",null).count()==1){
     	    mDb.execSQL("DELETE FROM artist WHERE id=(SELECT artist FROM song WHERE id='"+id+"')");
     	}
-    	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE id='"+id+"')",null).count()==1){
+    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE id='"+id+"')",null).count()==1){
     	    mDb.execSQL("DELETE FROM album WHERE id=(SELECT album FROM song WHERE id='"+id+"')");
     	}
-    	if(mDb.query("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE id='"+id+"')",null).count()==1){
+    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE id='"+id+"')",null).count()==1){
     	    mDb.execSQL("DELETE FROM genre WHERE id=(SELECT genre FROM song WHERE id='"+id+"')");
     	}
     	mDb.execSQL("DELETE FROM song WHERE id='"+id+"'");
@@ -193,8 +193,8 @@ public class MusicDB {
 	}
     }
 
-    public Cursor query(String sql, String[] selectionArgs){
-	return mDb.query(sql, selectionArgs);
+    public Cursor rawQuery(String sql, String[] selectionArgs){
+	return mDb.rawQuery(sql, selectionArgs);
     }
 
     public Cursor query(String table, String[] columns, 
@@ -210,7 +210,7 @@ public class MusicDB {
     }
     
     public String nextSong(int pos){
-	Cursor c = mDb.query("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song.id=current_playlist.id", null);
+	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
 	    return null;
 	}
@@ -218,7 +218,7 @@ public class MusicDB {
     }
     
     public String previousSong(int pos){
-	Cursor c = mDb.query("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song.id=current_playlist.id", null);
+	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
 	    return null;
 	}

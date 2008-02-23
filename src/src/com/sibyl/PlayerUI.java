@@ -1,7 +1,6 @@
 package com.sibyl;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PlayerUI extends Activity {
 	
@@ -56,8 +56,7 @@ public class PlayerUI extends Activity {
         Bundle args = new Bundle();
         args.putString("filename", "test.mp3");
         bindService(new Intent(PlayerUI.this,
-                    Sibylservice.class),
-                    null, mConnection, Context.BIND_AUTO_CREATE);
+                    Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
     	
     }
     
@@ -101,12 +100,9 @@ public class PlayerUI extends Activity {
             // representation of that from the raw service object.
             mService = ISibylservice.Stub.asInterface((IBinder)service);
             
-            NotificationManager nm = (NotificationManager)
-                    getSystemService(NOTIFICATION_SERVICE);
-            nm.notifyWithText(100,
-                              ("Connexion au service reussie"),
-                               NotificationManager.LENGTH_SHORT,
-                               null);
+            //remplacant du NotificationManager/notifyWithText
+            Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
+                Toast.LENGTH_SHORT).show();
 
         }
 
@@ -116,12 +112,9 @@ public class PlayerUI extends Activity {
             // unexpectedly disconnected -- that is, its process crashed.
             mService = null;
             
-            NotificationManager nm = (NotificationManager)
-                    getSystemService(NOTIFICATION_SERVICE);
-            nm.notifyWithText(100,
-                              ("Deconnexion du service"),
-                               NotificationManager.LENGTH_SHORT,
-                               null);
+            //remplacant du NotificationManager/notifyWithText
+            Toast.makeText(PlayerUI.this, "Deconnexion du service", 
+                Toast.LENGTH_SHORT).show();                              
         }
     };
 
@@ -134,8 +127,7 @@ public class PlayerUI extends Activity {
             Bundle args = new Bundle();
             args.putString("filename", "test.mp3");
             bindService(new Intent(PlayerUI.this,
-                        Sibylservice.class),
-                        null, mConnection, Context.BIND_AUTO_CREATE);
+                        Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
 
         }
     };

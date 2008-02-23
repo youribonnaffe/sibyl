@@ -49,7 +49,7 @@ public class Test extends Activity{
 
 	    // an example to display all songs
 	    // example with tables for columns names and so on
-	    Cursor c = mdb.query("SELECT url, title, artist_name, album_name, genre_name " +
+	    Cursor c = mdb.rawQuery("SELECT url, title, artist_name, album_name, genre_name " +
 		    "FROM song, artist, album, genre " +
 		    "WHERE artist.id = artist AND album.id=album AND genre.id=genre",null);
 	    while(c.next()){

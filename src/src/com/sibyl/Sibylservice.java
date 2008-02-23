@@ -6,12 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.media.MediaPlayer;
 
-
-import android.os.BinderNative;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.Parcel;
 
-import android.app.NotificationManager;
+import android.widget.Toast;
 
 
 public class Sibylservice extends Service
@@ -41,29 +40,29 @@ public class Sibylservice extends Service
     
     protected void playSong(String filename) 
     {
-        NotificationManager nm = (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
-
-        
+                
         try{
             mp.setDataSource("/tmp/"+filename);
+            mp.prepare();
         }
         catch ( Exception e) {
-            nm.notifyWithText(1235, "Exception: "+e,
-                NotificationManager.LENGTH_SHORT, null);
+            //remplacant du NotificationManager/notifyWithText
+            Toast.makeText(Sibylservice.this, "Exception: "+e, 
+                Toast.LENGTH_SHORT).show();
 
         }
-        mp.prepare();
         mp.start();
-
-        nm.notifyWithText(1234, "Playing song: "+filename,
-            NotificationManager.LENGTH_SHORT, null);
+        
+        //remplacant du NotificationManager/notifyWithText
+        Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
+                Toast.LENGTH_SHORT).show();
 
 
     }
     
+
     @Override
-    public IBinder getBinder()
+    public IBinder onBind(Intent i)
     {
         return mBinder;
     }
