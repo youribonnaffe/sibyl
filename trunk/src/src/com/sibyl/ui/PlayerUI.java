@@ -1,5 +1,6 @@
-package com.sibyl;
+package com.sibyl.ui;
 
+import com.sibyl.*;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
