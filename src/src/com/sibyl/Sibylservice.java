@@ -18,10 +18,9 @@ public class Sibylservice extends Service
     /** Called with the service is first created. */
     @Override
     protected void onCreate()
-    {
-       // Intent intent = new Intent();
-       // intent.setClass(this, SibylUI.class);
-    
+    {        
+        paused=false;
+        
         mp = new MediaPlayer();
     }
     
@@ -40,23 +39,28 @@ public class Sibylservice extends Service
     
     protected void playSong(String filename) 
     {
-                
-        try{
-            mp.setDataSource("/tmp/"+filename);
-            mp.prepare();
-        }
-        catch ( Exception e) {
+        if( !paused ) {
+        //we're not in pause so we start playing a new song
+            try{
+                mp.setDataSource("/tmp/"+filename);
+                mp.prepare();
+            }
+            catch ( Exception e) {
+                //remplacant du NotificationManager/notifyWithText
+                Toast.makeText(Sibylservice.this, "Exception: "+e, 
+                    Toast.LENGTH_SHORT).show();
+
+            }
+            mp.start();
+            
             //remplacant du NotificationManager/notifyWithText
-            Toast.makeText(Sibylservice.this, "Exception: "+e, 
-                Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
+                    Toast.LENGTH_SHORT).show();
         }
-        mp.start();
-        
-        //remplacant du NotificationManager/notifyWithText
-        Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
-                Toast.LENGTH_SHORT).show();
-
+        else {
+        //we're in pause so we continue playing the paused song
+            mp.start();
+        }
 
     }
     
@@ -74,15 +78,33 @@ public class Sibylservice extends Service
         }
         
         public void stop() {
-            
+            mp.stop();
         }
         
         public void pause() {
-        
+            mp.pause();
         }
+        
+        public int getCurrentPosition() {
+            return mp.getCurrentPosition();
+        }
+        
+        public int getDuration() {
+            return mp.getDuration();
+        }
+        
+        public void setCurrentPosition(int msec) {
+            mp.seekTo(msec);
+        }
+        
+        public void setLooping(int looping) {
+            mp.setLooping(looping);
+        }
+         
     };
     
 
     private MediaPlayer mp;
+    private boolean paused;
 
 }
