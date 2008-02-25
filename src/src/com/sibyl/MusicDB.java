@@ -1,6 +1,26 @@
+/* 
+ *
+ * Copyright (C) 2007 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.sibyl;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import android.content.ContentValues;
@@ -8,12 +28,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
+import android.database.sqlite.SQLiteOpenHelper;
 
-
-// probleme url avec '''
-// optimize string concat and static ?
-// optimize database 
+//optimize string concat and static ?
+//optimize database -> if needed try triggers
 
 public class MusicDB {
 
@@ -22,16 +40,11 @@ public class MusicDB {
     private static final String DB_NAME = "music.db";
     private static final int DB_VERSION = 1;
 
-    public MusicDB(Context c) throws IOException {
-	// open db or create it if needed
-	try{
-	    mDb = c.openDatabase(DB_NAME, null);
+    private static class MusicDBHelper extends SQLiteOpenHelper{
+	private static final String GENRE_FILE = "/tmp/tags";
 
-	    //Log.v("","open");
-	}catch(FileNotFoundException fnfe){
-	    mDb = c.createDatabase(DB_NAME, DB_VERSION, Context.MODE_PRIVATE, null);
-	    //Log.v("","create");
-	    // create all databases
+	@Override
+	public void onCreate(SQLiteDatabase mDb) {
 	    mDb.execSQL("CREATE TABLE song("+
 		    "id INTEGER PRIMARY KEY,"+
 		    "url VARCHAR UNIQUE,"+
@@ -65,12 +78,67 @@ public class MusicDB {
 		    "id INTEGER"+
 		    ")"
 	    );
+	    // triggers
+	    mDb.execSQL("CREATE TRIGGER t_del_song_artist " +
+		    "AFTER DELETE ON song " +
+		    "FOR EACH ROW " +
+		    "WHEN ( OLD.artist!=1 AND (SELECT COUNT(*) FROM SONG WHERE artist=OLD.artist) == 0) " +
+		    "BEGIN " +
+		    "DELETE FROM artist WHERE id=OLD.artist; " +
+	    "END;");
+	    mDb.execSQL("CREATE TRIGGER t_del_song_album " +
+		    "AFTER DELETE ON song " +
+		    "FOR EACH ROW " +
+		    "WHEN ( OLD.album!=1 AND (SELECT COUNT(*) FROM SONG WHERE album=OLD.album) == 0) " +
+		    "BEGIN " +
+		    "DELETE FROM album WHERE id=OLD.album; " +
+	    "END;");
+	    mDb.execSQL("CREATE TRIGGER t_del_song_genre " +
+		    "AFTER DELETE ON song " +
+		    "FOR EACH ROW " +
+		    "WHEN ( OLD.genre!=1 AND (SELECT COUNT(*) FROM SONG WHERE genre=OLD.genre) == 0) " +
+		    "BEGIN " +
+		    "DELETE FROM genre WHERE id=OLD.genre; " +
+	    "END;");
+
 	    // default values for undefined tags
 	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('')");
 	    mDb.execSQL("INSERT INTO album(album_name) VALUES('')");
 	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('')");
+	    // read id3v1 genre from file
+	    try{
+		BufferedReader f = new BufferedReader(new FileReader(GENRE_FILE));
+		String line;
+		while( (line=f.readLine()) != null){
+		    mDb.execSQL(line);
+		}
+	    }catch(FileNotFoundException fnfe){
+
+	    }catch(IOException ioe){
+
+	    }
+
 	    // how to ensure that ?
 	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase mDb, int oldVersion, int newVersion) {
+	    // drop and re-create tables
+	    mDb.execSQL("DROP TABLE IF EXISTS current_playlist");
+	    mDb.execSQL("DROP TABLE IF EXISTS genre");
+	    mDb.execSQL("DROP TABLE IF EXISTS album");
+	    mDb.execSQL("DROP TABLE IF EXISTS artist");
+	    mDb.execSQL("DROP TABLE IF EXISTS song");
+	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_genre");
+	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_artist");
+	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
+	    onCreate(mDb);
+	}
+    }
+
+    public MusicDB( Context c ) { 
+	// exceptions ??
+	mDb = (new MusicDBHelper()).openDatabase(c, DB_NAME, null, DB_VERSION);
     }
 
     public void insert(String[] url) throws FileNotFoundException, IOException, SQLiteException{
@@ -80,61 +148,53 @@ public class MusicDB {
     }
 
     public void insert(String url) throws FileNotFoundException, IOException, SQLiteException{
-
+	// read tags
 	ContentValues cv = new ID3TagReader(url).getValues();
-	// 
-	Log.v("CV", cv.toString());
+
 	int artist = 0 ,album = 0, genre = 0; // = 0 -> last value, !=0 -> null or select
 	//, album = false, genre = false;
 	mDb.execSQL("BEGIN TRANSACTION");
 	try{
-	    if(cv.containsKey(Music.ARTIST.NAME)){
-		try{
+	    if(cv.containsKey(Music.ARTIST.NAME) && cv.getAsString(Music.ARTIST.NAME) != ""){
+		Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
+		if(c.next()){
+		    artist = c.getInt(0);
+		}else{
 		    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+cv.getAsString(Music.ARTIST.NAME)+"')");
-		    artist = 0;
-		}catch(SQLiteException sqle){
-		    Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
-		    if(c.next()){
-			artist = c.getInt(0);
-		    }
-		    c.close();
 		}
+		c.close();
 	    }else{
 		artist = 1;
 	    }
 
-	    if(cv.containsKey(Music.ALBUM.NAME)){
-		try{
+	    if(cv.containsKey(Music.ALBUM.NAME) && cv.getAsString(Music.ALBUM.NAME) != ""){
+		Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
+		if(c.next()){
+		    album = c.getInt(0);
+		}else{
 		    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+cv.getAsString(Music.ALBUM.NAME)+"')");
-		    album = 0;
-		}catch(SQLiteException sqle){
-		    Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
-		    if(c.next()){
-			album = c.getInt(0);
-		    }
-		    c.close();
 		}
+		c.close();
 	    }else{
 		album = 1;
 	    }
 
-	    if(cv.containsKey(Music.GENRE.NAME)){
-		try{
+	    if(cv.containsKey(Music.GENRE.NAME) && cv.getAsString(Music.GENRE.NAME) != ""){
+		Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
+		if(c.next()){
+		    genre = c.getInt(0);
+		}else{
 		    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+cv.getAsString(Music.GENRE.NAME)+"')");
-		    genre = 0;
-		}catch(SQLiteException sqle){
-		    Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
-		    if(c.next()){
-			genre = c.getInt(0);
-		    }
-		    c.close();
 		}
+		c.close();
 	    }else{
 		genre = 1;
 	    }
 
 	    // insert order in table song
-	    mDb.execSQL("INSERT INTO song(url,title,track, artist,album,genre) VALUES('"+url+"','"+
+	    // char ' is protected in url, for the tags this is done during reading them
+	    mDb.execSQL("INSERT INTO song(url,title,track, artist,album,genre) VALUES('"+
+		    url.replace("'", "''")+"','"+
 		    (cv.containsKey(Music.SONG.TITLE) ? cv.getAsString(Music.SONG.TITLE) : "")+"','"+
 		    (cv.containsKey(Music.SONG.TRACK) ? cv.getAsString(Music.SONG.TRACK) : "")+"',"+
 		    (artist != 0 ? artist : "(SELECT max(id) FROM artist)")+","+
@@ -150,47 +210,11 @@ public class MusicDB {
     }
 
     public void deleteSong(String url){
-	try{
-        	mDb.execSQL("BEGIN TRANSACTION");
-        
-        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE url='"+url+"')",null).count()==1){
-        	    mDb.execSQL("DELETE FROM artist WHERE id=(SELECT artist FROM song WHERE url='"+url+"')");
-        	}
-        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE url='"+url+"')",null).count()==1){
-        	    mDb.execSQL("DELETE FROM album WHERE id=(SELECT album FROM song WHERE url='"+url+"')");
-        	}
-        	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE url='"+url+"')",null).count()==1){
-        	    mDb.execSQL("DELETE FROM genre WHERE id=(SELECT genre FROM song WHERE url='"+url+"')");
-        	}
-        	mDb.execSQL("DELETE FROM song WHERE url='"+url+"'");
-        
-        	mDb.execSQL("COMMIT TRANSACTION");
-	}catch(SQLiteException e){
-	    mDb.execSQL("ROLLBACK");
-	    throw e;
-	}
+	mDb.execSQL("DELETE FROM song WHERE url='"+url+"'");
     }
 
     public void deleteSong(int id){
-	try{
-    	mDb.execSQL("BEGIN TRANSACTION");
-    
-    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE artist=(SELECT artist FROM song WHERE id='"+id+"')",null).count()==1){
-    	    mDb.execSQL("DELETE FROM artist WHERE id=(SELECT artist FROM song WHERE id='"+id+"')");
-    	}
-    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE album=(SELECT album FROM song WHERE id='"+id+"')",null).count()==1){
-    	    mDb.execSQL("DELETE FROM album WHERE id=(SELECT album FROM song WHERE id='"+id+"')");
-    	}
-    	if(mDb.rawQuery("SELECT COUNT(*) FROM SONG WHERE genre=(SELECT genre FROM song WHERE id='"+id+"')",null).count()==1){
-    	    mDb.execSQL("DELETE FROM genre WHERE id=(SELECT genre FROM song WHERE id='"+id+"')");
-    	}
-    	mDb.execSQL("DELETE FROM song WHERE id='"+id+"'");
-    
-    	mDb.execSQL("COMMIT TRANSACTION");
-	}catch(SQLiteException e){
-	    mDb.execSQL("ROLLBACK");
-	    throw e;
-	}
+	mDb.execSQL("DELETE FROM song WHERE id='"+id+"'");
     }
 
     public Cursor rawQuery(String sql, String[] selectionArgs){
@@ -202,13 +226,13 @@ public class MusicDB {
 	    String groupBy, String having, String orderBy){
 	return mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
-    
+
     public Cursor query(boolean distinct, String table, String[] columns, 
 	    String selection, String[] selectionArgs, 
 	    String groupBy, String having, String orderBy){
 	return mDb.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
-    
+
     public String nextSong(int pos){
 	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
@@ -216,7 +240,7 @@ public class MusicDB {
 	}
 	return c.getString(0);
     }
-    
+
     public String previousSong(int pos){
 	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
@@ -224,7 +248,7 @@ public class MusicDB {
 	}
 	return c.getString(0);
     }
-    
+
     public void execSQL(String query){
 	mDb.execSQL(query);
     }
