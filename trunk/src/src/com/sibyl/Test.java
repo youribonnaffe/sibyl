@@ -1,11 +1,11 @@
 package com.sibyl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,8 +14,8 @@ import android.util.Log;
  * a example activity to illustrate database manipulation
  */
 
-//genre id3v1
-//jointures id3v1
+// genre id3v1
+// jointures id3v1
 
 public class Test extends Activity{
 
@@ -24,9 +24,8 @@ public class Test extends Activity{
     public void onCreate(Bundle icicle) {
 	super.onCreate(icicle);
 
-	setContentView(R.layout.main);
-
 	try{
+	    
 	    MusicDB mdb = new MusicDB(this);
 	    Log.v(TAG,"BD OK");
 
@@ -38,14 +37,16 @@ public class Test extends Activity{
 		}
 	    };
 	    // insert them in the database
-	    /*
+	    
 	    for(String s : dir.list(filter)){
 		try{
+		   long t = System.currentTimeMillis();
 		   mdb.insert("/tmp/"+s);
+		   Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
 		}catch(SQLiteException sqle){
 		    Log.v(TAG, "sql" + sqle.toString());
 		}
-	    }*/
+	    }
 
 	    // an example to display all songs
 	    // example with tables for columns names and so on
@@ -58,12 +59,20 @@ public class Test extends Activity{
 		}
 		Log.v(TAG, "-----");
 	    }
-
+	    c.close();
 	    // a example to delete a song
-	    // mdb.deleteSong("/tmp/testv1.mp3");
-	    
-	}catch(FileNotFoundException e){
-	    Log.v(TAG, e.toString());
+	    /*mdb.deleteSong("/tmp/test.mp3");
+	    mdb.deleteSong(3);
+	   c = mdb.rawQuery("SELECT url, title, artist_name, album_name, genre_name " +
+		    "FROM song, artist, album, genre " +
+		    "WHERE artist.id = artist AND album.id=album AND genre.id=genre",null);
+	    while(c.next()){
+		for(String s : c.getColumnNames()){
+		    Log.v(TAG, s+"="+c.getString(c.getColumnIndex(s)));
+		}
+		Log.v(TAG, "-----");
+	    }
+	    */
 	}catch(Exception ex){
 	    Log.v(TAG, ex.toString());
 	}
