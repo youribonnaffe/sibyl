@@ -60,6 +60,24 @@ public class Test extends Activity{
 		Log.v(TAG, "-----");
 	    }
 	    c.close();
+	    
+	    // an example to add song to the playlist
+	    Log.v(TAG, "*** PLAYLIST ***");
+
+	    int[] t = {1,2,3};
+	    mdb.insertPlaylist(t);
+	    mdb.insertPlaylist(Music.SONG.ARTIST,"The Prodigy");
+	    
+	    c = mdb.rawQuery("SELECT url, title, artist_name, album_name, genre_name " +
+		    "FROM song, artist, album, genre, current_playlist " +
+		    "WHERE artist.id = artist AND album.id=album AND genre.id=genre AND song.id = current_playlist.id",null);
+	    while(c.next()){
+		for(String s : c.getColumnNames()){
+		    Log.v(TAG, s+"="+c.getString(c.getColumnIndex(s)));
+		}
+		Log.v(TAG, "-----");
+	    }
+	    
 	    // a example to delete a song
 	    /*mdb.deleteSong("/tmp/test.mp3");
 	    mdb.deleteSong(3);
