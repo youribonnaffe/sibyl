@@ -252,4 +252,30 @@ public class MusicDB {
     public void execSQL(String query){
 	mDb.execSQL(query);
     }
+
+    public void insertPlaylist( int[] ids ){
+	for( int id : ids ){
+	    mDb.execSQL("INSERT INTO current_playlist(id) VALUES("+id+")");
+	}
+    }
+
+    public void insertPlaylist(String column, String value){
+	if(column == Music.SONG.ARTIST){
+	    mDb.execSQL("INSERT INTO current_playlist(id) " +
+		    "SELECT song.id FROM song, artist " +
+		    "WHERE artist.artist_name = '"+value+"' " +
+	    "AND song.artist = artist.id");
+	}else if(column == Music.SONG.ALBUM){
+	    mDb.execSQL("INSERT INTO current_playlist(id) " +
+		    "SELECT song.id FROM song, album " +
+		    "WHERE album.album_name = '"+value+"' " +
+	    "AND song.album = album.id");
+	}else if(column == Music.SONG.GENRE){
+	    mDb.execSQL("INSERT INTO current_playlist(id) " +
+		    "SELECT song.id FROM song, genre " +
+		    "WHERE genre.genre_name = '"+value+"' " +
+	    "AND song.genre = genre.id");
+	}
+    }
+
 }
