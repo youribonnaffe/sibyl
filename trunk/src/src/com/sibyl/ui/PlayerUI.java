@@ -44,6 +44,8 @@ public class PlayerUI extends Activity {
 	
 	private boolean play = false;
 	private boolean pause = false;
+
+	private MusicDB mdb;	//the database
 	
     /** Called when the activity is first created. */
     @Override
@@ -59,7 +61,15 @@ public class PlayerUI extends Activity {
         tempsTotal = (TextView) findViewById(R.id.tpsTotal);
         lecture = (Button) findViewById(R.id.lecture);
         ImageView cover = (ImageView) findViewById(R.id.cover);
-        cover.setImageDrawable(Drawable.createFromPath("/tmp/cover.jpg"));  
+        cover.setImageDrawable(Drawable.createFromPath("/tmp/cover.jpg"));
+        
+        //create or connect to the Database
+    	try{
+    	    mdb = new MusicDB(this);
+    	    Log.v(TAG,"BD OK");
+    	}catch(Exception ex){
+    	    Log.v(TAG, ex.toString()+" Create");
+    	}
 
         lecture.setOnClickListener(mPlayListener);
     }
@@ -107,6 +117,7 @@ public class PlayerUI extends Activity {
         case ADD_ID:
         	//add song
         	fillBD("/tmp/");
+        	fillPlayList();
         	break;
         }
         
@@ -195,20 +206,17 @@ public class PlayerUI extends Activity {
     
     private void fillBD (String path)
     {
+    	// get all mp3 files in path
     	try{
-    	    
-    	    MusicDB mdb = new MusicDB(this);
-    	    Log.v(TAG,"BD OK");
-
-    	    // get all mp3 files in path
     	    File dir = new File(path);
+    	    Log.v(TAG, "Insert");
     	    FilenameFilter filter = new FilenameFilter() {
     		public boolean accept(File dir, String name) {
     		    return name.endsWith(".mp3");
     		}
     	    };
-    	    // insert them in the database
     	    
+    	    // insert them in the database    
     	    for(String s : dir.list(filter)){
     		try{
     		   long t = System.currentTimeMillis();
@@ -218,10 +226,25 @@ public class PlayerUI extends Activity {
     		    Log.v(TAG, "sql" + sqle.toString());
     		}
     	    }
-
     	}catch(Exception ex){
     	    Log.v(TAG, ex.toString());
     	}
+    	
+    }
+    
+    private void fillPlayList()
+    {
+	    try{
+	    	Cursor c = mdb.rawQuery("SELECT ID FROM SONG;",null);
+	    	int songID [] = new int[c.count()];
+	    	int pos = 0;
+		    while(c.next()){
+		    	songID[pos++] = c.getInt(0); //there is just one column	    	
+		    }
+		    mdb.insertPlaylist(songID);
+	    }catch(Exception ex){
+		    Log.v(TAG, ex.toString());
+		}
     }
 
 }
