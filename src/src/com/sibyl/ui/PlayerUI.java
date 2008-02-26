@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.io.File;
+import java.io.FilenameFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 public class PlayerUI extends Activity {
 	
@@ -26,12 +31,17 @@ public class PlayerUI extends Activity {
 	private static final int QUIT_ID = Menu.FIRST;
 	private static final int PLAYLIST_ID = Menu.FIRST +1;
 	private static final int OPTION_ID = Menu.FIRST +2;
+	private static final int ADD_ID = Menu.FIRST +3;
 	
+    private static final String TAG = "COLLECTION";
+	
+	//view of the ui
 	private TextView artiste;
 	private TextView titre;
 	private TextView tempsEcoule;
 	private TextView tempsTotal;
 	private Button lecture;
+	
 	private boolean play = false;
 	private boolean pause = false;
 	
@@ -69,6 +79,7 @@ public class PlayerUI extends Activity {
         menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
+        menu.add(0,ADD_ID, "Add /tmp");
         return true;
     }
     
@@ -92,6 +103,10 @@ public class PlayerUI extends Activity {
             break;
         case OPTION_ID:
         	//launch the option's activity
+        	break;
+        case ADD_ID:
+        	//add song
+        	fillBD("/tmp/");
         	break;
         }
         
@@ -176,4 +191,37 @@ public class PlayerUI extends Activity {
             play = !play;
         }
     };
+    
+    
+    private void fillBD (String path)
+    {
+    	try{
+    	    
+    	    MusicDB mdb = new MusicDB(this);
+    	    Log.v(TAG,"BD OK");
+
+    	    // get all mp3 files in path
+    	    File dir = new File(path);
+    	    FilenameFilter filter = new FilenameFilter() {
+    		public boolean accept(File dir, String name) {
+    		    return name.endsWith(".mp3");
+    		}
+    	    };
+    	    // insert them in the database
+    	    
+    	    for(String s : dir.list(filter)){
+    		try{
+    		   long t = System.currentTimeMillis();
+    		   mdb.insert(path+s);
+    		   Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
+    		}catch(SQLiteException sqle){
+    		    Log.v(TAG, "sql" + sqle.toString());
+    		}
+    	    }
+
+    	}catch(Exception ex){
+    	    Log.v(TAG, ex.toString());
+    	}
+    }
+
 }
