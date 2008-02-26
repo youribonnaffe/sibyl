@@ -49,17 +49,18 @@ public class Sibylservice extends Service
                 //remplacant du NotificationManager/notifyWithText
                 Toast.makeText(Sibylservice.this, "Exception: "+e, 
                     Toast.LENGTH_SHORT).show();
-
             }
             mp.start();
             
             //remplacant du NotificationManager/notifyWithText
             Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
         }
         else {
         //we're in pause so we continue playing the paused song
             mp.start();
+            Toast.makeText(Sibylservice.this, "reprise", 
+                    Toast.LENGTH_LONG).show();
         }
 
     }
