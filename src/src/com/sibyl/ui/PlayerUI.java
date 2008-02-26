@@ -32,6 +32,8 @@ public class PlayerUI extends Activity {
 	private TextView tempsEcoule;
 	private TextView tempsTotal;
 	private Button lecture;
+	private boolean play = false;
+	private boolean pause = false;
 	
     /** Called when the activity is first created. */
     @Override
@@ -75,7 +77,15 @@ public class PlayerUI extends Activity {
         super.onMenuItemSelected(featureId, item);
         switch(item.getId()) {
         case QUIT_ID:
-            //kill Sibyl (and the Core Service?)
+            try {
+                mService.stop();
+            }//lors de l'appel de fonction de interface (fichier aidl)
+            //il faut catcher les DeadObjectException
+            catch (DeadObjectException ex) {
+            }
+            play = false;
+            pause = false;
+            lecture.setText(R.string.stop);
             break;
         case PLAYLIST_ID:
             //launch the playlist's activity
@@ -119,40 +129,51 @@ public class PlayerUI extends Activity {
         }
     };
 
-     
-    private OnClickListener mStartListener = new OnClickListener()
-    {
-        public void onClick(View v)
-        {
 
-            Bundle args = new Bundle();
-            args.putString("filename", "test.mp3");
-            bindService(new Intent(PlayerUI.this,
-                        Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        }
-    };
     
     private OnClickListener mPlayListener = new OnClickListener()
     {
         public void onClick(View v)
         {
-        	String text = new String(getText(R.string.play).toString());
-            if( lecture.getText().toString().equals(text))
+            if( play) //call if a music is played (pause the music)
             {
             	lecture.setText(R.string.stop);
+                try {
+                    mService.pause();
+                }//lors de l'appel de fonction de interface (fichier aidl)
+                //il faut catcher les DeadObjectException
+                catch (DeadObjectException ex) {
+                }
+                pause = true;
             }
-            else
+            else // to start listening a music or resume.
             {
             	lecture.setText(R.string.play);
+
+	            try {
+	                mService.start();
+	            }//lors de l'appel de fonction de interface (fichier aidl)
+	            //il faut catcher les DeadObjectException
+	            catch (DeadObjectException ex) {
+	            }
+	            if(!pause)
+	            {
+	            	int length = 0;
+	            	int min, sec;
+	                try {
+	                    length = mService.getDuration();
+	                }
+	                catch (DeadObjectException ex) {
+	                }
+	                min = Math.round((float) (length / 1000.0 / 60));
+	                sec = Math.round((float) ((length / 1000.0 / 60) - min) * 60);
+	                tempsTotal.setText(((min < 10) ? "0":"")+String.valueOf(min)+":"+String.valueOf(sec));
+	            	
+	            }
+	            
+	            pause = false;
             }
-            try {
-                mService.start();
-            }//lors de l'appel de fonction de interface (fichier aidl)
-            //il faut catcher les DeadObjectException
-            catch (DeadObjectException ex) {
-            
-            }
+            play = !play;
         }
     };
 }

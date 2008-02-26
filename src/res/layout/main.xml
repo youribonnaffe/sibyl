@@ -80,7 +80,7 @@
 			<TextView
 				android:text="@string/separateur"/>
 			<TextView android:id="@+id/tpsTotal"
-				android:text="@string/time_total"/>
+				android:text="@string/time_zero"/>
 		</TableRow>
 	</TableLayout>
 	
