@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo "*** Sibyl Init script ***"
-echo "Add covers"
-adb push cover.jpg /tmp/
-echo "Add mp3"
-adb push test.mp3 /tmp/
