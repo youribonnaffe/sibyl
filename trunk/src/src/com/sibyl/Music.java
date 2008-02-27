@@ -20,7 +20,7 @@ package com.sibyl;
 
 public class Music {
 
-    public static String MUSIC_DIR = "/music";
+    public static String MUSIC_DIR = "/data/music";
     public static String[] SONGS = { SONG.ID, SONG.URL, SONG.TITLE,
 	    SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
 	    SONG.ALBUM, SONG.GENRE };
