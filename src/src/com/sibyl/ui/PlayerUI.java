@@ -121,7 +121,6 @@ public class PlayerUI extends Activity {
 
     @Override
     protected void onDestroy() {
-	// TODO Auto-generated method stub
 	super.onDestroy();
 	mHandler.removeCallbacks(timerTask);
     }
@@ -208,89 +207,99 @@ public class PlayerUI extends Activity {
 
     private OnClickListener mPlayListener = new OnClickListener()
     {
-	public void onClick(View v)
-	{
-	    if( play) //call if a music is played (pause the music)
-	    {
-		lecture.setText(R.string.stop);
-		try {
-		    mService.pause();
-		}//lors de l'appel de fonction de interface (fichier aidl)
-		//il faut catcher les DeadObjectException
-		catch (DeadObjectException ex) {
-		}
-		pause = true;
-		// remove timer task from ui thread
-		mHandler.removeCallbacks(timerTask);
-	    }
-	    else // to start listening a music or resume.
-	    {
-		lecture.setText(R.string.play);
-
-		try {
-		    mService.start();
-		}//lors de l'appel de fonction de interface (fichier aidl)
-		//il faut catcher les DeadObjectException
-		catch (DeadObjectException ex) {
-		}
-		if(!pause)
-		{
-		    try {
-			tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
-		    }catch (DeadObjectException ex){}
-		    time = 0;
-		    mHandler.removeCallbacks(timerTask);
-		    // add timer task to ui thread
-		    mHandler.post(timerTask);
-
-		}
-
-		pause = false;
-	    }
-	    play = !play;
-	}
+    	public void onClick(View v)
+    	{
+    	    if( play) //call if a music is played (pause the music)
+    	    {
+    	        lecture.setText(R.string.play);
+        		try {
+        		    mService.pause();
+        		}//lors de l'appel de fonction de interface (fichier aidl)
+        		//il faut catcher les DeadObjectException
+        		catch (DeadObjectException ex) {
+        		}
+        		pause = true;
+    		// remove timer task from ui thread
+        		mHandler.removeCallbacks(timerTask);
+    	    }
+    	    else // to start listening a music or resume.
+    	    {
+    	        lecture.setText(R.string.stop);
+        		try {
+        		    mService.start();
+        		}//lors de l'appel de fonction de interface (fichier aidl)
+        		//il faut catcher les DeadObjectException
+        		catch (DeadObjectException ex) {
+        		}
+        		if(!pause)
+        		{
+        		    try {
+        			tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
+        		    }catch (DeadObjectException ex){}
+        		    time = 0;
+        		    mHandler.removeCallbacks(timerTask);
+        		    // add timer task to ui thread
+        		    mHandler.post(timerTask);
+        
+        		}
+        		pause = false;
+    	    }
+    	    play = !play;
+    	}
     };
     private void fillBD (String path)
     {
-	// get all mp3 files in path
-	try{
-	    File dir = new File(path);
-	    Log.v(TAG, "Insert");
-	    FilenameFilter filter = new FilenameFilter() {
-		public boolean accept(File dir, String name) {
-		    return name.endsWith(".mp3");
-		}
-	    };
+        // get all mp3 files in path
+        try
+        {
+            File dir = new File(path);
+            Log.v(TAG, "Insert");
+            FilenameFilter filter = new FilenameFilter() 
+            {
+                public boolean accept(File dir, String name) 
+                {
+                    return name.endsWith(".mp3");
+                }
+            };
 
-	    // insert them in the database    
-	    for(String s : dir.list(filter)){
-		try{
-		    long t = System.currentTimeMillis();
-		    mdb.insert(path+s);
-		    Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-		}catch(SQLiteException sqle){
-		    Log.v(TAG, "sql" + sqle.toString());
-		}
+            // insert them in the database    
+            for(String s : dir.list(filter))
+            {
+                try
+                {
+                    long t = System.currentTimeMillis();
+                    mdb.insert(path+s);
+                    Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
+                }
+                catch(SQLiteException sqle)
+                {
+                    Log.v(TAG, "sql" + sqle.toString());
+                }
+	        }
 	    }
-	}catch(Exception ex){
-	    Log.v(TAG, ex.toString());
-	}
+        catch(Exception ex)
+        {
+	        Log.v(TAG, ex.toString());
+	    }
 
     }
 
     private void fillPlayList()
     {
-	try{
-	    Cursor c = mdb.rawQuery("SELECT ID FROM SONG",null);
-	    int songID [] = new int[c.count()];
-	    int pos = 0;
-	    while(c.next()){
-		songID[pos++] = c.getInt(0); //there is just one column	    	
-	    }
-	    mdb.insertPlaylist(songID);
-	}catch(Exception ex){
-	    Log.v(TAG, ex.toString());
-	}
+    	try
+        {
+    	        Cursor c = mdb.rawQuery("SELECT ID FROM SONG",null);
+    	        int songID [] = new int[c.count()];
+    	        int pos = 0;
+    	        while(c.next()){
+    	        songID[pos++] = c.getInt(0); //there is just one column	    	
+    	    }
+    	    mdb.insertPlaylist(songID);
+    	}
+        catch(Exception ex)
+        {
+    	    Log.v(TAG, ex.toString());
+        }
     }
 
 }
