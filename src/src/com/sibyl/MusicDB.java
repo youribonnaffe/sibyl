@@ -259,6 +259,9 @@ public class MusicDB {
 	}
     }
 
+    // add song where column = value
+    // use column name from Music.SONG 
+    // artist, album and genre implemented
     public void insertPlaylist(String column, String value){
 	if(column == Music.SONG.ARTIST){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
