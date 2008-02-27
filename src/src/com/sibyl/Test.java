@@ -47,8 +47,8 @@ public class Test extends Activity{
 	    MusicDB mdb = new MusicDB(this);
 	    Log.v(TAG,"BD OK");
 
-	    // get all mp3 files in /tmp
-	    File dir = new File("/tmp/");
+	    // get all mp3 files in Music.MUSIC_DIR
+	    File dir = new File(Music.MUSIC_DIR+"/");
 	    FilenameFilter filter = new FilenameFilter() {
 		public boolean accept(File dir, String name) {
 		    return name.endsWith(".mp3");
@@ -59,7 +59,7 @@ public class Test extends Activity{
 	    for(String s : dir.list(filter)){
 		try{
 		   long t = System.currentTimeMillis();
-		   mdb.insert("/tmp/"+s);
+		   mdb.insert(Music.MUSIC_DIR+"/"+s);
 		   Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
 		}catch(SQLiteException sqle){
 		    Log.v(TAG, "sql" + sqle.toString());
@@ -97,7 +97,7 @@ public class Test extends Activity{
 	    }
 	    
 	    // a example to delete a song
-	    /*mdb.deleteSong("/tmp/test.mp3");
+	    /*mdb.deleteSong(Music.MUSIC_DIR+"/test.mp3");
 	    mdb.deleteSong(3);
 	   c = mdb.rawQuery("SELECT url, title, artist_name, album_name, genre_name " +
 		    "FROM song, artist, album, genre " +

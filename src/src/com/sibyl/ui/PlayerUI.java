@@ -79,7 +79,7 @@ public class PlayerUI extends Activity {
         tempsTotal = (TextView) findViewById(R.id.tpsTotal);
         lecture = (Button) findViewById(R.id.lecture);
         ImageView cover = (ImageView) findViewById(R.id.cover);
-        cover.setImageDrawable(Drawable.createFromPath("/tmp/cover.jpg"));
+        cover.setImageDrawable(Drawable.createFromPath(Music.MUSIC_DIR+"/cover.jpg"));
         
         //create or connect to the Database
     	try{
@@ -107,7 +107,7 @@ public class PlayerUI extends Activity {
         menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
-        menu.add(0,ADD_ID, "Add /tmp");
+        menu.add(0,ADD_ID, "Add "+Music.MUSIC_DIR);
         return true;
     }
     
@@ -134,7 +134,7 @@ public class PlayerUI extends Activity {
         	break;
         case ADD_ID:
         	//add song
-        	fillBD("/tmp/");
+        	fillBD(Music.MUSIC_DIR+"/");
         	fillPlayList();
         	break;
         }

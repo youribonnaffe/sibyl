@@ -60,7 +60,7 @@ public class Sibylservice extends Service
         if( !paused ) {
         //we're not in pause so we start playing a new song
             try{
-                mp.setDataSource("/tmp/"+filename);
+                mp.setDataSource(Music.MUSIC_DIR+"/"+filename);
                 mp.prepare();
             }
             catch ( Exception e) {
