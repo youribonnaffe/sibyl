@@ -106,7 +106,7 @@ public class PlayerUI extends Activity {
 	tempsTotal = (TextView) findViewById(R.id.tpsTotal);
 	lecture = (Button) findViewById(R.id.lecture);
 	ImageView cover = (ImageView) findViewById(R.id.cover);
-	cover.setImageDrawable(Drawable.createFromPath("/tmp/cover.jpg"));  
+	cover.setImageDrawable(Drawable.createFromPath("/data/music/cover.jpg"));  
 
 	//create or connect to the Database
 	try{
