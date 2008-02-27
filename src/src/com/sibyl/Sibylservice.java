@@ -23,12 +23,15 @@ import android.content.Intent;
 
 import android.os.Bundle;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Parcel;
 
 import android.widget.Toast;
+
+import android.util.Log;
 
 
 public class Sibylservice extends Service
@@ -38,14 +41,25 @@ public class Sibylservice extends Service
     protected void onCreate()
     {        
         paused=false;
-        
+        currentSong=0;
         mp = new MediaPlayer();
+        mp.setOnCompletionListener(endSongListener);
+        
+        //create or connect to the Database
+    	try{
+    	    mdb = new MusicDB(this);
+    	    Log.v(TAG,"BD OK");
+    	}
+        catch(Exception ex){
+    	    Log.v(TAG, ex.toString()+" Create");
+    	}
+
     }
     
     @Override
     protected void onStart(int startId, Bundle arguments)
     {
-       //playSong("test.mp3");
+
     }
     
     @Override
@@ -55,30 +69,55 @@ public class Sibylservice extends Service
         mp.release();
     }
     
+    protected void play() {
+        if( !paused ) {
+            play_next();
+        }
+        else {
+            mp.start();
+            paused=false;
+        }
+
+    }
+    
+    protected void play_next() {
+        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
+        String filename=mdb.nextSong(currentSong);
+        currentSong++;
+        paused=false;
+        if(filename != null) playSong(filename);
+    }
+    
     protected void playSong(String filename) 
     {
+        Log.v(TAG,">>> PlaySong("+filename+") called: paused="+ paused);
         if( !paused ) {
         //we're not in pause so we start playing a new song
             try{
-                mp.setDataSource(Music.MUSIC_DIR+"/"+filename);
+                mp.reset();
+                mp.setDataSource(/*Music.MUSIC_DIR+"/"+*/filename);
                 mp.prepare();
             }
             catch ( Exception e) {
                 //remplacant du NotificationManager/notifyWithText
-                Toast.makeText(Sibylservice.this, "Exception: "+e, 
-                    Toast.LENGTH_SHORT).show();
+                Log.v(TAG, "playSong: exception: "+e.toString());
+                //Notifications removed else they throw an exception
+                //surely a problem of multithreading
+               /* Toast.makeText(Sibylservice.this, "Exception: "+e.toString(), 
+                    Toast.LENGTH_SHORT).show();*/
             }
             mp.start();
             
             //remplacant du NotificationManager/notifyWithText
-            Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
-                    Toast.LENGTH_LONG).show();
+            /*Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
+                    Toast.LENGTH_LONG).show();*/
         }
         else {
         //we're in pause so we continue playing the paused song
             mp.start();
-            Toast.makeText(Sibylservice.this, "reprise", 
-                    Toast.LENGTH_LONG).show();
+            /*Toast.makeText(Sibylservice.this, "reprise", 
+                    Toast.LENGTH_LONG).show();*/
+            paused=false;
         }
 
     }
@@ -93,7 +132,7 @@ public class Sibylservice extends Service
     //interface accessible par les autres classes (cf aidl)
     private final ISibylservice.Stub mBinder = new ISibylservice.Stub() {
         public void start() {
-            playSong("test.mp3");
+            play();
         }
         
         public void stop() {
@@ -102,6 +141,7 @@ public class Sibylservice extends Service
         
         public void pause() {
             mp.pause();
+            paused=true;
         }
         
         public int getCurrentPosition() {
@@ -119,11 +159,28 @@ public class Sibylservice extends Service
         public void setLooping(int looping) {
             mp.setLooping(looping);
         }
+        
+        public void next() {
+            play_next();
+        }
+        
+        public void prev() {
+        }
          
+    };
+    
+    private OnCompletionListener endSongListener = new OnCompletionListener() 
+    {
+        public void onCompletion(MediaPlayer mp) 
+        {
+            play_next();
+        } 
     };
     
 
     private MediaPlayer mp;
+    private MusicDB mdb;
     private boolean paused;
+    private int currentSong;
 
 }
