@@ -43,4 +43,10 @@ interface ISibylservice {
     /* activate or deactivate looping / repetition of the current song 
         If looping is set to 0: the current song is played once 
         If looping is set to 1: the current song is repeated while looping is not 0 */
+    
+    void next();
+    /* play the next song of the current playlist*/
+    
+    void prev();
+    /* play the previous song of the current playlist */
 }
