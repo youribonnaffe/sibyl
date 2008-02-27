@@ -1,6 +1,6 @@
 /* 
  *
- * Copyright (C) 2007 sibyl project
+ * Copyright (C) 2007-2008 sibyl project
  * http://code.google.com/p/sibyl/
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
