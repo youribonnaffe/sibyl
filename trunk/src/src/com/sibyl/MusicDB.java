@@ -41,7 +41,7 @@ public class MusicDB {
     private static final int DB_VERSION = 1;
 
     private static class MusicDBHelper extends SQLiteOpenHelper{
-	private static final String GENRE_FILE = "/tmp/tags";
+	private static final String GENRE_FILE = Music.MUSIC_DIR+"/tags";
 
 	@Override
 	public void onCreate(SQLiteDatabase mDb) {
