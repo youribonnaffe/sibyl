@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #script a copier dans InitSibyl une fois le tar.gz decompresse
+# to keep files on emulator
 dir=/data/music
 if [ $# -ne "1" ] 
 then
