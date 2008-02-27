@@ -73,7 +73,7 @@
 	    
 		<TableRow>
 			<Button	android:id="@+id/lecture"
-				android:text="@string/stop" />
+				android:text="@string/play" />
 			<TextView android:id="@+id/tpsEcoule"
 				android:text="@string/time_zero"
 				android:textAlign="end" />
