@@ -59,7 +59,7 @@
 			<Button android:id="@+id/next"
 				android:text="N"
 				android:focusable="true"
-				android:layout_height="wrap_content" />
+				android:layout_height="wrap_content"/>
 		</TableRow>
 	</TableLayout>
 				
