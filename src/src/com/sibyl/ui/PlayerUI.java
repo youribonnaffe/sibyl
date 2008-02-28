@@ -169,7 +169,7 @@ public class PlayerUI extends Activity {
 	    }
 	    play = false;
 	    pause = false;
-	    lecture.setText(R.string.stop);
+	    lecture.setText(R.string.pause);
 	    break;
 	case PLAYLIST_ID:
 	    //launch the playlist's activity
@@ -237,7 +237,7 @@ public class PlayerUI extends Activity {
 	    }
 	    else // to start listening a music or resume.
 	    {
-		lecture.setText(R.string.stop);
+		lecture.setText(R.string.pause);
 		try {
 		    mService.start();
 		}//lors de l'appel de fonction de interface (fichier aidl)
