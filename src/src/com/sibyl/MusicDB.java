@@ -136,17 +136,40 @@ public class MusicDB {
 	}
     }
 
+    /**
+     * constructor to get a connection to the database, if the database doesn't
+     * exist yet, it is created
+     * @param c the application context
+     */
     public MusicDB( Context c ) { 
 	// exceptions ??
 	mDb = (new MusicDBHelper()).openDatabase(c, DB_NAME, null, DB_VERSION);
     }
 
-    public void insert(String[] url) throws FileNotFoundException, IOException, SQLiteException{
-	for(int i=0; i<url.length; i++){
-	    insert(url[i]);
+    /**
+     * insert songs in the database where urls are the absolute filenames of them
+     * the files are processed to extract the ID3 tags
+     * 
+     * @param url array of urls to insert several songs at a time
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws SQLiteException
+     */
+    public void insert(String[] urls) throws FileNotFoundException, IOException, SQLiteException{
+	for(int i=0; i<urls.length; i++){
+	    insert(urls[i]);
 	}
     }
 
+    /**
+     * insert one song in the database where url is the absolute filename of it
+     * the file is processed to extract the ID3 tags
+     * 
+     * @param url the absolute path (and name) of the song
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws SQLiteException
+     */
     public void insert(String url) throws FileNotFoundException, IOException, SQLiteException{
 	// read tags
 	ContentValues cv = new ID3TagReader(url).getValues();
@@ -209,30 +232,74 @@ public class MusicDB {
 	}
     }
 
+    /** 
+     * delete a song from the database with the url given
+     * @param url
+     */
     public void deleteSong(String url){
 	mDb.execSQL("DELETE FROM song WHERE url='"+url+"'");
     }
 
+    /**
+     * delete a song from the database with the url given
+     * @param id
+     */
     public void deleteSong(int id){
 	mDb.execSQL("DELETE FROM song WHERE id='"+id+"'");
     }
 
+    /**
+     * just to allow the user to execute query on the database 
+     * @see android.database.sqlite.SQLiteDatabase#rawQuery(String, String[])
+     * @param sql the SQL query
+     * @param selectionArgs see android doc
+     * @return
+     */
     public Cursor rawQuery(String sql, String[] selectionArgs){
 	return mDb.rawQuery(sql, selectionArgs);
     }
 
+    /**
+     * to execute query each arg is a part of the SQL query
+     * 
+     * @param table
+     * @param columns
+     * @param selection
+     * @param selectionArgs
+     * @param groupBy
+     * @param having
+     * @param orderBy
+     * @return
+     */
     public Cursor query(String table, String[] columns, 
 	    String selection, String[] selectionArgs, 
 	    String groupBy, String having, String orderBy){
 	return mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
+    /**
+     * to execute query each arg is a part of the SQL query
+     * @param distinct
+     * @param table
+     * @param columns
+     * @param selection
+     * @param selectionArgs
+     * @param groupBy
+     * @param having
+     * @param orderBy
+     * @return
+     */
     public Cursor query(boolean distinct, String table, String[] columns, 
 	    String selection, String[] selectionArgs, 
 	    String groupBy, String having, String orderBy){
 	return mDb.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
+    /**
+     * return the next song in the playlist
+     * @param pos
+     * @return url of the next song
+     */
     public String nextSong(int pos){
 	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
@@ -241,6 +308,11 @@ public class MusicDB {
 	return c.getString(0);
     }
 
+    /**
+     * return the previous song in the playlist
+     * @param pos
+     * @return url of the previous song
+     */
     public String previousSong(int pos){
 	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song.id=current_playlist.id", null);
 	if(!c.first()){
@@ -249,10 +321,22 @@ public class MusicDB {
 	return c.getString(0);
     }
 
+    /**
+     * execute SQL statement that is not a query (INSERT, DELETE ...)
+     * 
+     * @see android.database.sqlite.SQLiteDatabase#execSQL(String)
+     * @param query
+     */
     public void execSQL(String query){
 	mDb.execSQL(query);
     }
 
+    
+    /**
+     * insert several songs in the playlist
+     * 
+     * @param ids the songs ids
+     */
     public void insertPlaylist( int[] ids ){
 	for( int id : ids ){
 	    mDb.execSQL("INSERT INTO current_playlist(id) VALUES("+id+")");
@@ -262,6 +346,14 @@ public class MusicDB {
     // add song where column = value
     // use column name from Music.SONG 
     // artist, album and genre implemented
+    /**
+     * add song where column = value
+     * use column name from Music.SONG 
+     * artist, album and genre implemented
+     * 
+     * @param column the selected column
+     * @param value  the value for the selected column
+     */
     public void insertPlaylist(String column, String value){
 	if(column == Music.SONG.ARTIST){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
