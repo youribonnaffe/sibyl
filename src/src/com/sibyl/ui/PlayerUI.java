@@ -217,6 +217,14 @@ public class PlayerUI extends Activity {
 		    Toast.LENGTH_SHORT).show();                              
 	}
     };
+    
+    //set the total time of the song which is played
+    private void setTotalTime ()
+    {
+	    try {
+			tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
+		    }catch (DeadObjectException ex){}
+    }
 
     private OnClickListener mPlayListener = new OnClickListener()
     {
@@ -224,38 +232,36 @@ public class PlayerUI extends Activity {
 	{
 	    if( play) //call if a music is played (pause the music)
 	    {
-		lecture.setText(R.string.play);
-		try {
-		    mService.pause();
-		}//lors de l'appel de fonction de interface (fichier aidl)
-		//il faut catcher les DeadObjectException
-		catch (DeadObjectException ex) {
-		}
-		pause = true;
-		// remove timer task from ui thread
-		mHandler.removeCallbacks(timerTask);
+			lecture.setText(R.string.play);
+			try {
+			    mService.pause();
+			}//lors de l'appel de fonction de interface (fichier aidl)
+			//il faut catcher les DeadObjectException
+			catch (DeadObjectException ex) {
+			}
+			pause = true;
+			// remove timer task from ui thread
+			mHandler.removeCallbacks(timerTask);
 	    }
 	    else // to start listening a music or resume.
 	    {
-		lecture.setText(R.string.pause);
-		try {
-		    mService.start();
-		}//lors de l'appel de fonction de interface (fichier aidl)
-		//il faut catcher les DeadObjectException
-		catch (DeadObjectException ex) {
-		}
-		if(!pause)
-		{
-		    try {
-			tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
-		    }catch (DeadObjectException ex){}
-		}
-		// reset timer so it will be recalculated if resuming
-		time = 0;
-		mHandler.removeCallbacks(timerTask);
-		// add timer task to ui thread
-		mHandler.post(timerTask);
-		pause = false;
+			lecture.setText(R.string.pause);
+			try {
+			    mService.start();
+			}//lors de l'appel de fonction de interface (fichier aidl)
+			//il faut catcher les DeadObjectException
+			catch (DeadObjectException ex) {
+			}
+			if(!pause) //a song is start.
+			{
+				setTotalTime();
+			}
+			// reset timer so it will be recalculated if resuming
+			time = 0;
+			mHandler.removeCallbacks(timerTask);
+			// add timer task to ui thread
+			mHandler.post(timerTask);
+			pause = false;
 	    }
 	    play = !play;
 	}
@@ -267,9 +273,13 @@ public class PlayerUI extends Activity {
     {
 		public void onClick(View v)
 		{
-			Toast.makeText(PlayerUI.this, "Next", Toast.LENGTH_SHORT).show();
 			try{
 				mService.next();
+				//is a song really played ???
+				setTotalTime();
+				play = true;
+				pause = false;
+				lecture.setText(R.string.pause);
 			}
 	    	catch (DeadObjectException ex){}
 		}
@@ -282,6 +292,11 @@ public class PlayerUI extends Activity {
 		{
 			try{
 				mService.prev();
+				//is a song really played ???
+				setTotalTime();
+				play = true;
+				pause = false;
+				lecture.setText(R.string.pause);
 			}
 	    	catch (DeadObjectException ex){}
 		}
