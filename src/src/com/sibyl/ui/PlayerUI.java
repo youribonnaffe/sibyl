@@ -273,7 +273,9 @@ public class PlayerUI extends Activity {
     {
 		public void onClick(View v)
 		{
-			try{
+			try
+            {
+                time = 0;
 				mService.next();
 				//is a song really played ???
 				setTotalTime();
@@ -290,7 +292,9 @@ public class PlayerUI extends Activity {
     {
 		public void onClick(View v)
 		{
-			try{
+			try
+            {
+                time = 0;
 				mService.prev();
 				//is a song really played ???
 				setTotalTime();
