@@ -70,6 +70,8 @@ public class PlayerUI extends Activity {
 
     private boolean play = false;
     private boolean pause = false;
+    private Button next;
+    private Button previous;
 
     private MusicDB mdb;	//the database
 
@@ -105,8 +107,18 @@ public class PlayerUI extends Activity {
 	elapsedTime = (TextView) findViewById(R.id.tpsEcoule);
 	tempsTotal = (TextView) findViewById(R.id.tpsTotal);
 	lecture = (Button) findViewById(R.id.lecture);
+	lecture.setOnClickListener(mPlayListener);
+	next = (Button) findViewById(R.id.next);
+	previous = (Button) findViewById(R.id.prec);
+	//set cover
 	ImageView cover = (ImageView) findViewById(R.id.cover);
 	cover.setImageDrawable(Drawable.createFromPath("/data/music/cover.jpg"));  
+	//set listenner
+	lecture.setOnClickListener(mPlayListener);
+	next.setOnClickListener(mNextListener);
+	previous.setOnClickListener(mPreviousListener);
+
+	
 
 	//create or connect to the Database
 	try{
@@ -115,9 +127,10 @@ public class PlayerUI extends Activity {
 	}catch(Exception ex){
 	    Log.v(TAG, ex.toString()+" Create");
 	}
-	lecture.setOnClickListener(mPlayListener);
-
     }
+    
+    
+    
 
     @Override
     protected void onDestroy() {
@@ -247,6 +260,34 @@ public class PlayerUI extends Activity {
 	    play = !play;
 	}
     };
+    
+    
+    //Listenner for the Button Next. Play the next song in the playlist
+    private OnClickListener mNextListener = new OnClickListener()
+    {
+		public void onClick(View v)
+		{
+			Toast.makeText(PlayerUI.this, "Next", Toast.LENGTH_SHORT).show();
+			try{
+				mService.next();
+			}
+	    	catch (DeadObjectException ex){}
+		}
+	};
+    
+	//Listenner for the button previous. Play the previous sont in the playlist
+    private OnClickListener mPreviousListener = new OnClickListener()
+    {
+		public void onClick(View v)
+		{
+			try{
+				mService.prev();
+			}
+	    	catch (DeadObjectException ex){}
+		}
+	};
+    
+    
     private void fillBD (String path)
     {
 	// get all mp3 files in path

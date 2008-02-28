@@ -48,7 +48,7 @@
 		<TableRow>
 			<Button android:id="@+id/prec"
 				android:text="P"
-				android:focusable="false"
+				android:focusable="true"
 				android:layout_height="wrap_content"/>
 				
 			<ImageView	android:id="@+id/cover" 
@@ -58,7 +58,7 @@
 
 			<Button android:id="@+id/next"
 				android:text="N"
-				android:focusable="false"
+				android:focusable="true"
 				android:layout_height="wrap_content" />
 		</TableRow>
 	</TableLayout>
