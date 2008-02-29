@@ -169,7 +169,8 @@ public class PlayerUI extends Activity {
 	    }
 	    play = false;
 	    pause = false;
-	    lecture.setText(R.string.pause);
+	    lecture.setText(R.string.play);
+        finish();
 	    break;
 	case PLAYLIST_ID:
 	    //launch the playlist's activity
@@ -271,40 +272,40 @@ public class PlayerUI extends Activity {
     //Listenner for the Button Next. Play the next song in the playlist
     private OnClickListener mNextListener = new OnClickListener()
     {
-		public void onClick(View v)
-		{
-			try
+        public void onClick(View v)
+        {
+            try
             {
                 time = 0;
-				mService.next();
-				//is a song really played ???
-				setTotalTime();
-				play = true;
-				pause = false;
-				lecture.setText(R.string.pause);
-			}
-	    	catch (DeadObjectException ex){}
-		}
-	};
+                mService.next();
+                //is a song really played ???
+                setTotalTime();
+                play = true;
+                pause = false;
+                lecture.setText(R.string.pause);
+            }
+            catch (DeadObjectException ex){}
+        }
+    };
     
 	//Listenner for the button previous. Play the previous sont in the playlist
-    private OnClickListener mPreviousListener = new OnClickListener()
+	private OnClickListener mPreviousListener = new OnClickListener()
     {
-		public void onClick(View v)
+        public void onClick(View v)
 		{
-			try
+		    try
             {
                 time = 0;
-				mService.prev();
-				//is a song really played ???
-				setTotalTime();
-				play = true;
-				pause = false;
-				lecture.setText(R.string.pause);
-			}
-	    	catch (DeadObjectException ex){}
+                mService.prev();
+                //is a song really played ???
+                setTotalTime();
+                play = true;
+                pause = false;
+                lecture.setText(R.string.pause);
+            }
+		    catch (DeadObjectException ex){}
 		}
-	};
+    };
     
     
     private void fillBD (String path)
