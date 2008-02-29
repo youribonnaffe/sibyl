@@ -4,11 +4,10 @@
 == of the revision number hunting ==
 
 
-||Revision||Winner||
-||n°42||Loktor||
+||Revision||Winner||Comment of the hunter||
+||n°42||Loktor||I'm very proud of having the geek number||
 ||n°69||Ismael||
-||n°93||Loktor||
-||n°100||Loktor||
+||n°100||Loktor||I was close to miss it||
 ||n°111||||
 ||n°123||||
 ||n°222||||
