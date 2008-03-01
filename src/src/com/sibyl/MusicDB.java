@@ -46,7 +46,7 @@ public class MusicDB {
 	@Override
 	public void onCreate(SQLiteDatabase mDb) {
 	    mDb.execSQL("CREATE TABLE song("+
-		    "id INTEGER PRIMARY KEY,"+
+		    "_id INTEGER PRIMARY KEY,"+
 		    "url VARCHAR UNIQUE,"+
 		    "title VARCHAR,"+
 		    "last_played DATE DEFAULT 0,"+
@@ -245,7 +245,7 @@ public class MusicDB {
      * @param id
      */
     public void deleteSong(int id){
-	mDb.execSQL("DELETE FROM song WHERE id='"+id+"'");
+	mDb.execSQL("DELETE FROM song WHERE _id='"+id+"'");
     }
 
     /**
@@ -301,7 +301,7 @@ public class MusicDB {
      * @return url of the next song
      */
     public String nextSong(int pos){
-	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song.id=current_playlist.id", null);
+	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song._id=current_playlist.id", null);
 	if(!c.first()){
 	    return null;
 	}
@@ -314,7 +314,7 @@ public class MusicDB {
      * @return url of the previous song
      */
     public String previousSong(int pos){
-	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song.id=current_playlist.id", null);
+	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song._id=current_playlist.id", null);
 	if(!c.first()){
 	    return null;
 	}
@@ -357,17 +357,17 @@ public class MusicDB {
     public void insertPlaylist(String column, String value){
 	if(column == Music.SONG.ARTIST){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
-		    "SELECT song.id FROM song, artist " +
+		    "SELECT song._id FROM song, artist " +
 		    "WHERE artist.artist_name = '"+value+"' " +
 	    "AND song.artist = artist.id");
 	}else if(column == Music.SONG.ALBUM){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
-		    "SELECT song.id FROM song, album " +
+		    "SELECT song._id FROM song, album " +
 		    "WHERE album.album_name = '"+value+"' " +
 	    "AND song.album = album.id");
 	}else if(column == Music.SONG.GENRE){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
-		    "SELECT song.id FROM song, genre " +
+		    "SELECT song._id FROM song, genre " +
 		    "WHERE genre.genre_name = '"+value+"' " +
 	    "AND song.genre = genre.id");
 	}

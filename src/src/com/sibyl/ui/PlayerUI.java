@@ -369,7 +369,7 @@ public class PlayerUI extends Activity
     {
         try
         {
-            Cursor c = mdb.rawQuery("SELECT ID FROM SONG",null);
+            Cursor c = mdb.rawQuery("SELECT _ID FROM SONG",null);
             int songID [] = new int[c.count()];
             int pos = 0;
             while(c.next())

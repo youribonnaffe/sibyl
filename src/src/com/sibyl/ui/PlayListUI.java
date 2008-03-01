@@ -85,24 +85,20 @@ public class PlayListUI extends ListActivity
         try
         {
             Log.v(TAG,"Curseur creation <<<<<<<<<<<<<<<<");
-            Cursor c = mdb.rawQuery("SELECT title " +
+            Cursor c = mdb.rawQuery("SELECT  _id , title " +
                     "FROM song", null);
             startManagingCursor(c);
-            ArrayList<String> mStrings = new ArrayList<String>();
-            while(c.next())
-            {
-                for(String s : c.getColumnNames())
-                {
-                    Log.v(TAG, s+"="+c.getString(c.getColumnIndex(s)));
-                    mStrings.add(c.getString(c.getColumnIndex(s)));
-                }
-                Log.v(TAG, "-----");
-            }
-            Log.v(TAG,"Curseur cree>>>>>>>>>>>>>>>>>>>>>");
-            ListAdapter adapter = new ArrayAdapter<String>(this,
-                            android.R.layout.simple_list_item_1, mStrings);
-            
+
+            try{
+            ListAdapter adapter = new SimpleCursorAdapter(
+                    this, R.layout.playlist_row, c, new String[] {"_id","title"}, 
+                    new int[] {R.id.text1, R.id.text2});  
             setListAdapter(adapter);
+            }
+            catch(Exception ex)
+            {
+                Log.v(TAG, ex.toString());
+            }
         }
         catch(Exception ex)
         {
