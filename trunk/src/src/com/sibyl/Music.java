@@ -31,7 +31,7 @@ public class Music {
 	    CURRENT_PLAYLIST.ID };
 
     public static class SONG {
-	public static String ID = "id";
+	public static String ID = "_id";
 	public static String URL = "url";
 	public static String TITLE = "title";
 	public static String LAST_PLAYED = "last_played";
