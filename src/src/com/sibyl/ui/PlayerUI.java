@@ -20,6 +20,8 @@ package com.sibyl.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -50,7 +52,7 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
-public class PlayerUI extends Activity 
+public class PlayerUI extends Activity implements Observer
 {
 
     ISibylservice mService = null;
@@ -388,6 +390,14 @@ public class PlayerUI extends Activity
     {
         Intent i = new Intent(this, PlayListUI.class);
         startSubActivity(i, 0);
+    }
+
+
+
+
+    public void update(Observable arg0, Object arg1) 
+    {
+        setTotalTime();
     }
 
 }
