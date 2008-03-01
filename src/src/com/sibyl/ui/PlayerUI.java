@@ -126,7 +126,8 @@ public class PlayerUI extends Activity implements Observer
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
-
+        
+        
         //create or connect to the Database
         try
         {

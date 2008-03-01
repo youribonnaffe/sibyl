@@ -18,6 +18,7 @@
 
 package com.sibyl;
 
+
 interface ISibylservice {
 
     void start();
@@ -50,10 +51,10 @@ interface ISibylservice {
     void prev();
     /* play the previous song of the current playlist */
     
-    void addObserver(in Observer obs);
+    void addObserver(in PlayerUI obs);
     /* ajoute un observeur au service */
     
-    void delObserver(in Observer obs);
+    void delObserver(in PlayerUI obs);
     /* supprimer un observeur du service */
     
 }

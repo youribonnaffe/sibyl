@@ -36,6 +36,8 @@ import android.os.IBinder;
 
 import android.util.Log;
 
+import com.sibyl.ui.*;
+
 
 public class Sibylservice extends Service
 {
@@ -172,14 +174,14 @@ public class Sibylservice extends Service
         public void prev() {
         }
         
-        public void addObserver(Observer obs)
+        public void addObserver(PlayerUI obs)
         {
-            obser.addObserver(obs);
+            //obser.addObserver(obs);
         }
         
-        void delObserver(Observer obs)
+        public void delObserver(PlayerUI obs)
         {
-            obser.deleteObserver(obs);
+            //obser.deleteObserver(obs);
         }
          
     };
