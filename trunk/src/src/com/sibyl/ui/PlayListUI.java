@@ -85,13 +85,16 @@ public class PlayListUI extends ListActivity
         try
         {
             Log.v(TAG,"Curseur creation <<<<<<<<<<<<<<<<");
-            Cursor c = mdb.rawQuery("SELECT  _id , title " +
-                    "FROM song", null);
+            Cursor c = mdb.rawQuery("SELECT  title _id , artist_name " +
+                    "FROM song, artist, current_playlist " +
+                    "WHERE song.artist = artist.id AND " +
+                    "current_playlist.id = song._id", null);
+
             startManagingCursor(c);
 
             try{
             ListAdapter adapter = new SimpleCursorAdapter(
-                    this, R.layout.playlist_row, c, new String[] {"_id","title"}, 
+                    this, R.layout.playlist_row, c, new String[] {"_id","artist_name"}, 
                     new int[] {R.id.text1, R.id.text2});  
             setListAdapter(adapter);
             }
