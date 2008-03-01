@@ -186,6 +186,7 @@ public class PlayerUI extends Activity
             break;
         case PLAYLIST_ID:
             //launch the playlist's activity
+            displayPlaylist();
             break;
         case OPTION_ID:
             //launch the option's activity
@@ -381,6 +382,12 @@ public class PlayerUI extends Activity
         {
             Log.v(TAG, ex.toString());
         }
+    }
+    
+    private void displayPlaylist() 
+    {
+        Intent i = new Intent(this, PlayListUI.class);
+        startSubActivity(i, 0);
     }
 
 }

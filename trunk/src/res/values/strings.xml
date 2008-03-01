@@ -17,9 +17,17 @@
     <string name="time_total">05:00</string>
     <string name="next">N</string>
     <string name="previous">P</string>
-    
+
+    <string name="playList">Playlist</string>
+        
     <string name="menu_quit">Quit</string>
     <string name="menu_playList">Playlist</string>
     <string name="menu_option">Option</string>
+    
+    <string name="menu_add">Add...</string>
+    <string name="menu_new">New...</string>
+    <string name="menu_smartpl">Smart Playlist</string>
+    <string name="menu_back">Back</string>
+
     
 </resources>
