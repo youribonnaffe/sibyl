@@ -19,24 +19,16 @@
 package com.sibyl;
 
 import java.util.Observable;
-import java.util.Observer;
 
 import android.app.Service;
 import android.content.Intent;
-
-import android.os.Bundle;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-
-//import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
-//import android.os.Parcel;
-
-//import android.widget.Toast;
-
 import android.util.Log;
 
-import com.sibyl.ui.*;
+import com.sibyl.ui.PlayerUI;
 
 
 public class Sibylservice extends Service
@@ -46,7 +38,7 @@ public class Sibylservice extends Service
     protected void onCreate()
     {        
         paused=false;
-        currentSong=0;
+        currentSong=1;
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
         obser = new Observable(); 
@@ -88,8 +80,7 @@ public class Sibylservice extends Service
     
     protected void play_next() {
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-        String filename=mdb.nextSong(currentSong);
-        currentSong++;
+        String filename=mdb.getSong(currentSong++);
         paused=false;
         obser.notifyObservers();
         if(filename != null) playSong(filename);

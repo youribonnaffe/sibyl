@@ -296,25 +296,12 @@ public class MusicDB {
     }
 
     /**
-     * return the next song in the playlist
+     * return the song at pos in the playlist
      * @param pos
      * @return url of the next song
      */
-    public String nextSong(int pos){
-	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"+1 AND song._id=current_playlist.id", null);
-	if(!c.first()){
-	    return null;
-	}
-	return c.getString(0);
-    }
-
-    /**
-     * return the previous song in the playlist
-     * @param pos
-     * @return url of the previous song
-     */
-    public String previousSong(int pos){
-	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+"-1 AND song._id=current_playlist.id", null);
+    public String getSong(int pos){
+	Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+" AND song._id=current_playlist.id", null);
 	if(!c.first()){
 	    return null;
 	}
