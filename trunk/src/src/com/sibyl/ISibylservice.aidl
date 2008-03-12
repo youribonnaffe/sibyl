@@ -50,11 +50,11 @@ interface ISibylservice {
     
     void prev();
     /* play the previous song of the current playlist */
-    
-    void addObserver(in PlayerUI obs);
+    /*
+    void addObserver(in PlayerUI obs);*/
     /* ajoute un observeur au service */
     
-    void delObserver(in PlayerUI obs);
+    //void delObserver(in PlayerUI obs);
     /* supprimer un observeur du service */
     
 }
