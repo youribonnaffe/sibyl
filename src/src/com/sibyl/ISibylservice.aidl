@@ -18,9 +18,12 @@
 
 package com.sibyl;
 
+import com.sibyl.ui.IPlayerUI;
 
 interface ISibylservice {
 
+    void connectToReceiver(in IPlayerUI receiver);
+    
     void start();
     /* start playing the current item in the selected playlist */
     
@@ -30,6 +33,16 @@ interface ISibylservice {
     void pause();
     /* pause the song. To start playing the paused song at its current position
         use start */
+    
+    boolean isPlaying();
+    /* returns true if the service is playing */
+    
+    /*CsState getState();*/
+    /* returns the state of the core service: CsState is an enum of the possible
+       states (PAUSED, PLAYING, STOPPED) */
+       
+    int getCurrentSongIndex();
+    /* returns the index in the playlist of the song currently played */
     
     int getCurrentPosition();
     /* returns the current position in the played song in milliseconds */
@@ -50,11 +63,6 @@ interface ISibylservice {
     
     void prev();
     /* play the previous song of the current playlist */
-    /*
-    void addObserver(in PlayerUI obs);*/
-    /* ajoute un observeur au service */
     
-    //void delObserver(in PlayerUI obs);
-    /* supprimer un observeur du service */
     
 }

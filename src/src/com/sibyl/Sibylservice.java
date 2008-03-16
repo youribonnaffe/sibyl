@@ -18,8 +18,6 @@
 
 package com.sibyl;
 
-import java.util.Observable;
-
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -27,21 +25,32 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.os.DeadObjectException;
 
-import com.sibyl.ui.PlayerUI;
+import com.sibyl.ui.IPlayerUI;
 
 
 public class Sibylservice extends Service
 {
-    /** Called with the service is first created. */
+    
+    public enum CsState {
+        STOPPED, PAUSED, PLAYING
+    }
+    
+    private MediaPlayer mp;
+    private MusicDB mdb;
+    private CsState playerState;
+    private int currentSong;
+    private IPlayerUI uiHandler;
+
+    /** creation of the service */
     @Override
     protected void onCreate()
     {        
-        paused=false;
+        playerState=CsState.STOPPED;
         currentSong=1;
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
-        obser = new Observable(); 
         
         //create or connect to the Database
     	try{
@@ -68,12 +77,12 @@ public class Sibylservice extends Service
     }
     
     protected void play() {
-        if( !paused ) {
+        if( playerState != CsState.PAUSED ) {
             play_next();
         }
         else {
             mp.start();
-            paused=false;
+            playerState=CsState.PLAYING;
         }
 
     }
@@ -81,15 +90,26 @@ public class Sibylservice extends Service
     protected void play_next() {
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
         String filename=mdb.getSong(currentSong++);
-        paused=false;
-        obser.notifyObservers();
+        playerState=CsState.PLAYING;
+        //obser.notifyObservers();
         if(filename != null) playSong(filename);
+        else playerState=CsState.STOPPED;
+    }
+    
+    protected void play_prev() {
+        Log.v(TAG,">>> play_prev() called: currentSong="+currentSong);
+        currentSong-=2;
+        String filename=mdb.getSong(currentSong++);
+        playerState=CsState.PLAYING;
+        //obser.notifyObservers();
+        if(filename != null) playSong(filename);
+        else playerState=CsState.STOPPED;
     }
     
     protected void playSong(String filename) 
     {
-        Log.v(TAG,">>> PlaySong("+filename+") called: paused="+ paused);
-        if( !paused ) {
+        Log.v(TAG,">>> PlaySong("+filename+") called");
+        if( playerState != CsState.PAUSED ) {
         //we're not in pause so we start playing a new song
             try{
                 mp.reset();
@@ -115,7 +135,7 @@ public class Sibylservice extends Service
             mp.start();
             /*Toast.makeText(Sibylservice.this, "reprise", 
                     Toast.LENGTH_LONG).show();*/
-            paused=false;
+            playerState=CsState.PLAYING;
         }
 
     }
@@ -129,17 +149,35 @@ public class Sibylservice extends Service
     
     //interface accessible par les autres classes (cf aidl)
     private final ISibylservice.Stub mBinder = new ISibylservice.Stub() {
+        
+        public void connectToReceiver(IPlayerUI receiver) {
+            uiHandler=receiver;
+        }
+
         public void start() {
             play();
         }
         
         public void stop() {
             mp.stop();
+            playerState=CsState.STOPPED;
         }
         
         public void pause() {
             mp.pause();
-            paused=true;
+            playerState=CsState.PAUSED;;
+        }
+        
+        public CsState getState() {
+            return playerState;
+        }
+        
+        public boolean isPlaying() {
+            return playerState==CsState.PLAYING;
+        }
+        
+        public int getCurrentSongIndex() {
+            return currentSong-1;
         }
         
         public int getCurrentPosition() {
@@ -163,16 +201,7 @@ public class Sibylservice extends Service
         }
         
         public void prev() {
-        }
-        
-        public void addObserver(PlayerUI obs)
-        {
-            //obser.addObserver(obs);
-        }
-        
-        public void delObserver(PlayerUI obs)
-        {
-            //obser.deleteObserver(obs);
+            play_prev();
         }
          
     };
@@ -182,14 +211,11 @@ public class Sibylservice extends Service
         public void onCompletion(MediaPlayer mp) 
         {
             play_next();
+            try {
+                uiHandler.handleEndSong();
+            } catch(DeadObjectException e) {}
         } 
     };
-    
-
-    private MediaPlayer mp;
-    private MusicDB mdb;
-    private boolean paused;
-    private int currentSong;
-    private Observable obser;
+   
 
 }
