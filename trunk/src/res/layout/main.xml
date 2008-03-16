@@ -76,6 +76,9 @@
 		<TableRow>
 			<Button	android:id="@+id/lecture"
 				android:text="@string/play" />
+			<Button android:id="@+id/avance"
+				android:text=">>"
+				android:focusable="true"/>
 			<TextView android:id="@+id/tpsEcoule"
 				android:text="@string/time_zero"
 				android:textAlign="end" />

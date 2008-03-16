@@ -52,7 +52,7 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
-public class PlayerUI extends Activity implements Observer
+public class PlayerUI extends Activity
 {
 
     ISibylservice mService = null;
@@ -75,9 +75,13 @@ public class PlayerUI extends Activity implements Observer
     private boolean pause = false;
     private Button next;
     private Button previous;
+    private Button avance;
 
     private MusicDB mdb;	//the database
-
+    
+    //handler to call function when datas are received from the service
+    private Handler mServHandler = new Handler();
+    
     // time elapsed when playing a song
     private int time;
     private Handler mHandler = new Handler();
@@ -119,6 +123,7 @@ public class PlayerUI extends Activity implements Observer
         lecture.setOnClickListener(mPlayListener);
         next = (Button) findViewById(R.id.next);
         previous = (Button) findViewById(R.id.prec);
+        avance = (Button) findViewById(R.id.avance);
         //set cover
         ImageView cover = (ImageView) findViewById(R.id.cover);
         cover.setImageDrawable(Drawable.createFromPath("/data/music/cover.jpg"));  
@@ -126,7 +131,7 @@ public class PlayerUI extends Activity implements Observer
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
-        
+        avance.setOnClickListener(mAvanceListener);
         
         //create or connect to the Database
         try
@@ -138,6 +143,7 @@ public class PlayerUI extends Activity implements Observer
         {
             Log.v(TAG, ex.toString()+" Create");
         }
+        
     }
     
     
@@ -155,7 +161,7 @@ public class PlayerUI extends Activity implements Observer
         Bundle args = new Bundle();
         args.putString("filename", "test.mp3");
         bindService(new Intent(PlayerUI.this,
-		Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -219,6 +225,12 @@ public class PlayerUI extends Activity implements Observer
             //remplacant du NotificationManager/notifyWithText
             Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
                     Toast.LENGTH_SHORT).show();
+                    
+            //connection of the service to the activity
+            try {
+                mService.connectToReceiver(mServiceListener);
+            }
+            catch(DeadObjectException ex){}
 
         }
 
@@ -330,6 +342,31 @@ public class PlayerUI extends Activity implements Observer
 	    }
     };
     
+    //Listener for the Button Avance. Avance the lecture of the song of 30sec
+    //useful for tests of handling the end of the song
+    private OnClickListener mAvanceListener = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            try
+            {
+                //avance de 30sec (30000ms)
+                int newTime=mService.getCurrentPosition()+30000;
+                if(newTime >= mService.getDuration()) 
+                {
+                    newTime=mService.getDuration()-3000;
+                }
+                mService.setCurrentPosition(newTime);
+                
+                //update of the current time displayed
+                mHandler.removeCallbacks(timerTask);
+                time=0;
+                mHandler.post(timerTask);
+            }
+            catch (DeadObjectException ex){}
+        }
+    };
+    
     
     private void fillBD (String path)
     {
@@ -394,11 +431,36 @@ public class PlayerUI extends Activity implements Observer
     }
 
 
-
-
-    public void update(Observable arg0, Object arg1) 
+    public void updateUI() 
     {
         setTotalTime();
+        int pos=0;
+        try {
+            pos=mService.getCurrentSongIndex();
+            Log.v(TAG, "updateUI: pos="+pos);
+            Cursor c = mdb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
+                            +"WHERE pos="+pos+" AND song._id=current_playlist.id and song.artist=artist.id", null);
+            if(c.first()) {
+                titre.setText("Titre :"+c.getString(0));
+                artiste.setText("Artiste :"+c.getString(1));
+            }
+        }
+        catch (DeadObjectException ex){}
     }
+    
+    //communication from the service
+    private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() {
+        public void handleEndSong() {
+            Log.v(TAG, "End song handled in PlayerUI");
+            mServHandler.post(new Runnable()
+            {
+                public void run()
+                {
+                    updateUI();
+                }
+            });
+            
+        }
+    };
 
 }
