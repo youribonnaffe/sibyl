@@ -360,4 +360,22 @@ public class MusicDB {
 	}
     }
 
+    public String getSongNameFromCP(int i)
+    {
+        Cursor c = mDb.rawQuery("SELECT title FROM song, current_playlist WHERE pos="+i+" AND song._id=current_playlist.id", null);
+        if(!c.first()){
+            return null;
+        }
+        return c.getString(0);
+    }
+    
+    public String getArtistNameFromCP(int i)
+    {
+        Cursor c = mDb.rawQuery("SELECT artist_name FROM song, current_playlist, artist "
+                            +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id", null);
+        if(!c.first()){
+            return null;
+        }
+        return c.getString(0);
+    }
 }

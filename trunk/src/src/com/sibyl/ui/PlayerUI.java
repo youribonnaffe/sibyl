@@ -135,6 +135,8 @@ public class PlayerUI extends Activity
         {
             mdb = new MusicDB(this);
             Log.v(TAG,"BD OK");
+            titre.setText(mdb.getSongNameFromCP(1));
+            artiste.setText(mdb.getArtistNameFromCP(1));
         }
         catch(Exception ex)
         {
@@ -437,12 +439,12 @@ public class PlayerUI extends Activity
         try {
             pos=mService.getCurrentSongIndex();
             Log.v(TAG, "updateUI: pos="+pos);
-            Cursor c = mdb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
-                            +"WHERE pos="+pos+" AND song._id=current_playlist.id and song.artist=artist.id", null);
-            if(c.first()) {
-                titre.setText(c.getString(0));
-                artiste.setText(c.getString(1));
-            }
+            /*Cursor c = mdb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
+                            +"WHERE pos="+pos+" AND song._id=current_playlist.id and song.artist=artist.id", null);*/
+            /*if(c.first()) {*/
+                titre.setText(mdb.getSongNameFromCP(pos));
+                artiste.setText(mdb.getArtistNameFromCP(pos));
+            /*}*/
         }
         catch (DeadObjectException ex){}
     }
