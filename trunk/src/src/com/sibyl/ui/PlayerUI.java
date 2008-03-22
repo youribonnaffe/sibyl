@@ -71,8 +71,8 @@ public class PlayerUI extends Activity
     private TextView tempsTotal;
     private Button lecture;
 
-    private boolean play = false;
-    private boolean pause = false;
+    private boolean play = false; //indicate if Sibyl is playing a song
+    private boolean pause = false; //indicate if a stop is paused
     private Button next;
     private Button previous;
     private Button avance;
@@ -305,16 +305,18 @@ public class PlayerUI extends Activity
         {
             try
             {
-                mHandler.removeCallbacks(timerTask);
-                time = 0;
-                // add timer task to ui thread
-                mHandler.post(timerTask);
                 mService.next();
-                //is a song really played ???
-                setTotalTime();
-                play = true;
-                pause = false;
-                lecture.setText(R.string.pause);
+                if( mService.isPlaying())
+                {
+                    mHandler.removeCallbacks(timerTask);
+                    time = 0;
+                    // add timer task to ui thread
+                    mHandler.post(timerTask);
+                    play = true;
+                    pause = false;
+                    lecture.setText(R.string.pause);
+                    updateUI();
+                }
             }
             catch (DeadObjectException ex){}
         }
@@ -323,23 +325,25 @@ public class PlayerUI extends Activity
 	//Listenner for the button previous. Play the previous sont in the playlist
     private OnClickListener mPreviousListener = new OnClickListener()
     {
-	    public void onClick(View v)
-	    {
-	        try
-	        {
-                mHandler.removeCallbacks(timerTask);
-                time = 0;
-                // add timer task to ui thread
-                mHandler.post(timerTask);
-	            mService.prev();
-	            //is a song really played ???
-	            setTotalTime();
-	            play = true;
-	            pause = false;
-	            lecture.setText(R.string.pause);
-	        }
-	        catch (DeadObjectException ex){}
-	    }
+        public void onClick(View v)
+        {
+            try
+            {
+                mService.prev();
+                if( mService.isPlaying()) //if a song is really player, update time, artist,name.
+                {
+                    mHandler.removeCallbacks(timerTask);
+                    time = 0;
+                    // add timer task to ui thread
+                    mHandler.post(timerTask);
+                    play = true;
+                    pause = false;
+                    lecture.setText(R.string.pause);
+                    updateUI();
+                }
+            }
+            catch (DeadObjectException ex){}
+        }
     };
     
     //Listener for the Button Avance. Avance the lecture of the song of 30sec
@@ -430,7 +434,7 @@ public class PlayerUI extends Activity
         startSubActivity(i, 0);
     }
 
-
+    //display the artist, the song, the new total time
     public void updateUI() 
     {
         setTotalTime();
@@ -441,8 +445,8 @@ public class PlayerUI extends Activity
             Cursor c = mdb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
                             +"WHERE pos="+pos+" AND song._id=current_playlist.id and song.artist=artist.id", null);
             if(c.first()) {
-                titre.setText("Titre :"+c.getString(0));
-                artiste.setText("Artiste :"+c.getString(1));
+                titre.setText(c.getString(0));
+                artiste.setText(c.getString(1));
             }
         }
         catch (DeadObjectException ex){}
