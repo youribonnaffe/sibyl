@@ -20,9 +20,6 @@ package com.sibyl.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Observable;
-import java.util.Observer;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -145,9 +142,6 @@ public class PlayerUI extends Activity
         }
         
     }
-    
-    
-    
 
     @Override
     protected void onDestroy() 
@@ -438,6 +432,7 @@ public class PlayerUI extends Activity
     public void updateUI() 
     {
         setTotalTime();
+        time = 0;
         int pos=0;
         try {
             pos=mService.getCurrentSongIndex();
