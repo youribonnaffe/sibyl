@@ -286,7 +286,7 @@ public class PlayerUI extends Activity
                 }//lors de l'appel de fonction de interface (fichier aidl)
                 //il faut catcher les DeadObjectException
                 catch (DeadObjectException ex) {}
-                updateUI(); //display informations about the song
+                //updateUI(); //display informations about the song
                 pause = false;
             }
             play = !play;
@@ -401,12 +401,13 @@ public class PlayerUI extends Activity
     }
 
     //display the artist, the song, the new total time
-    public void updateUI() 
+    private void updateUI() 
     {
-        setTotalTime();
-        time = 0;
-        int pos=0;
-        try {
+        try 
+        {
+            time = 0;
+            setTotalTime();
+            int pos=0;
             pos=mService.getCurrentSongIndex();
             Log.v(TAG, "updateUI: pos="+pos);
             String [] songInfo = mdb.getSongInfoFromCP(pos);
@@ -420,8 +421,10 @@ public class PlayerUI extends Activity
     }
     
     //communication from the service
-    private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() {
-        public void handleEndSong() {
+    private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() 
+    {
+        public void handleEndSong() 
+        {
             Log.v(TAG, "End song handled in PlayerUI");
             mServHandler.post(new Runnable()
             {
@@ -432,7 +435,31 @@ public class PlayerUI extends Activity
             });
             
         }
+
+        public void handleEndPlaylist()
+        {
+            mServHandler.post(new Runnable()
+            {
+                public void run()
+                {
+                    noSongToPlay();
+                }
+            });
+        }
     };
+    
+    private void noSongToPlay()
+    {
+        mHandler.removeCallbacks(timerTask);
+        time = 0;
+        elapsedTime.setText(R.string.time_zero);
+        artiste.setText(R.string.artiste);
+        tempsTotal.setText(R.string.time_zero);
+        titre.setText(R.string.titre);
+        lecture.setText(R.string.play);
+        pause = true;
+        play = false;
+    }
 
     //keyboard keys pressed: pad_left, pad_right
     @Override
@@ -466,7 +493,7 @@ public class PlayerUI extends Activity
                 play = true;
                 pause = false;
                 lecture.setText(R.string.pause);
-                updateUI();
+                //updateUI();
             }
         }
         catch (DeadObjectException ex){}

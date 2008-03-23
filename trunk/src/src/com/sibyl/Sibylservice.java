@@ -102,45 +102,70 @@ public class Sibylservice extends Service
         nm.cancel(R.layout.notification);
     }
     
-    protected void play() {
-        //updateNotification(R.drawable.play, "play");
-        if( playerState != CsState.PAUSED ) {
-            play_next();
+    protected void play() 
+    {
+        if( playerState != CsState.PAUSED ) 
+        {
+            launch();
         }
-        else {
-            mp.start();
-            playerState=CsState.PLAYING;
-            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
-            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+        else 
+        {
+            resume();
         }
 
     }
     
-    protected void play_next() {
-        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-        String filename=mdb.getSong(currentSong++);
-        playerState=CsState.PLAYING;
-        //obser.notifyObservers();
-        if(filename != null){
+    protected void launch()
+    {
+        String filename = mdb.getSong(currentSong);
+        playerState = CsState.PLAYING;
+        if(filename != null)
+        {
             playSong(filename);
-            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
+            String [] songInfo = mdb.getSongInfoFromCP(currentSong);
             updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
         }
-        else playerState=CsState.STOPPED;
+        else
+        {
+            mp.stop();
+            try 
+            {
+                currentSong = 1;
+                uiHandler.handleEndPlaylist();
+            } catch (DeadObjectException e) 
+            {
+                e.printStackTrace();
+            }
+            playerState=CsState.STOPPED;
+        }
     }
     
-    protected void play_prev() {
-        Log.v(TAG,">>> play_prev() called: currentSong="+currentSong);
-        currentSong-=2;
-        String filename=mdb.getSong(currentSong++);
+    protected void resume()
+    {
+        mp.start();
         playerState=CsState.PLAYING;
-        //obser.notifyObservers();
-        if(filename != null){
-            playSong(filename);
-            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
-            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+        String [] songInfo = mdb.getSongInfoFromCP(currentSong);
+        updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+    }
+    
+    protected void play_next() 
+    {
+        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
+        if (playerState != CsState.STOPPED)
+        {
+            currentSong++;   
         }
-        else playerState=CsState.STOPPED;
+        launch();
+    }
+    
+    protected void play_prev() 
+    {
+        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
+        if (playerState != CsState.STOPPED)
+        {
+            currentSong--;   
+        }
+        launch();
     }
     
     protected void playSong(String filename) 
@@ -152,6 +177,7 @@ public class Sibylservice extends Service
                 mp.reset();
                 mp.setDataSource(/*Music.MUSIC_DIR+"/"+*/filename);
                 mp.prepare();
+                uiHandler.handleEndSong();
             }
             catch ( Exception e) {
                 //remplacant du NotificationManager/notifyWithText
@@ -224,7 +250,7 @@ public class Sibylservice extends Service
         }
         
         public int getCurrentSongIndex() {
-            return currentSong-1;
+            return currentSong;
         }
         
         public int getCurrentPosition() {
@@ -263,9 +289,9 @@ public class Sibylservice extends Service
         public void onCompletion(MediaPlayer mp) 
         {
             play_next();
-            try {
+            /*try {
                 uiHandler.handleEndSong();
-            } catch(DeadObjectException e) {}
+            } catch(DeadObjectException e) {}*/
         } 
     };
    
