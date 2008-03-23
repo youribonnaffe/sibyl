@@ -20,6 +20,7 @@ package com.sibyl.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +35,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.DateUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
@@ -59,6 +61,11 @@ public class PlayerUI extends Activity
     private static final int OPTION_ID = Menu.FIRST +2;
     private static final int ADD_ID = Menu.FIRST +3;
 
+    public static class PLAY {
+        public static int NEXT = 0;
+        public static int PREV = 1;
+    }
+    
     private static final String TAG = "COLLECTION";
 
     //view of the ui
@@ -292,18 +299,7 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
-            try
-            {
-                mService.next();
-                if( mService.isPlaying())
-                {
-                    play = true;
-                    pause = false;
-                    lecture.setText(R.string.pause);
-                    updateUI();
-                }
-            }
-            catch (DeadObjectException ex){}
+            playSong(PLAY.NEXT);
         }
     };
     
@@ -312,18 +308,7 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
-            try
-            {
-                mService.prev();
-                if( mService.isPlaying()) //if a song is really player, update time, artist,name.
-                {
-                    play = true;
-                    pause = false;
-                    lecture.setText(R.string.pause);
-                    updateUI();
-                }
-            }
-            catch (DeadObjectException ex){}
+            playSong(PLAY.PREV);
         }
     };
     
@@ -352,6 +337,7 @@ public class PlayerUI extends Activity
     };
     
     
+    //Fill the table Song with mp3 found in path
     private void fillBD (String path)
     {
         // get all mp3 files in path
@@ -448,4 +434,41 @@ public class PlayerUI extends Activity
         }
     };
 
+    //keyboard keys pressed: pad_left, pad_right
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
+        {
+            playSong(PLAY.PREV);
+        }
+        if( keyCode == KeyEvent.KEYCODE_DPAD_RIGHT )
+        {
+        	playSong(PLAY.NEXT);
+        }
+        
+        return super.onKeyUp(keyCode, event);
+    }
+    
+
+    //call the service methods prev() or next() in function of type
+    //and refresh the UI
+    private void playSong( int type){
+        try
+        {
+            if( type == PLAY.NEXT) {
+                mService.next();
+            }
+            else{
+                mService.prev();
+            }
+            if( mService.isPlaying())
+            {
+                play = true;
+                pause = false;
+                lecture.setText(R.string.pause);
+                updateUI();
+            }
+        }
+        catch (DeadObjectException ex){}
+    }
 }
