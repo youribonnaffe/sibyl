@@ -143,7 +143,6 @@ public class PlayerUI extends Activity
         {
             Log.v(TAG, ex.toString()+" Create");
         }
-        
     }
 
     @Override
@@ -280,15 +279,7 @@ public class PlayerUI extends Activity
                 }//lors de l'appel de fonction de interface (fichier aidl)
                 //il faut catcher les DeadObjectException
                 catch (DeadObjectException ex) {}
-                if(!pause) //a song is start.
-                {
-                    setTotalTime();
-                }
-                // reset timer so it will be recalculated if resuming
-                time = 0;
-                mHandler.removeCallbacks(timerTask);
-                // add timer task to ui thread
-                mHandler.post(timerTask);
+                updateUI(); //display informations about the song
                 pause = false;
             }
             play = !play;
