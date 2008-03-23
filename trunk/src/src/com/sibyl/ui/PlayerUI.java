@@ -151,6 +151,7 @@ public class PlayerUI extends Activity
     {
         super.onDestroy();
         mHandler.removeCallbacks(timerTask);
+        unbindService(mConnection);
     }
 
     public void launchService()	
