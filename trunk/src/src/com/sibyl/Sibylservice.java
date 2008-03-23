@@ -140,6 +140,15 @@ public class Sibylservice extends Service
 
     }
     
+    protected void playNumberI(int i)
+    {
+        currentSong = i;
+        play();
+        try 
+        {
+            uiHandler.handleEndSong();
+        } catch(DeadObjectException e) {}
+    }
 
     @Override
     public IBinder onBind(Intent i)
@@ -202,6 +211,11 @@ public class Sibylservice extends Service
         
         public void prev() {
             play_prev();
+        }
+
+        public void playSongPlaylist(int pos) 
+        {
+            playNumberI(pos);
         }
          
     };

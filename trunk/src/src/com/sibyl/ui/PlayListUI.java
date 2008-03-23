@@ -1,22 +1,27 @@
 package com.sibyl.ui;
 
-import java.util.ArrayList;
-
+import com.sibyl.ISibylservice;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
+import com.sibyl.Sibylservice;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.Contacts.People;
-import android.provider.Contacts.Phones;
+import android.os.DeadObjectException;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.view.Menu.Item;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
+//import android.widget.TextView;
 
 public class PlayListUI extends ListActivity
 {
@@ -27,7 +32,9 @@ public class PlayListUI extends ListActivity
     
     private static final String TAG = "PLAYLIST";
     
-    private TextView playList;
+    ISibylservice mService = null;
+    
+    //private TextView playList;
     
     private MusicDB mdb;    //the database
     
@@ -36,8 +43,9 @@ public class PlayListUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        launchService();
         setContentView(R.layout.playlist);
-        playList = (TextView) findViewById(R.layout.playlist);
+        //TextView playList = (TextView) findViewById(R.layout.playlist);
         try
         {
             mdb = new MusicDB(this);
@@ -58,6 +66,13 @@ public class PlayListUI extends ListActivity
         menu.add(0, SMARTPL_ID, R.string.menu_smartpl);
         menu.add(0, BACK_ID, R.string.menu_back);
         return true;
+    }
+    
+    @Override
+    protected void onDestroy() 
+    {
+        super.onDestroy();
+        unbindService(mConnection);        
     }
     
     @Override
@@ -84,17 +99,14 @@ public class PlayListUI extends ListActivity
     {
         try
         {
-            Log.v(TAG,"Curseur creation <<<<<<<<<<<<<<<<");
-            Cursor c = mdb.rawQuery("SELECT  title _id , artist_name " +
-                    "FROM song, artist, current_playlist " +
-                    "WHERE song.artist = artist.id AND " +
-                    "current_playlist.id = song._id", null);
-
+            Log.v(TAG,"Curseur creation");
+            Cursor c = mdb.getPlayListInfo();
             startManagingCursor(c);
 
             try{
+                /* TODO l'ui doit pas connaitre les champs de la base, donc a changer*/
             ListAdapter adapter = new SimpleCursorAdapter(
-                    this, R.layout.playlist_row, c, new String[] {"_id","artist_name"}, 
+                    this, R.layout.playlist_row, c, new String[] {"_id","artist_name"},  
                     new int[] {R.id.text1, R.id.text2});  
             setListAdapter(adapter);
             }
@@ -109,6 +121,50 @@ public class PlayListUI extends ListActivity
         }
         
     }
+    
+    /* TODO verifier que l'on se connecte bien au meme service que PlayerUI 
+     * et qu'il n'y a pas 2 servi lancés, normalement c'est bon */
+    
+    public void launchService() 
+    {
+        bindService(new Intent(PlayListUI.this,
+            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
+    
+    private ServiceConnection mConnection = new ServiceConnection()
+    {
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  We are communicating with our
+            // service through an IDL interface, so get a client-side
+            // representation of that from the raw service object.
+            mService = ISibylservice.Stub.asInterface((IBinder)service);
+        }
+
+        public void onServiceDisconnected(ComponentName className)
+        {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mService = null;      
+        }
+    };
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) 
+    {
+        Log.v(TAG,"test <<<<<<<<<<<< >>>>>>>>>>>>>"+position);
+        position ++;
+        try 
+        {
+            mService.playSongPlaylist(position);
+        } catch (DeadObjectException e) 
+        {
+            e.printStackTrace();
+        }
+    }
+    
 
     
 }
