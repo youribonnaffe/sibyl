@@ -103,13 +103,15 @@ public class Sibylservice extends Service
     }
     
     protected void play() {
-        updateNotification(R.drawable.play, "play");
+        //updateNotification(R.drawable.play, "play");
         if( playerState != CsState.PAUSED ) {
             play_next();
         }
         else {
             mp.start();
             playerState=CsState.PLAYING;
+            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
+            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
         }
 
     }
@@ -119,7 +121,11 @@ public class Sibylservice extends Service
         String filename=mdb.getSong(currentSong++);
         playerState=CsState.PLAYING;
         //obser.notifyObservers();
-        if(filename != null) playSong(filename);
+        if(filename != null){
+            playSong(filename);
+            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
+            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+        }
         else playerState=CsState.STOPPED;
     }
     
@@ -129,7 +135,11 @@ public class Sibylservice extends Service
         String filename=mdb.getSong(currentSong++);
         playerState=CsState.PLAYING;
         //obser.notifyObservers();
-        if(filename != null) playSong(filename);
+        if(filename != null){
+            playSong(filename);
+            String [] songInfo = mdb.getSongInfoFromCP(currentSong-1);
+            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+        }
         else playerState=CsState.STOPPED;
     }
     
