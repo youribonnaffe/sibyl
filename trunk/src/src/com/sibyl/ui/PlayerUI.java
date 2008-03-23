@@ -135,8 +135,9 @@ public class PlayerUI extends Activity
         {
             mdb = new MusicDB(this);
             Log.v(TAG,"BD OK");
-            titre.setText(mdb.getSongNameFromCP(1));
-            artiste.setText(mdb.getArtistNameFromCP(1));
+            String [] songInfo = mdb.getSongInfoFromCP(1);
+            titre.setText(songInfo[0]);
+            artiste.setText(songInfo[1]);
         }
         catch(Exception ex)
         {
@@ -304,10 +305,6 @@ public class PlayerUI extends Activity
                 mService.next();
                 if( mService.isPlaying())
                 {
-                    mHandler.removeCallbacks(timerTask);
-                    time = 0;
-                    // add timer task to ui thread
-                    mHandler.post(timerTask);
                     play = true;
                     pause = false;
                     lecture.setText(R.string.pause);
@@ -328,10 +325,6 @@ public class PlayerUI extends Activity
                 mService.prev();
                 if( mService.isPlaying()) //if a song is really player, update time, artist,name.
                 {
-                    mHandler.removeCallbacks(timerTask);
-                    time = 0;
-                    // add timer task to ui thread
-                    mHandler.post(timerTask);
                     play = true;
                     pause = false;
                     lecture.setText(R.string.pause);
@@ -360,7 +353,6 @@ public class PlayerUI extends Activity
                 
                 //update of the current time displayed
                 mHandler.removeCallbacks(timerTask);
-                time=0;
                 mHandler.post(timerTask);
             }
             catch (DeadObjectException ex){}
@@ -439,12 +431,12 @@ public class PlayerUI extends Activity
         try {
             pos=mService.getCurrentSongIndex();
             Log.v(TAG, "updateUI: pos="+pos);
-            /*Cursor c = mdb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
-                            +"WHERE pos="+pos+" AND song._id=current_playlist.id and song.artist=artist.id", null);*/
-            /*if(c.first()) {*/
-                titre.setText(mdb.getSongNameFromCP(pos));
-                artiste.setText(mdb.getArtistNameFromCP(pos));
-            /*}*/
+            String [] songInfo = mdb.getSongInfoFromCP(pos);
+            titre.setText(songInfo[0]);
+            artiste.setText(songInfo[1]);
+            mHandler.removeCallbacks(timerTask);
+            // add timer task to ui thread
+            mHandler.post(timerTask);
         }
         catch (DeadObjectException ex){}
     }

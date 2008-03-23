@@ -34,7 +34,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 //optimize database -> if needed try triggers
 
 public class MusicDB {
-
+    
     private SQLiteDatabase mDb;
 
     private static final String DB_NAME = "music.db";
@@ -359,23 +359,22 @@ public class MusicDB {
 	    "AND song.genre = genre.id");
 	}
     }
-
-    public String getSongNameFromCP(int i)
-    {
-        Cursor c = mDb.rawQuery("SELECT title FROM song, current_playlist WHERE pos="+i+" AND song._id=current_playlist.id", null);
-        if(!c.first()){
-            return null;
-        }
-        return c.getString(0);
-    }
     
-    public String getArtistNameFromCP(int i)
+    public String[] getSongInfoFromCP(int i)
     {
-        Cursor c = mDb.rawQuery("SELECT artist_name FROM song, current_playlist, artist "
+        Cursor c = mDb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
                             +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id", null);
         if(!c.first()){
             return null;
         }
-        return c.getString(0);
+        String str[] = {c.getString(0), c.getString(1)};
+        return str;
+    }
+    
+    public Cursor getPlayListInfo()
+    {
+        return mDb.rawQuery("SELECT title _id, artist_name FROM song, current_playlist, artist "
+                +"WHERE song._id=current_playlist.id and song.artist=artist.id", null);
+        
     }
 }
