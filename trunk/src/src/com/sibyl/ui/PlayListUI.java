@@ -45,7 +45,7 @@ public class PlayListUI extends ListActivity
         super.onCreate(icicle);
         launchService();
         setContentView(R.layout.playlist);
-        //TextView playList = (TextView) findViewById(R.layout.playlist);
+        
         try
         {
             mdb = new MusicDB(this);
@@ -141,6 +141,17 @@ public class PlayListUI extends ListActivity
             // service through an IDL interface, so get a client-side
             // representation of that from the raw service object.
             mService = ISibylservice.Stub.asInterface((IBinder)service);
+            try 
+            {
+                /* Positionner le selecteur de la liste sur la chanson en cours
+                 * une fois que le service est connecté
+                 * */
+                setSelection(mService.getCurrentSongIndex()-1);
+            } 
+            catch (DeadObjectException e) 
+            {
+                e.printStackTrace();
+            }
         }
 
         public void onServiceDisconnected(ComponentName className)
