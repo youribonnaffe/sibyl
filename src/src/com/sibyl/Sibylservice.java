@@ -18,6 +18,8 @@
 
 package com.sibyl;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -42,6 +44,7 @@ public class Sibylservice extends Service
     private CsState playerState;
     private int currentSong;
     private IPlayerUI uiHandler;
+    private NotificationManager nm;
 
     /** creation of the service */
     @Override
@@ -51,7 +54,7 @@ public class Sibylservice extends Service
         currentSong=1;
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
-        
+        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         //create or connect to the Database
     	try{
     	    mdb = new MusicDB(this);
@@ -60,7 +63,7 @@ public class Sibylservice extends Service
         catch(Exception ex){
     	    Log.v(TAG, ex.toString()+" Create");
     	}
-
+        updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
     }
     
     @Override
@@ -69,14 +72,38 @@ public class Sibylservice extends Service
 
     }
     
+    public void updateNotification(int idIcon, String text)
+    {
+        Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
+        
+        nm.notify(
+                R.layout.notification,                  // we use a string id because it is a unique
+                                                   // number.  we use it later to cancel the
+                                                   // notification
+                new Notification(
+                    this,                               // our context
+                    idIcon,                             // the icon for the status bar
+                    text,                               // the text to display in the ticker
+                    System.currentTimeMillis(),         // the timestamp for the notification
+                    "Sibyl",                            // the title for the notification
+                    text,                               // the details to display in the notification
+                    appIntent,                               // the contentIntent (see above)
+                    R.drawable.icon,                    // the app icon
+                    getText(R.string.app_name),         // the name of the app
+                    appIntent)); // the appIntent (see above)
+
+    }
+    
     @Override
     protected void onDestroy()
     {
         mp.stop();
         mp.release();
+        nm.cancel(R.layout.notification);
     }
     
     protected void play() {
+        updateNotification(R.drawable.play, "play");
         if( playerState != CsState.PAUSED ) {
             play_next();
         }
@@ -174,7 +201,8 @@ public class Sibylservice extends Service
         
         public void pause() {
             mp.pause();
-            playerState=CsState.PAUSED;;
+            playerState=CsState.PAUSED;
+            updateNotification(R.drawable.pause,"pause");
         }
         
         public CsState getState() {
