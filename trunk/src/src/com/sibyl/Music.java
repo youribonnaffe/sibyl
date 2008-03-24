@@ -29,6 +29,7 @@ public class Music {
     public static String[] GENRES = { GENRE.ID, GENRE.NAME };
     public static String[] CURRENT_PLAYLISTS = { CURRENT_PLAYLIST.POS,
 	    CURRENT_PLAYLIST.ID };
+    public static String[] DIR = {DIRECTORY.ID, DIRECTORY.DIR};
 
     public static class SONG {
 	public static String ID = "_id";
@@ -60,6 +61,12 @@ public class Music {
     public static class CURRENT_PLAYLIST {
 	public static String POS = "pos";
 	public static String ID = "id";
+    }
+    
+    public static class DIRECTORY 
+    {
+        public static String ID = "id_";
+        public static String DIR = "dir";
     }
 
 }
