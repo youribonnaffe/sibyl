@@ -36,6 +36,7 @@ import android.util.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
@@ -92,23 +93,18 @@ public class PlayerUI extends Activity
     //thread wich shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
-        public void run() 
-        {
-            // re adjusting time
-            if( time%10 == 0)
-            {
-                try
-                {
-                    time = mService.getCurrentPosition()/1000;
-                }
-                catch(DeadObjectException ex){}
-            }
-            // display time
-            elapsedTime.setText(DateUtils.formatElapsedTime(time));
-            time++;
-            // re update timer in 1 sec
-            mHandler.postDelayed(this, 1000);
-        }
+	public void run() 
+	{
+	    // re adjusting time
+	    try
+	    {
+		// display time
+		elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()/1000));
+	    }
+	    catch(DeadObjectException ex){}
+	    // again in 0.1s
+	    mHandler.postDelayed(this, 1000);
+	}
     };
 
     /** Called when the activity is first created. */
@@ -125,7 +121,6 @@ public class PlayerUI extends Activity
         elapsedTime = (TextView) findViewById(R.id.tpsEcoule);
         tempsTotal = (TextView) findViewById(R.id.tpsTotal);
         lecture = (Button) findViewById(R.id.lecture);
-        lecture.setOnClickListener(mPlayListener);
         next = (Button) findViewById(R.id.next);
         previous = (Button) findViewById(R.id.prec);
         avance = (Button) findViewById(R.id.avance);
@@ -137,7 +132,8 @@ public class PlayerUI extends Activity
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
         avance.setOnClickListener(mAvanceListener);
-        
+        lecture.requestFocus();
+       
         //create or connect to the Database
         try
         {
@@ -158,8 +154,22 @@ public class PlayerUI extends Activity
     protected void onDestroy() 
     {
         super.onDestroy();
-        mHandler.removeCallbacks(timerTask);
+        //mHandler.removeCallbacks(timerTask); done during onStop
         unbindService(mConnection);
+    }
+    
+    @Override
+    protected void onStop() {
+	// TODO Auto-generated method stub
+	super.onStop();
+	mHandler.removeCallbacks(timerTask); // stop the timer update
+    }
+    
+    @Override
+    protected void onRestart() {
+	// TODO Auto-generated method stub
+	super.onStop();
+	mHandler.post(timerTask); // resume timer update
     }
 
     //launch the service
@@ -292,6 +302,7 @@ public class PlayerUI extends Activity
                 }
                 catch (DeadObjectException ex) {}
                 //updateUI(); //display informations about the song
+                mHandler.post(timerTask);
                 pause = false;
             }
             play = !play;
@@ -480,22 +491,55 @@ public class PlayerUI extends Activity
         pause = true;
         play = false;
     }
-
-    //keyboard keys pressed: pad_left, pad_right
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
-        {
-            playSong(PLAY.PREV);
-        }
-        if( keyCode == KeyEvent.KEYCODE_DPAD_RIGHT )
-        {
-        	playSong(PLAY.NEXT);
-        }
-        
-        return super.onKeyUp(keyCode, event);
+    
+   public boolean onTouchEvent(MotionEvent ev){
+	super.onTouchEvent(ev);
+	lecture.requestFocus();
+	return true;
     }
     
+    public boolean onKeyUp(int keycode, KeyEvent event){
+	switch(event.getKeyCode()){
+	    case KeyEvent.KEYCODE_DPAD_DOWN :
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_UP :
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_LEFT :
+		previous.requestFocus();
+		previous.performClick();
+		lecture.requestFocus();
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_RIGHT :
+		next.requestFocus();
+		next.performClick();
+		lecture.requestFocus();
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_CENTER :
+		lecture.requestFocus();
+		lecture.performClick();
+		return true;
+	}
+	return true;
+    }
+    
+    public boolean onKeyDown(int keycode, KeyEvent event){
+	switch(keycode){
+	    case KeyEvent.KEYCODE_DPAD_DOWN :
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_UP :
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_LEFT :
+		previous.requestFocus();
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_RIGHT :
+		next.requestFocus();
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_CENTER :
+		lecture.requestFocus();
+		return true;
+	}
+	return true;
+    }
 
     //call the service methods prev() or next() in function of type
     //and refresh the UI
