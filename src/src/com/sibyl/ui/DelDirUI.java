@@ -6,12 +6,17 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 
 import android.app.ListActivity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.DeadObjectException;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class DelDirUI extends ListActivity
 {
@@ -78,5 +83,32 @@ public class DelDirUI extends ListActivity
             break;
         }
         return true;
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, final int position, long id) 
+    {
+        Log.v(TAG,"test <<<<<<<<<<<< >>>>>>>>>>>>>"+position); 
+        new AlertDialog.Builder(DelDirUI.this)
+                .setIcon(R.drawable.play)
+                .setTitle(R.string.dial_deldir)
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() 
+                {
+                    public void onClick(DialogInterface dialog, int whichButton) 
+                    {
+                        int i = position;
+                        i++;
+                        Log.v(TAG,""+i);
+                        mdb.delDir(""+i);
+                        finish();
+                    }
+                })
+                .setNegativeButton("no", new DialogInterface.OnClickListener() 
+                {
+                    public void onClick(DialogInterface dialog, int whichButton) 
+                    {
+                    }
+                })
+                .show();
     }
 }
