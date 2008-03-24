@@ -352,19 +352,23 @@ public class MusicDB {
 	if(column == Music.SONG.ARTIST){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
 		    "SELECT song._id FROM song, artist " +
-		    "WHERE artist.artist_name = '"+value+"' " +
+		    "WHERE artist.artist_name = \""+value+"\"" +
 	    "AND song.artist = artist.id");
 	}else if(column == Music.SONG.ALBUM){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
 		    "SELECT song._id FROM song, album " +
-		    "WHERE album.album_name = '"+value+"' " +
+		    "WHERE album.album_name = \""+value+"\"" +
 	    "AND song.album = album.id");
 	}else if(column == Music.SONG.GENRE){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
 		    "SELECT song._id FROM song, genre " +
-		    "WHERE genre.genre_name = '"+value+"' " +
+		    "WHERE genre.genre_name =\"'"+value+"\"" +
 	    "AND song.genre = genre.id");
-	}
+	}else if(column == Music.SONG.TITLE){
+        mDb.execSQL("INSERT INTO current_playlist(id) " +
+                "SELECT song._id FROM song " +
+                "WHERE song.title=\""+value+"\"");
+        }
     }
     
     public String[] getSongInfoFromCP(int i)

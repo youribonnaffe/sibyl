@@ -18,15 +18,11 @@
 
 package com.sibyl.ui;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.DeadObjectException;
@@ -45,7 +41,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.sibyl.ISibylservice;
-import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
@@ -60,7 +55,6 @@ public class PlayerUI extends Activity
     private static final int QUIT_ID = Menu.FIRST;
     private static final int PLAYLIST_ID = Menu.FIRST +1;
     private static final int OPTION_ID = Menu.FIRST +2;
-    private static final int ADD_ID = Menu.FIRST +3;
 
     public static class PLAY {
         public static int NEXT = 0;
@@ -80,7 +74,8 @@ public class PlayerUI extends Activity
     private Button avance;
 
     private boolean play = false; //indicate if Sibyl is playing a song
-    private boolean pause = false; //indicate if a stop is paused
+    private boolean pause = false; //indicate if a stop is paused  /* TODO what ?!? */
+    private boolean stopped = false;
     
     private MusicDB mdb;	//the database
     
@@ -88,7 +83,6 @@ public class PlayerUI extends Activity
     private Handler mServHandler = new Handler();
     
     // time elapsed when playing a song
-    private int time;
     private Handler mHandler = new Handler();
     //thread wich shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
@@ -133,7 +127,7 @@ public class PlayerUI extends Activity
         previous.setOnClickListener(mPreviousListener);
         avance.setOnClickListener(mAvanceListener);
         lecture.requestFocus();
-       
+        elapsedTime.setText(DateUtils.formatElapsedTime(0));
         //create or connect to the Database
         try
         {
@@ -159,17 +153,37 @@ public class PlayerUI extends Activity
     }
     
     @Override
-    protected void onStop() {
-	// TODO Auto-generated method stub
-	super.onStop();
-	mHandler.removeCallbacks(timerTask); // stop the timer update
+    protected void onStop() 
+    {
+    	super.onStop();
+        stopped = true;
+    	mHandler.removeCallbacks(timerTask); // stop the timer update
     }
     
     @Override
-    protected void onRestart() {
-	// TODO Auto-generated method stub
-	super.onStop();
-	mHandler.post(timerTask); // resume timer update
+    protected void onRestart() 
+    {
+    	super.onRestart();
+        stopped = false;
+        try 
+        {
+            if(mService.isPlaying())
+            {
+                mHandler.post(timerTask);
+                lecture.setText(R.string.pause);
+                play = true;
+                pause = false;
+            }
+            else
+            {
+                lecture.setText(R.string.play);
+                play = true;
+                pause = false;
+            }
+        } catch (DeadObjectException e) 
+        {
+            e.printStackTrace();
+        }
     }
 
     //launch the service
@@ -188,7 +202,6 @@ public class PlayerUI extends Activity
         menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
-        menu.add(0,ADD_ID, "Add "+Music.MUSIC_DIR);
         return true;
     }
 
@@ -217,11 +230,6 @@ public class PlayerUI extends Activity
         case OPTION_ID:
             //launch the option's activity
             displayConfig();
-            break;
-        case ADD_ID:
-            //add song
-            //fillBD(Music.MUSIC_DIR+"/");
-            fillPlayList();
             break;
         }
         
@@ -353,67 +361,6 @@ public class PlayerUI extends Activity
         }
     };
     
-    
-    //Fill the table Song with mp3 found in path
-    private void fillBD (String path)
-    {
-        // get all mp3 files in path
-        try
-        {
-            File dir = new File(path);
-            Log.v(TAG, "Insert");
-            FilenameFilter filter = new FilenameFilter() 
-            {
-                public boolean accept(File dir, String name) 
-                {
-                    return name.endsWith(".mp3");
-                }
-            };
-
-            // insert them in the database    
-            for(String s : dir.list(filter))
-            {
-                try
-                {
-                    long t = System.currentTimeMillis();
-                    mdb.insert(path+s);
-                    Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-                }
-                catch(SQLiteException sqle)
-                {
-                    Log.v(TAG, "sql" + sqle.toString());
-                }
-            }
-        }
-        catch(Exception ex)
-        {
-            Log.v(TAG, ex.toString());
-        }
-
-    }
-    
-    
-    //fill the current_playlist table with music from the table SONG
-    private void fillPlayList()
-    {
-        try
-        {
-            Cursor c = mdb.rawQuery("SELECT _ID FROM SONG",null);
-            int songID [] = new int[c.count()];
-            int pos = 0;
-            while(c.next())
-            {
-                songID[pos++] = c.getInt(0); //there is just one column	    	
-            }
-            mdb.insertPlaylist(songID);
-        }
-        catch(Exception ex)
-        {
-            Log.v(TAG, ex.toString());
-        }
-    }
-    
-    
     //launch the activity PlayerListUI: show and manage the playlist
     private void displayPlaylist() 
     {
@@ -433,7 +380,7 @@ public class PlayerUI extends Activity
     {
         try 
         {
-            time = 0;//reset the time
+            elapsedTime.setText(DateUtils.formatElapsedTime(0));//reset the time
             setTotalTime();
             int pos=0;
             //display the song and artist name
@@ -445,12 +392,15 @@ public class PlayerUI extends Activity
             //remove timer
             mHandler.removeCallbacks(timerTask);
             // add timer task to ui thread
-            mHandler.post(timerTask);
+            if (!stopped)
+            {
+                mHandler.post(timerTask);
+            }
         }
         catch (DeadObjectException ex){}
     }
     
-    
+    /* TODO Supprimer la communication avec le service quand la fenetre n'est plus affichée ? */
     //communication from the service
     private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() 
     {
@@ -482,8 +432,7 @@ public class PlayerUI extends Activity
     private void noSongToPlay()
     {
         mHandler.removeCallbacks(timerTask);
-        time = 0;
-        elapsedTime.setText(R.string.time_zero);
+        elapsedTime.setText(DateUtils.formatElapsedTime(0));
         artiste.setText(R.string.artiste);
         tempsTotal.setText(R.string.time_zero);
         titre.setText(R.string.titre);

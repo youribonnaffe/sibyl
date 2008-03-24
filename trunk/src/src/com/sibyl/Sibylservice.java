@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
+import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 import android.os.DeadObjectException;
@@ -127,7 +128,7 @@ public class Sibylservice extends Service
         }
         else
         {
-            mp.stop();
+            stop();
             try 
             {
                 currentSong = 1;
@@ -136,8 +137,14 @@ public class Sibylservice extends Service
             {
                 e.printStackTrace();
             }
-            playerState=CsState.STOPPED;
+            
         }
+    }
+    
+    protected void stop()
+    {
+        mp.stop();
+        playerState=CsState.STOPPED;
     }
     
     protected void resume()
@@ -202,6 +209,7 @@ public class Sibylservice extends Service
     
     protected void playNumberI(int i)
     {
+        stop();
         currentSong = i;
         play();
         try 
