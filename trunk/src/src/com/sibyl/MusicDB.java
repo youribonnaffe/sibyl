@@ -29,7 +29,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 //optimize string concat and static ?
 //optimize database -> if needed try triggers
@@ -136,6 +135,7 @@ public class MusicDB {
 	    mDb.execSQL("DROP TABLE IF EXISTS album");
 	    mDb.execSQL("DROP TABLE IF EXISTS artist");
 	    mDb.execSQL("DROP TABLE IF EXISTS song");
+        mDb.execSQL("DROP TABLE IF EXISTS directory");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_genre");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_artist");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
