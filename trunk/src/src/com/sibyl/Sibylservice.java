@@ -151,10 +151,7 @@ public class Sibylservice extends Service
     protected void play_next() 
     {
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-        if (playerState != CsState.STOPPED)
-        {
-            currentSong++;   
-        }
+        currentSong++;
         launch();
     }
     
