@@ -30,7 +30,13 @@
     <string name="menu_back">Back</string>
     <string name="menu_del">Del...</string>
     <string name="playlistsep"> - </string>
-    
     <string name="dial_deldir">Do you want to Delete this directory ?</string>
+    
+    <string name="add_artist">Artiste</string>
+    <string name="add_album">Album</string>
+    <string name="add_song">Musique</string>
+    <string name="add_style">Genre</string>
+
+
     
 </resources>
