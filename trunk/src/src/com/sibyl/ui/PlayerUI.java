@@ -203,10 +203,11 @@ public class PlayerUI extends Activity
             break;
         case OPTION_ID:
             //launch the option's activity
+            displayConfig();
             break;
         case ADD_ID:
             //add song
-            fillBD(Music.MUSIC_DIR+"/");
+            //fillBD(Music.MUSIC_DIR+"/");
             fillPlayList();
             break;
         }
@@ -400,6 +401,12 @@ public class PlayerUI extends Activity
         startSubActivity(i, 0);
     }
 
+    private void displayConfig() 
+    {
+        Intent i = new Intent(this, ConfigUI.class);
+        startSubActivity(i, 0);
+    }
+    
     //display the artist, the song, the new total time
     private void updateUI() 
     {
