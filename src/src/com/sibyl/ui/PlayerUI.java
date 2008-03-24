@@ -492,7 +492,7 @@ public class PlayerUI extends Activity
         play = false;
     }
     
-   public boolean onTouchEvent(MotionEvent ev){
+    public boolean onTouchEvent(MotionEvent ev){
 	super.onTouchEvent(ev);
 	lecture.requestFocus();
 	return true;
@@ -519,7 +519,7 @@ public class PlayerUI extends Activity
 		lecture.performClick();
 		return true;
 	}
-	return true;
+	return super.onKeyUp(keycode, event);
     }
     
     public boolean onKeyDown(int keycode, KeyEvent event){
@@ -538,7 +538,7 @@ public class PlayerUI extends Activity
 		lecture.requestFocus();
 		return true;
 	}
-	return true;
+	return super.onKeyDown(keycode, event);
     }
 
     //call the service methods prev() or next() in function of type
