@@ -3,9 +3,10 @@ package com.sibyl.ui;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.DeadObjectException;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
+import android.view.Menu.Item;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -17,7 +18,10 @@ import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
-public class AddUI extends ListActivity {
+public class AddUI extends ListActivity 
+{
+    private static final int BACK_ID = Menu.FIRST;
+    
     private static final String TAG = "AddUI";
     private MusicDB mdb;    //the database
     
@@ -27,8 +31,9 @@ public class AddUI extends ListActivity {
     private STATE positionMenu = STATE.MAIN; //position in the menu
 
     @Override
-    protected void onCreate(Bundle icicle) {
-        // TODO Auto-generated method stub
+    protected void onCreate(Bundle icicle) 
+    {
+        super.onCreate(icicle);
         
         try
         {
@@ -40,17 +45,45 @@ public class AddUI extends ListActivity {
             Log.v(TAG, ex.toString()+" Create");
         }   
        displayMainMenu(); 
-               
-        super.onCreate(icicle);
     }
     
-    private void displayMainMenu(){
+    @Override
+    protected void onDestroy() 
+    {
+        super.onDestroy();     
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) 
+    {
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, BACK_ID, R.string.menu_back);
+        return true;
+    }
+    
+    @Override
+    public boolean onMenuItemSelected(int featureId, Item item) 
+    {
+        super.onMenuItemSelected(featureId, item);
+        switch(item.getId()) 
+        {
+        case BACK_ID:
+            finish();
+            break;
+        }
+        
+        return true;
+    }
+    
+    private void displayMainMenu()
+    {
         String[] field = {getString(R.string.add_artist),
                 getString(R.string.add_album),
                 getString(R.string.add_song),
                 getString(R.string.add_style)};
         
-        try{
+        try
+        {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
             setListAdapter(adapter);
         }

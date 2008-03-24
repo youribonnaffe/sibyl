@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.DeadObjectException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
