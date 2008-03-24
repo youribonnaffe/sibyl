@@ -82,6 +82,8 @@ public class PlayListUI extends ListActivity
         switch(item.getId()) 
         {
         case ADD_ID:
+            Intent i = new Intent(this, AddUI.class);
+            startSubActivity(i, 0);
             break;
         case NEW_ID:
             try 

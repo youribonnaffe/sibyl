@@ -20,7 +20,6 @@ package com.sibyl.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,18 +43,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
+
+//Main activity: the playeur
 public class PlayerUI extends Activity
 {
 
     ISibylservice mService = null;
-
+    //menu variables
     private static final int QUIT_ID = Menu.FIRST;
     private static final int PLAYLIST_ID = Menu.FIRST +1;
     private static final int OPTION_ID = Menu.FIRST +2;
@@ -68,19 +68,19 @@ public class PlayerUI extends Activity
     
     private static final String TAG = "COLLECTION";
 
-    //view of the ui
+    //views of the ui
     private TextView artiste;
     private TextView titre;
     private TextView elapsedTime;
     private TextView tempsTotal;
     private Button lecture;
-
-    private boolean play = false; //indicate if Sibyl is playing a song
-    private boolean pause = false; //indicate if a stop is paused
     private Button next;
     private Button previous;
     private Button avance;
 
+    private boolean play = false; //indicate if Sibyl is playing a song
+    private boolean pause = false; //indicate if a stop is paused
+    
     private MusicDB mdb;	//the database
     
     //handler to call function when datas are received from the service
@@ -89,6 +89,7 @@ public class PlayerUI extends Activity
     // time elapsed when playing a song
     private int time;
     private Handler mHandler = new Handler();
+    //thread wich shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
         public void run() 
@@ -142,6 +143,7 @@ public class PlayerUI extends Activity
         {
             mdb = new MusicDB(this);
             Log.v(TAG,"BD OK");
+            //display the artist and the song in the playlist
             String [] songInfo = mdb.getSongInfoFromCP(1);
             titre.setText(songInfo[0]);
             artiste.setText(songInfo[1]);
@@ -160,6 +162,7 @@ public class PlayerUI extends Activity
         unbindService(mConnection);
     }
 
+    //launch the service
     public void launchService()	
     {
         Bundle args = new Bundle();
@@ -251,6 +254,7 @@ public class PlayerUI extends Activity
         }
     };
     
+    
     //set the total time of the song which is played
     private void setTotalTime ()
     {
@@ -261,6 +265,8 @@ public class PlayerUI extends Activity
         catch (DeadObjectException ex){}
     }
 
+    
+    //listener for the button Play/Pause
     private OnClickListener mPlayListener = new OnClickListener()
     {
         public void onClick(View v)
@@ -271,8 +277,7 @@ public class PlayerUI extends Activity
                 try 
                 {
                     mService.pause();
-                }//lors de l'appel de fonction de interface (fichier aidl)
-                //il faut catcher les DeadObjectException
+                }
                 catch (DeadObjectException ex) {}
                 pause = true;
                 // remove timer task from ui thread
@@ -284,8 +289,7 @@ public class PlayerUI extends Activity
                 try 
                 {
                     mService.start();
-                }//lors de l'appel de fonction de interface (fichier aidl)
-                //il faut catcher les DeadObjectException
+                }
                 catch (DeadObjectException ex) {}
                 //updateUI(); //display informations about the song
                 pause = false;
@@ -312,6 +316,7 @@ public class PlayerUI extends Activity
             playSong(PLAY.PREV);
         }
     };
+    
     
     //Listener for the Button Avance. Avance the lecture of the song of 30sec
     //useful for tests of handling the end of the song
@@ -375,7 +380,9 @@ public class PlayerUI extends Activity
         }
 
     }
-
+    
+    
+    //fill the current_playlist table with music from the table SONG
     private void fillPlayList()
     {
         try
@@ -395,37 +402,43 @@ public class PlayerUI extends Activity
         }
     }
     
+    
+    //launch the activity PlayerListUI: show and manage the playlist
     private void displayPlaylist() 
     {
         Intent i = new Intent(this, PlayListUI.class);
         startSubActivity(i, 0);
     }
 
+
     private void displayConfig() 
     {
         Intent i = new Intent(this, ConfigUI.class);
         startSubActivity(i, 0);
     }
-    
+
     //display the artist, the song, the new total time
     private void updateUI() 
     {
         try 
         {
-            time = 0;
+            time = 0;//reset the time
             setTotalTime();
             int pos=0;
+            //display the song and artist name
             pos=mService.getCurrentSongIndex();
             Log.v(TAG, "updateUI: pos="+pos);
             String [] songInfo = mdb.getSongInfoFromCP(pos);
             titre.setText(songInfo[0]);
             artiste.setText(songInfo[1]);
+            //remove timer
             mHandler.removeCallbacks(timerTask);
             // add timer task to ui thread
             mHandler.post(timerTask);
         }
         catch (DeadObjectException ex){}
     }
+    
     
     //communication from the service
     private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() 
@@ -441,7 +454,7 @@ public class PlayerUI extends Activity
                 }
             });
             
-        }
+        }   
 
         public void handleEndPlaylist()
         {
