@@ -84,6 +84,14 @@ public class PlayListUI extends ListActivity
         case ADD_ID:
             break;
         case NEW_ID:
+            try 
+            {
+                mService.stop();
+                mdb.clearPlaylist();
+                fillData();
+            } catch (DeadObjectException e) {
+                e.printStackTrace();
+            }
             break;
         case SMARTPL_ID:
             break;
@@ -94,6 +102,8 @@ public class PlayListUI extends ListActivity
         
         return true;
     }
+    
+    
     
     private void fillData()
     {

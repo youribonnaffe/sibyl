@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 //optimize string concat and static ?
 //optimize database -> if needed try triggers
@@ -78,6 +79,12 @@ public class MusicDB {
 		    "id INTEGER"+
 		    ")"
 	    );
+        
+        mDb.execSQL("CREATE TABLE directory("+
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                "dir VARCHAR UNIQUE"+
+                ")"
+            );
 	    // triggers
 	    mDb.execSQL("CREATE TRIGGER t_del_song_artist " +
 		    "AFTER DELETE ON song " +
@@ -376,5 +383,34 @@ public class MusicDB {
         return mDb.rawQuery("SELECT title _id, artist_name FROM song, current_playlist, artist "
                 +"WHERE song._id=current_playlist.id and song.artist=artist.id", null);
         
+    }
+    
+    public void clearPlaylist()
+    {
+        mDb.execSQL("DELETE FROM current_playlist");
+    }
+    
+    public void insertDir(String dir)
+    {
+        Cursor c = mDb.rawQuery("SELECT dir FROM directory WHERE dir='"+dir+"'",null);
+        if (c.count() == 0)
+        {
+            mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
+        }
+    }
+    public Cursor getDir()
+    {
+        return mDb.rawQuery("SELECT dir FROM directory",null);
+    }
+    public void delDir(String id)
+    {
+        mDb.execSQL("DELETE FROM directory WHERE _id="+id);
+    }
+    public void clearDB()
+    {
+        mDb.execSQL("DELETE FROM song");
+        mDb.execSQL("DELETE FROM artist");
+        mDb.execSQL("DELETE FROM album");
+        mDb.execSQL("DELETE FROM genre");
     }
 }
