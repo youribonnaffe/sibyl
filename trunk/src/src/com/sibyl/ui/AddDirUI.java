@@ -47,10 +47,10 @@ public class AddDirUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setContentView(R.layout.add);
         path = "/data/music";
         mStrings = fillBD(path);
-        setListAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mStrings));
+        setListAdapter(new ArrayAdapter<String>(this,R.layout.add_row,R.id.text1, mStrings));
         try
         {
             mdb = new MusicDB(this);
@@ -68,7 +68,7 @@ public class AddDirUI extends ListActivity
         path = mStrings.get(position);
         mStrings = fillBD(path);
         setListAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mStrings));
+                R.layout.add_row,R.id.text1, mStrings));
     }
     
 //  Fill the table Song with mp3 found in path

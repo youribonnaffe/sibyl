@@ -48,6 +48,7 @@ public class DelDirUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setContentView(R.layout.add);
         try
         {
             mdb = new MusicDB(this);
@@ -58,8 +59,7 @@ public class DelDirUI extends ListActivity
             Log.v(TAG, ex.toString()+" Create");
         }   
         ArrayList<String> mStrings = fillBD();
-        setListAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mStrings));
+        setListAdapter(new ArrayAdapter<String>(this,R.layout.add_row,R.id.text1, mStrings));
     }
     private ArrayList<String> fillBD ()
     {
