@@ -137,6 +137,8 @@ public class AddUI extends ListActivity
     }
     
     
+    /* TODO C'est moche les requetes faites directement par l'activity... */
+    
     private void mainMenu(CharSequence text){
         try{  
             Cursor c = null;
@@ -144,22 +146,22 @@ public class AddUI extends ListActivity
             //wich line has been select ?
             if(text == getText(R.string.add_artist)) {
                 c = mdb.rawQuery("SELECT artist_name _id " +
-                        "FROM artist;",null);
+                        "FROM artist ORDER BY artist_name;",null);
                 positionMenu = STATE.ARTIST;
             }
             else if(text == getText(R.string.add_album)) {
                 c = mdb.rawQuery("SELECT album_name _id " +
-                        "FROM album;",null);
+                        "FROM album ORDER BY album_name;",null);
                 positionMenu = STATE.ALBUM;
             }
             else if(text == getText(R.string.add_song)) {
                 c = mdb.rawQuery("SELECT title _id " +
-                        "FROM song;",null);
+                        "FROM song ORDER BY title;",null);
                 positionMenu = STATE.SONG;
             }
             else if(text == getText(R.string.add_style)) {
                 c = mdb.rawQuery("SELECT genre_name _id " +
-                        "FROM genre;",null);
+                        "FROM genre ORDER BY genre_name;",null);
                 positionMenu = STATE.STYLE;
             }
             

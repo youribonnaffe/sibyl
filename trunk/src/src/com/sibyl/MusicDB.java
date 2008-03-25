@@ -362,7 +362,7 @@ public class MusicDB {
 	}else if(column == Music.SONG.GENRE){
 	    mDb.execSQL("INSERT INTO current_playlist(id) " +
 		    "SELECT song._id FROM song, genre " +
-		    "WHERE genre.genre_name =\"'"+value+"\"" +
+		    "WHERE genre.genre_name =\""+value+"\"" +
 	    "AND song.genre = genre.id");
 	}else if(column == Music.SONG.TITLE){
         mDb.execSQL("INSERT INTO current_playlist(id) " +
