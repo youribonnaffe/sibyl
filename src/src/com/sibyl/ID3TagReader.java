@@ -85,18 +85,24 @@ public class ID3TagReader {
 	    skipSure(f,2);
 	    // search for corresponding tag
 	    int i;
-	    for(i=0; i<tags.length; i++){
-		if(tags[i].charAt(0) == buff[0] && tags[i].charAt(1) == buff[1] 
-		     && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3]){
-		    // read frame size
-		    char[] buff2 = new char[size-1];
-		    // read frame content
-		    skipSure(f, 1);
-		    f.read(buff2, 0, size-1);
-		    pos+=size;
-		    cv.put(cols[i], new String(buff2).replace("'", "''"));
-		    break;
-		}
+	    for(i=0; i<tags.length; i++)
+        {
+    		if(tags[i].charAt(0) == buff[0] && tags[i].charAt(1) == buff[1] 
+    		     && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3])
+            {
+    		    // read frame size
+    		    char[] buff2 = new char[size-1];
+    		    // read frame content
+    		    skipSure(f, 1);
+    		    f.read(buff2, 0, size-1);
+    		    pos+=size;
+    
+                String str = new String(buff2).trim();
+                if (str.compareTo("")==0)
+                    str="Unknown";
+    		    cv.put(cols[i], str.replace("'", "''"));
+    		    break;
+    		}
 	    }
 	    if(i==tags.length){
 		skipSure(f, size);
@@ -109,14 +115,24 @@ public class ID3TagReader {
 
     private void readID3v1Tags(BufferedReader f) throws IOException{
 	char[] buff = new char[30];
+    String str;
 	f.read(buff, 0, 30);
-	cv.put(Music.SONG.TITLE, new String(buff).trim());
+    str = new String(buff).trim();
+    if (str.compareTo("")==0)
+        str="Unknown";
+	cv.put(Music.SONG.TITLE, str);
 
 	f.read(buff, 0, 30);
-	cv.put(Music.ARTIST.NAME, new String(buff).trim());
+    str = new String(buff).trim();
+    if (str.compareTo("")==0)
+        str="Unknown";
+	cv.put(Music.ARTIST.NAME, str);
 
 	f.read(buff, 0, 30);
-	cv.put(Music.ALBUM.NAME, new String(buff).trim());
+    str = new String(buff).trim();
+    if (str.compareTo("")==0)
+        str="Unknown";
+	cv.put(Music.ALBUM.NAME, str);
 
 	skipSure(f, 32);
 	if(f.read() == 0){
@@ -125,7 +141,7 @@ public class ID3TagReader {
 	    f.read();
 	}
 	int t = f.read();
-	cv.put(Music.GENRE.ID, t>0 && t<147 ? t : 0);
+	cv.put(Music.GENRE.ID, t>0 && t<147 ? t : 12);
     }
 
     public ContentValues getValues(){
