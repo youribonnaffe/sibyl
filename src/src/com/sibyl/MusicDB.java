@@ -20,8 +20,8 @@ package com.sibyl;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 //optimize string concat and static ?
 //optimize database -> if needed try triggers
@@ -41,8 +42,7 @@ public class MusicDB {
     private static final int DB_VERSION = 1;
 
     private static class MusicDBHelper extends SQLiteOpenHelper{
-	private static final String GENRE_FILE = Music.MUSIC_DIR+"/tags";
-
+	private Context usedC;
 	@Override
 	public void onCreate(SQLiteDatabase mDb) {
 	    mDb.execSQL("CREATE TABLE song("+
@@ -111,17 +111,20 @@ public class MusicDB {
 	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('')");
 	    mDb.execSQL("INSERT INTO album(album_name) VALUES('')");
 	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('')");
-	    // read id3v1 genre from file
+	    // read id3v1 genres from file
 	    try{
-		BufferedReader f = new BufferedReader(new FileReader(GENRE_FILE));
+		// kind of boring ...
+		BufferedReader f = new BufferedReader(
+			new InputStreamReader(
+				usedC.getResources().openRawResource(R.raw.tags)));
 		String line;
 		while( (line=f.readLine()) != null){
 		    mDb.execSQL(line);
 		}
 	    }catch(FileNotFoundException fnfe){
-
+		// todo ?
 	    }catch(IOException ioe){
-
+		// todo ?
 	    }
 
 	    // how to ensure that ?
@@ -140,6 +143,11 @@ public class MusicDB {
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_artist");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
 	    onCreate(mDb);
+	}
+	
+	public SQLiteDatabase openDatabase(Context context, String name, CursorFactory factory, int newVersion){
+	    usedC = context;
+	    return super.openDatabase(context, name, factory, newVersion);
 	}
     }
 
