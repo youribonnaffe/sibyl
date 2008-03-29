@@ -35,12 +35,13 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 //optimize database -> if needed try triggers
 
 public class MusicDB {
-    
+
     private SQLiteDatabase mDb;
 
     private static final String DB_NAME = "music.db";
     private static final int DB_VERSION = 1;
-
+    private static final int NB_PREDEFINED_GENRE = 149;
+    
     private static class MusicDBHelper extends SQLiteOpenHelper{
 	private Context usedC;
 	@Override
@@ -78,12 +79,12 @@ public class MusicDB {
 		    "id INTEGER"+
 		    ")"
 	    );
-        
-        mDb.execSQL("CREATE TABLE directory("+
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                "dir VARCHAR UNIQUE"+
-                ")"
-            );
+
+	    mDb.execSQL("CREATE TABLE directory("+
+		    "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+		    "dir VARCHAR UNIQUE"+
+		    ")"
+	    );
 	    // triggers
 	    mDb.execSQL("CREATE TRIGGER t_del_song_artist " +
 		    "AFTER DELETE ON song " +
@@ -102,7 +103,7 @@ public class MusicDB {
 	    mDb.execSQL("CREATE TRIGGER t_del_song_genre " +
 		    "AFTER DELETE ON song " +
 		    "FOR EACH ROW " +
-		    "WHEN ( OLD.genre!=1 AND (SELECT COUNT(*) FROM SONG WHERE genre=OLD.genre) == 0) " +
+		    "WHEN ( OLD.genre>"+NB_PREDEFINED_GENRE+" AND (SELECT COUNT(*) FROM SONG WHERE genre=OLD.genre) == 0) " +
 		    "BEGIN " +
 		    "DELETE FROM genre WHERE id=OLD.genre; " +
 	    "END;");
@@ -116,7 +117,7 @@ public class MusicDB {
 		// kind of boring ...
 		BufferedReader f = new BufferedReader(
 			new InputStreamReader(
-				usedC.getResources().openRawResource(R.raw.tags)));
+				usedC.getResources().openRawResource(R.raw.tags)),8192);
 		String line;
 		while( (line=f.readLine()) != null){
 		    mDb.execSQL(line);
@@ -138,13 +139,13 @@ public class MusicDB {
 	    mDb.execSQL("DROP TABLE IF EXISTS album");
 	    mDb.execSQL("DROP TABLE IF EXISTS artist");
 	    mDb.execSQL("DROP TABLE IF EXISTS song");
-        mDb.execSQL("DROP TABLE IF EXISTS directory");
+	    mDb.execSQL("DROP TABLE IF EXISTS directory");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_genre");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_artist");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
 	    onCreate(mDb);
 	}
-	
+
 	public SQLiteDatabase openDatabase(Context context, String name, CursorFactory factory, int newVersion){
 	    usedC = context;
 	    return super.openDatabase(context, name, factory, newVersion);
@@ -333,7 +334,7 @@ public class MusicDB {
 	mDb.execSQL(query);
     }
 
-    
+
     /**
      * insert several songs in the playlist
      * 
@@ -373,56 +374,60 @@ public class MusicDB {
 		    "WHERE genre.genre_name =\""+value+"\"" +
 	    "AND song.genre = genre.id");
 	}else if(column == Music.SONG.TITLE){
-        mDb.execSQL("INSERT INTO current_playlist(id) " +
-                "SELECT song._id FROM song " +
-                "WHERE song.title=\""+value+"\"");
-        }
+	    mDb.execSQL("INSERT INTO current_playlist(id) " +
+		    "SELECT song._id FROM song " +
+		    "WHERE song.title=\""+value+"\"");
+	}
     }
     
+    public void insertPlaylist(Music.SmartPlaylist sp){
+	mDb.execSQL(sp.getQuery());
+    }
+
     public String[] getSongInfoFromCP(int i)
     {
-        Cursor c = mDb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
-                            +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id", null);
-        if(!c.first()){
-            return null;
-        }
-        String str[] = {c.getString(0), c.getString(1)};
-        return str;
+	Cursor c = mDb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
+		+"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id", null);
+	if(!c.first()){
+	    return null;
+	}
+	String str[] = {c.getString(0), c.getString(1)};
+	return str;
     }
-    
+
     public Cursor getPlayListInfo()
     {
-        return mDb.rawQuery("SELECT title _id, artist_name FROM song, current_playlist, artist "
-                +"WHERE song._id=current_playlist.id and song.artist=artist.id", null);
-        
+	return mDb.rawQuery("SELECT title _id, artist_name FROM song, current_playlist, artist "
+		+"WHERE song._id=current_playlist.id and song.artist=artist.id", null);
+
     }
-    
+
     public void clearPlaylist()
     {
-        mDb.execSQL("DELETE FROM current_playlist");
+	mDb.execSQL("DELETE FROM current_playlist");
     }
-    
+
     public void insertDir(String dir)
     {
-        Cursor c = mDb.rawQuery("SELECT dir FROM directory WHERE dir='"+dir+"'",null);
-        if (c.count() == 0)
-        {
-            mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
-        }
+	Cursor c = mDb.rawQuery("SELECT dir FROM directory WHERE dir='"+dir+"'",null);
+	if (c.count() == 0)
+	{
+	    mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
+	}
     }
     public Cursor getDir()
     {
-        return mDb.rawQuery("SELECT dir FROM directory",null);
+	return mDb.rawQuery("SELECT dir FROM directory",null);
     }
     public void delDir(String id)
     {
-        mDb.execSQL("DELETE FROM directory WHERE _id="+id);
+	mDb.execSQL("DELETE FROM directory WHERE _id="+id);
     }
     public void clearDB()
     {
-        mDb.execSQL("DELETE FROM song");
-        mDb.execSQL("DELETE FROM artist");
-        mDb.execSQL("DELETE FROM album");
-        mDb.execSQL("DELETE FROM genre");
+	mDb.execSQL("DELETE FROM song");
+	mDb.execSQL("DELETE FROM artist");
+	mDb.execSQL("DELETE FROM album");
+	mDb.execSQL("DELETE FROM genre");
     }
 }

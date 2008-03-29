@@ -22,13 +22,13 @@ public class Music {
 
     public static String MUSIC_DIR = "/data/music";
     public static String[] SONGS = { SONG.ID, SONG.URL, SONG.TITLE,
-	    SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
-	    SONG.ALBUM, SONG.GENRE };
+	SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
+	SONG.ALBUM, SONG.GENRE };
     public static String[] ARTISTS = { ARTIST.ID, ARTIST.NAME };
     public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME };
     public static String[] GENRES = { GENRE.ID, GENRE.NAME };
     public static String[] CURRENT_PLAYLISTS = { CURRENT_PLAYLIST.POS,
-	    CURRENT_PLAYLIST.ID };
+	CURRENT_PLAYLIST.ID };
     public static String[] DIR = {DIRECTORY.ID, DIRECTORY.DIR};
 
     public static class SONG {
@@ -62,11 +62,45 @@ public class Music {
 	public static String POS = "pos";
 	public static String ID = "id";
     }
-    
+
     public static class DIRECTORY 
     {
-        public static String ID = "id_";
-        public static String DIR = "dir";
+	public static String ID = "id_";
+	public static String DIR = "dir";
+    }
+
+    // describe playlist possiblities
+    public static enum SmartPlaylist
+    {
+	RANDOM, LESS_PLAYED, MOST_PLAYED;
+	
+	// SQL query associated with a playlist
+	public String getQuery(){
+	    switch(this){
+    	    	case RANDOM : 
+    	    	    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY random() LIMIT 25";
+    	    	case LESS_PLAYED : 
+    	    	    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played ASC LIMIT 25";
+    	    	case MOST_PLAYED :
+    	    	    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played DESC LIMIT 25";
+    	    	default : 
+    	    	    return "";
+	    }
+	}
+	
+	// get string id for the enum values
+	public int getStringId(){
+	    switch(this){
+	    	case RANDOM : 
+	    	    return R.string.playlist_random;
+	    	case LESS_PLAYED : 
+	    	    return R.string.playlist_less_played;
+	    	case MOST_PLAYED :
+	    	    return R.string.playlist_most_played;
+	    	default :
+	    	    return android.R.string.unknownName;
+	    }
+	}
     }
 
 }

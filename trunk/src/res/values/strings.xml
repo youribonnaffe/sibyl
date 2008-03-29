@@ -54,6 +54,8 @@
     <string name="add_song">Musique</string>
     <string name="add_style">Genre</string>
 
-
+    <string name="playlist_random">Random songs</string>
+    <string name="playlist_less_played">Less played songs</string>
+    <string name="playlist_most_played">Most played songs</string>
     
 </resources>
