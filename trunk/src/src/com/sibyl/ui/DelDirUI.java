@@ -45,6 +45,8 @@ public class DelDirUI extends ListActivity
 
     private MusicDB mdb;    //the database
     
+    private ArrayList<String> mStrings;
+    
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
@@ -58,7 +60,7 @@ public class DelDirUI extends ListActivity
         {
             Log.v(TAG, ex.toString()+" Create");
         }   
-        ArrayList<String> mStrings = fillBD();
+        mStrings = fillBD();
         setListAdapter(new ArrayAdapter<String>(this,R.layout.add_row,R.id.text1, mStrings));
     }
     private ArrayList<String> fillBD ()
@@ -90,9 +92,8 @@ public class DelDirUI extends ListActivity
         {
         case DEL_ID:
             int i = getSelectedItemPosition();
-            i++;
             Log.v(TAG,""+i);
-            mdb.delDir(""+i);
+            mdb.delDir(mStrings.get(i));
             finish();
             break;
         case BACK_ID:
@@ -114,9 +115,8 @@ public class DelDirUI extends ListActivity
                     public void onClick(DialogInterface dialog, int whichButton) 
                     {
                         int i = position;
-                        i++;
                         Log.v(TAG,""+i);
-                        mdb.delDir(""+i);
+                        mdb.delDir(mStrings.get(i));
                         finish();
                     }
                 })
