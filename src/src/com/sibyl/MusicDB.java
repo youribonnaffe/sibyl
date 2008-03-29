@@ -419,9 +419,9 @@ public class MusicDB {
     {
 	return mDb.rawQuery("SELECT dir FROM directory",null);
     }
-    public void delDir(String id)
+    public void delDir(String dir)
     {
-	mDb.execSQL("DELETE FROM directory WHERE _id="+id);
+        mDb.execSQL("DELETE FROM directory WHERE dir='"+dir+"'");
     }
     public void clearDB()
     {
