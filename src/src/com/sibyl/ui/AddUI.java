@@ -43,7 +43,7 @@ public class AddUI extends ListActivity
     private static final String TAG = "AddUI";
     private MusicDB mdb;    //the database
     
-    private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG};
+    private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
 
     
     private STATE positionMenu = STATE.MAIN; //position in the menu
@@ -98,7 +98,8 @@ public class AddUI extends ListActivity
         String[] field = {getString(R.string.add_artist),
                 getString(R.string.add_album),
                 getString(R.string.add_song),
-                getString(R.string.add_style)};
+                getString(R.string.add_style),
+                getString(R.string.add_smart_playlist)};
         
         try
         {
@@ -108,7 +109,8 @@ public class AddUI extends ListActivity
         catch(Exception ex){}      
     }
     
-    
+    /*When a row is selected, the UI is update by this method*/
+    /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
     protected void onListItemClick(ListView l, View vu, int position, long id) 
     {
         LinearLayout row = (LinearLayout) vu;
@@ -130,6 +132,20 @@ public class AddUI extends ListActivity
             else if(positionMenu == STATE.STYLE){
                 mdb.insertPlaylist(Music.SONG.GENRE, text.getText().toString());
             }
+            else if(positionMenu == STATE.SMART_PLAYLIST){
+                Music.SmartPlaylist sp = null;
+                String spSelected = text.getText().toString();
+                if(spSelected.equals(getString(R.string.playlist_less_played))){
+                    sp = Music.SmartPlaylist.LESS_PLAYED;
+                }
+                if(spSelected.equals(getString(R.string.playlist_most_played))){
+                    sp = Music.SmartPlaylist.MOST_PLAYED;
+                }
+                if(spSelected.equals(getString(R.string.playlist_random))){
+                    sp = Music.SmartPlaylist.RANDOM;
+                }
+                mdb.insertPlaylist(sp);
+            }
             positionMenu = STATE.MAIN;
             displayMainMenu();
             Log.v(TAG,text.toString());
@@ -139,11 +155,12 @@ public class AddUI extends ListActivity
     
     /* TODO C'est moche les requetes faites directement par l'activity... */
     
+    /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
     private void mainMenu(CharSequence text){
         try{  
             Cursor c = null;
             
-            //wich line has been select ?
+            //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
             if(text == getText(R.string.add_artist)) {
                 c = mdb.rawQuery("SELECT artist_name _id " +
                         "FROM artist ORDER BY artist_name;",null);
@@ -164,6 +181,18 @@ public class AddUI extends ListActivity
                         "FROM genre ORDER BY genre_name;",null);
                 positionMenu = STATE.STYLE;
             }
+            else if(text == getText(R.string.add_smart_playlist)) {
+                String[] field = {getString(R.string.playlist_most_played),
+                        getString(R.string.playlist_most_played),
+                        getString(R.string.playlist_random)};
+                
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
+                setListAdapter(adapter);
+                
+                positionMenu = STATE.SMART_PLAYLIST;
+                return; /*quit mainMenu when the smart playlist row are added */
+                }
+                    
             
             startManagingCursor(c);
             
