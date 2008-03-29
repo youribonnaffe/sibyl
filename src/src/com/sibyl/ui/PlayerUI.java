@@ -87,15 +87,17 @@ public class PlayerUI extends Activity
     //thread wich shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
+	private int timer;
 	public void run() 
 	{
 	    // re adjusting time
 	    try
 	    {
 		// display time
-		elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()/1000));
+		timer = mService.getCurrentPosition(); // seems to avoid ANR
 	    }
 	    catch(DeadObjectException ex){}
+	    elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
 	    // again in 0.1s
 	    mHandler.postDelayed(this, 1000);
 	}
@@ -124,6 +126,9 @@ public class PlayerUI extends Activity
         //set listenner
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
+        next.setFocusableInTouchMode(true);
+        previous.setFocusableInTouchMode(true);
+        lecture.setFocusableInTouchMode(true);
         previous.setOnClickListener(mPreviousListener);
         avance.setOnClickListener(mAvanceListener);
         lecture.requestFocus();
@@ -442,29 +447,31 @@ public class PlayerUI extends Activity
     }
     
     public boolean onTouchEvent(MotionEvent ev){
-	super.onTouchEvent(ev);
+	//Log.v("touche event", ev.toString()+ " focus : "+ this.getCurrentFocus());
 	lecture.requestFocus();
-	return true;
+	//Log.v("focus", "o"+this.getCurrentFocus());
+	return super.onTouchEvent(ev);
     }
     
     public boolean onKeyUp(int keycode, KeyEvent event){
+	//Log.v("event up", event.toString());
 	switch(event.getKeyCode()){
 	    case KeyEvent.KEYCODE_DPAD_DOWN :
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_UP :
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_LEFT :
-		previous.requestFocus();
 		previous.performClick();
-		lecture.requestFocus();
+		previous.setBackground(android.R.drawable.btn_default);
+		//lecture.requestFocus();
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_RIGHT :
-		next.requestFocus();
 		next.performClick();
-		lecture.requestFocus();
+		next.setBackground(android.R.drawable.btn_default);
+		//lecture.requestFocus();
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_CENTER :
-		lecture.requestFocus();
+		//lecture.requestFocus();
 		lecture.performClick();
 		return true;
 	}
@@ -472,19 +479,19 @@ public class PlayerUI extends Activity
     }
     
     public boolean onKeyDown(int keycode, KeyEvent event){
+	//Log.v("event down", event.toString());
 	switch(keycode){
 	    case KeyEvent.KEYCODE_DPAD_DOWN :
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_UP :
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_LEFT :
-		previous.requestFocus();
+		previous.setBackground(android.R.drawable.btn_default_selected);
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_RIGHT :
-		next.requestFocus();
+		next.setBackground(android.R.drawable.btn_default_selected);
 		return true;
 	    case KeyEvent.KEYCODE_DPAD_CENTER :
-		lecture.requestFocus();
 		return true;
 	}
 	return super.onKeyDown(keycode, event);
