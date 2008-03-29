@@ -45,8 +45,7 @@ public class PlayListUI extends ListActivity
 {
     private static final int ADD_ID = Menu.FIRST;
     private static final int NEW_ID = Menu.FIRST +1;
-    private static final int SMARTPL_ID = Menu.FIRST +2;
-    private static final int BACK_ID = Menu.FIRST +3;
+    private static final int BACK_ID = Menu.FIRST +2;
     
     private static final String TAG = "PLAYLIST";
     
@@ -81,7 +80,6 @@ public class PlayListUI extends ListActivity
         super.onCreateOptionsMenu(menu);
         menu.add(0, ADD_ID, R.string.menu_add);
         menu.add(0, NEW_ID, R.string.menu_new);
-        menu.add(0, SMARTPL_ID, R.string.menu_smartpl);
         menu.add(0, BACK_ID, R.string.menu_back);
         return true;
     }
@@ -93,14 +91,15 @@ public class PlayListUI extends ListActivity
         unbindService(mConnection);        
     }
     
-    @Override
+    /*when a menu is selected*/
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
         super.onMenuItemSelected(featureId, item);
+        Intent i =null;
         switch(item.getId()) 
         {
         case ADD_ID:
-            Intent i = new Intent(this, AddUI.class);
+            i = new Intent(this, AddUI.class);
             startSubActivity(i, 0);
             break;
         case NEW_ID:
@@ -112,8 +111,8 @@ public class PlayListUI extends ListActivity
             } catch (DeadObjectException e) {
                 e.printStackTrace();
             }
-            break;
-        case SMARTPL_ID:
+            i = new Intent(this, AddUI.class);
+            startSubActivity(i, 0);
             break;
         case BACK_ID:
             finish();

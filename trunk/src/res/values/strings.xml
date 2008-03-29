@@ -43,7 +43,6 @@
     
     <string name="menu_add">Add...</string>
     <string name="menu_new">New...</string>
-    <string name="menu_smartpl">Smart Playlist</string>
     <string name="menu_back">Back</string>
     <string name="menu_del">Del...</string>
     <string name="playlistsep"> - </string>
@@ -53,6 +52,7 @@
     <string name="add_album">Album</string>
     <string name="add_song">Musique</string>
     <string name="add_style">Genre</string>
+    <string name="add_smart_playlist">Smart Playlist</string>
 
     <string name="playlist_random">Random songs</string>
     <string name="playlist_less_played">Less played songs</string>
