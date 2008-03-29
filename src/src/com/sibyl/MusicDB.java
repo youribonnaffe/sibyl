@@ -19,6 +19,7 @@
 package com.sibyl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,6 +31,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.util.Log;
 
 //optimize string concat and static ?
 //optimize database -> if needed try triggers
@@ -107,11 +109,17 @@ public class MusicDB {
 		    "BEGIN " +
 		    "DELETE FROM genre WHERE id=OLD.genre; " +
 	    "END;");
+	    mDb.execSQL("CREATE TRIGGER t_del_song_current_playlist " +
+		    "AFTER DELETE ON song " +
+		    "FOR EACH ROW " +
+		    "BEGIN " +
+		    "DELETE FROM current_playlist WHERE id=OLD._id; " +
+	    "END;");
 
 	    // default values for undefined tags
-	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('')");
-	    mDb.execSQL("INSERT INTO album(album_name) VALUES('')");
-	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('')");
+	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
+	    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
+	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
 	    // read id3v1 genres from file
 	    try{
 		// kind of boring ...
@@ -194,7 +202,8 @@ public class MusicDB {
 	//, album = false, genre = false;
 	mDb.execSQL("BEGIN TRANSACTION");
 	try{
-	    if(cv.containsKey(Music.ARTIST.NAME) && cv.getAsString(Music.ARTIST.NAME) != ""){
+	    if(cv.containsKey(Music.ARTIST.NAME) && cv.getAsString(Music.ARTIST.NAME).length() > 0){
+		Log.v("INSERTION ARTISTE", "-"+cv.getAsString(Music.ARTIST.NAME).length()+"-");
 		Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
 		if(c.next()){
 		    artist = c.getInt(0);
@@ -206,7 +215,7 @@ public class MusicDB {
 		artist = 1;
 	    }
 
-	    if(cv.containsKey(Music.ALBUM.NAME) && cv.getAsString(Music.ALBUM.NAME) != ""){
+	    if(cv.containsKey(Music.ALBUM.NAME) && cv.getAsString(Music.ALBUM.NAME).length() > 0){
 		Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
 		if(c.next()){
 		    album = c.getInt(0);
@@ -218,7 +227,7 @@ public class MusicDB {
 		album = 1;
 	    }
 
-	    if(cv.containsKey(Music.GENRE.NAME) && cv.getAsString(Music.GENRE.NAME) != ""){
+	    if(cv.containsKey(Music.GENRE.NAME) && cv.getAsString(Music.GENRE.NAME).length() > 0){
 		Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
 		if(c.next()){
 		    genre = c.getInt(0);
@@ -229,12 +238,18 @@ public class MusicDB {
 	    }else{
 		genre = 1;
 	    }
-
+	    Log.v("debug",cv.toString());
 	    // insert order in table song
+	    String title;
+	    if(cv.containsKey(Music.SONG.TITLE) && cv.getAsString(Music.SONG.TITLE).length() > 0){
+		title = cv.getAsString(Music.SONG.TITLE);
+	    }else{
+		title = new File(url).getName();
+	    }
 	    // char ' is protected in url, for the tags this is done during reading them
 	    mDb.execSQL("INSERT INTO song(url,title,track, artist,album,genre) VALUES('"+
 		    url.replace("'", "''")+"','"+
-		    (cv.containsKey(Music.SONG.TITLE) ? cv.getAsString(Music.SONG.TITLE) : "")+"','"+
+		    title +"','"+
 		    (cv.containsKey(Music.SONG.TRACK) ? cv.getAsString(Music.SONG.TRACK) : "")+"',"+
 		    (artist != 0 ? artist : "(SELECT max(id) FROM artist)")+","+
 		    (album != 0 ? album : "(SELECT max(id) FROM album)")+","+
@@ -426,8 +441,8 @@ public class MusicDB {
     public void clearDB()
     {
 	mDb.execSQL("DELETE FROM song");
-	mDb.execSQL("DELETE FROM artist");
-	mDb.execSQL("DELETE FROM album");
-	mDb.execSQL("DELETE FROM genre");
+	//mDb.execSQL("DELETE FROM artist");
+	//mDb.execSQL("DELETE FROM album");
+	//mDb.execSQL("DELETE FROM genre");
     }
 }

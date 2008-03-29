@@ -58,4 +58,5 @@
     <string name="playlist_less_played">Less played songs</string>
     <string name="playlist_most_played">Most played songs</string>
     
+    <string name="tags_unknow">Unknow</string>
 </resources>

@@ -164,7 +164,7 @@ public class Sibylservice extends Service
     
     protected void play_prev() 
     {
-        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
+        Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
         if (playerState != CsState.STOPPED)
         {
             currentSong--;   
