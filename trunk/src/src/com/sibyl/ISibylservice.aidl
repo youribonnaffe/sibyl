@@ -53,7 +53,7 @@ interface ISibylservice {
     int getDuration();
     /* returns the duration of the played song in milliseconds */
     
-    void setLooping(in int looping);
+    void setLooping(in boolean looping);
     /* activate or deactivate looping / repetition of the current song 
         If looping is set to 0: the current song is played once 
         If looping is set to 1: the current song is repeated while looping is not 0 */
@@ -67,5 +67,6 @@ interface ISibylservice {
     void prev();
     /* play the previous song of the current playlist */
     
+    void setRepeatAll();
     
 }

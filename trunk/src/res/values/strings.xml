@@ -54,6 +54,10 @@
     <string name="add_style">Genre</string>
     <string name="add_smart_playlist">Smart Playlist</string>
 
+    <string name="rep_no">No repeat</string>
+    <string name="rep_one">Repeat song</string>
+    <string name="rep_all">Repeat playlist</string>
+
     <!-- PLAYLIST -->
     <string name="playlist_random">Random songs</string>
     <string name="playlist_less_played">Less played songs</string>
