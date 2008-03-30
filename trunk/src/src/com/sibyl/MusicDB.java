@@ -469,4 +469,17 @@ public class MusicDB {
     {
 	mDb.execSQL("DELETE FROM song");
     }
+    
+    public void countUp(int i)
+    {
+        Cursor c = mDb.rawQuery("SELECT count_played, song._id FROM song, current_playlist WHERE song._id=current_playlist.id and current_playlist.pos='"+i+"'",null);
+        if(c.first())
+        {
+            int nb = c.getInt(0);
+            nb++;
+            String id = c.getString(1);
+            mDb.execSQL("UPDATE song SET count_played="+nb+" WHERE _id='"+id+"'");
+            //Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
+        }
+    }
 }

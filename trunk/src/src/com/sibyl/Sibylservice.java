@@ -183,9 +183,9 @@ public class Sibylservice extends Service
         Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
         if (playerState != CsState.STOPPED)
         {
-            currentSong--;   
+            currentSong--; 
+            launch();  
         }
-        launch();
     }
     
     protected void playSong(String filename) 
@@ -311,6 +311,7 @@ public class Sibylservice extends Service
     {
         public void onCompletion(MediaPlayer mp) 
         {
+            mdb.countUp(currentSong);
             if(!looping)
             {
                 play_next();
