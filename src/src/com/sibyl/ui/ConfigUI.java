@@ -19,14 +19,15 @@
 package com.sibyl.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import com.sibyl.MusicDB;
-import com.sibyl.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +37,9 @@ import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.sibyl.MusicDB;
+import com.sibyl.R;
 
 public class ConfigUI extends Activity
 {
@@ -66,11 +70,10 @@ public class ConfigUI extends Activity
         try
         {
             mdb = new MusicDB(this);
-            Log.v(TAG,"BD OK");
         }
-        catch(Exception ex)
+        catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString()+" Create");
+            Log.v(TAG, ex.toString());
         }   
     }
     
@@ -82,7 +85,7 @@ public class ConfigUI extends Activity
         Cursor c = mdb.getDir();
         while (c.next())
         {
-            Log.v(TAG,"ADD !"+c.getString(0));
+            //Log.v(TAG,"ADD !"+c.getString(0));
             listFile.add(c.getString(0));
         }
         String str = "";
@@ -150,35 +153,38 @@ public class ConfigUI extends Activity
         {
             path += '/';
             File dir = new File(path);
-            Log.v(TAG, "Insert"+path);
+            //Log.v(TAG, "Insert"+path);
             FilenameFilter filter = new FilenameFilter() 
             {
                 public boolean accept(File dir, String name) 
                 {
-                    return name.endsWith(".mp3");
+                    return name.endsWith(".mp3"); // extension should be a parameter
                 }
             };
 
             // insert them in the database    
             for(String s : dir.list(filter))
             {
-                try
-                {
-                    long t = System.currentTimeMillis();
+        	try{
+                    // ?? long t = System.currentTimeMillis();
                     mdb.insert(path+s);
-                    Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-                }
-                catch(SQLiteException sqle)
-                {
-                    Log.v(TAG, "sql" + sqle.toString());
-                }
+                    //Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
+        	}catch(SQLiteException sqle){
+                    Log.v(TAG, sqle.toString());
+                    // warn user
+        	}catch(FileNotFoundException fnfe){
+                    Log.v(TAG, fnfe.toString());
+                    // warn user
+        	}catch(IOException ioe){
+                    Log.v(TAG, ioe.toString());
+                    // warn user
+        	}        	
             }
         }
-        catch(Exception ex)
+        catch(NullPointerException ex)
         {
-            Log.v(TAG, ex.toString());
+           // will never happen
         }
-
     }
     
     public boolean onCreateOptionsMenu(Menu menu) 

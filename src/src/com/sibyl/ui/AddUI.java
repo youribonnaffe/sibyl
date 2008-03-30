@@ -20,6 +20,7 @@ package com.sibyl.ui;
 
 import android.app.ListActivity;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -39,173 +40,161 @@ import com.sibyl.R;
 public class AddUI extends ListActivity 
 {
     private static final int BACK_ID = Menu.FIRST;
-    
+
     private static final String TAG = "AddUI";
     private MusicDB mdb;    //the database
-    
+
     private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
 
-    
+
     private STATE positionMenu = STATE.MAIN; //position in the menu
 
     @Override
     protected void onCreate(Bundle icicle) 
     {
-        super.onCreate(icicle);
-        
-        try
-        {
-            mdb = new MusicDB(this);
-            Log.v(TAG,"BD OK");
-        }
-        catch(Exception ex)
-        {
-            Log.v(TAG, ex.toString()+" Create");
-        }   
-       displayMainMenu(); 
+	super.onCreate(icicle);
+
+	try
+	{
+	    mdb = new MusicDB(this);
+	    Log.v(TAG,"BD OK");
+	}
+	catch(SQLiteDiskIOException ex)
+	{
+	    Log.v(TAG, ex.toString());
+	}   
+	displayMainMenu(); 
     }
-    
+
     @Override
     protected void onDestroy() 
     {
-        super.onDestroy();     
+	super.onDestroy();     
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
-        super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.menu_back);
-        return true;
+	super.onCreateOptionsMenu(menu);
+	menu.add(0, BACK_ID, R.string.menu_back);
+	return true;
     }
-    
+
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
-        super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
-        {
-        case BACK_ID:
-            finish();
-            break;
-        }
-        
-        return true;
+	super.onMenuItemSelected(featureId, item);
+	switch(item.getId()) 
+	{
+	case BACK_ID:
+	    finish();
+	    break;
+	}
+
+	return true;
     }
-    
+
     private void displayMainMenu()
     {
-        String[] field = {getString(R.string.add_artist),
-                getString(R.string.add_album),
-                getString(R.string.add_song),
-                getString(R.string.add_style),
-                getString(R.string.add_smart_playlist)};
-        
-        try
-        {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
-            setListAdapter(adapter);
-        }
-        catch(Exception ex){}      
+	String[] field = {getString(R.string.add_artist),
+		getString(R.string.add_album),
+		getString(R.string.add_song),
+		getString(R.string.add_style),
+		getString(R.string.add_smart_playlist)};
+
+	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
+	setListAdapter(adapter);
     }
-    
+
     /*When a row is selected, the UI is update by this method*/
     /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
     protected void onListItemClick(ListView l, View vu, int position, long id) 
     {
-        LinearLayout row = (LinearLayout) vu;
-        TextView text = (TextView) row.findViewById(R.id.text1);
-        
-        if( positionMenu == STATE.MAIN){
-                mainMenu(text.getText());
-        }
-        else
-        {   if(positionMenu == STATE.ARTIST){
-                mdb.insertPlaylist(Music.SONG.ARTIST, text.getText().toString());
-            }
-            else if(positionMenu == STATE.ALBUM){
-                mdb.insertPlaylist(Music.SONG.ALBUM, text.getText().toString());
-            }
-            else if(positionMenu == STATE.SONG){
-                mdb.insertPlaylist(Music.SONG.TITLE, text.getText().toString());
-            }
-            else if(positionMenu == STATE.STYLE){
-                mdb.insertPlaylist(Music.SONG.GENRE, text.getText().toString());
-            }
-            else if(positionMenu == STATE.SMART_PLAYLIST){
-                Music.SmartPlaylist sp = null;
-                String spSelected = text.getText().toString();
-                if(spSelected.equals(getString(R.string.playlist_less_played))){
-                    sp = Music.SmartPlaylist.LESS_PLAYED;
-                }
-                if(spSelected.equals(getString(R.string.playlist_most_played))){
-                    sp = Music.SmartPlaylist.MOST_PLAYED;
-                }
-                if(spSelected.equals(getString(R.string.playlist_random))){
-                    sp = Music.SmartPlaylist.RANDOM;
-                }
-                mdb.insertPlaylist(sp);
-            }
-            positionMenu = STATE.MAIN;
-            displayMainMenu();
-            Log.v(TAG,text.toString());
-        }
+	LinearLayout row = (LinearLayout) vu;
+	TextView text = (TextView) row.findViewById(R.id.text1);
+
+	if( positionMenu == STATE.MAIN){
+	    mainMenu(text.getText());
+	}
+	else
+	{   if(positionMenu == STATE.ARTIST){
+	    mdb.insertPlaylist(Music.SONG.ARTIST, text.getText().toString());
+	}
+	else if(positionMenu == STATE.ALBUM){
+	    mdb.insertPlaylist(Music.SONG.ALBUM, text.getText().toString());
+	}
+	else if(positionMenu == STATE.SONG){
+	    mdb.insertPlaylist(Music.SONG.TITLE, text.getText().toString());
+	}
+	else if(positionMenu == STATE.STYLE){
+	    mdb.insertPlaylist(Music.SONG.GENRE, text.getText().toString());
+	}
+	else if(positionMenu == STATE.SMART_PLAYLIST){
+	    Music.SmartPlaylist sp = null;
+	    String spSelected = text.getText().toString();
+	    if(spSelected.equals(getString(R.string.playlist_less_played))){
+		sp = Music.SmartPlaylist.LESS_PLAYED;
+	    }
+	    if(spSelected.equals(getString(R.string.playlist_most_played))){
+		sp = Music.SmartPlaylist.MOST_PLAYED;
+	    }
+	    if(spSelected.equals(getString(R.string.playlist_random))){
+		sp = Music.SmartPlaylist.RANDOM;
+	    }
+	    mdb.insertPlaylist(sp);
+	}
+	positionMenu = STATE.MAIN;
+	displayMainMenu();
+	//Log.v(TAG,text.toString());
+	}
     }
-    
-    
+
+
     /* TODO C'est moche les requetes faites directement par l'activity... */
-    
+
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
     private void mainMenu(CharSequence text){
-        try{  
-            Cursor c = null;
-            
-            //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
-            if(text == getText(R.string.add_artist)) {
-                c = mdb.rawQuery("SELECT artist_name _id " +
-                        "FROM artist ORDER BY artist_name;",null);
-                positionMenu = STATE.ARTIST;
-            }
-            else if(text == getText(R.string.add_album)) {
-                c = mdb.rawQuery("SELECT album_name _id " +
-                        "FROM album ORDER BY album_name;",null);
-                positionMenu = STATE.ALBUM;
-            }
-            else if(text == getText(R.string.add_song)) {
-                c = mdb.rawQuery("SELECT title _id " +
-                        "FROM song ORDER BY title;",null);
-                positionMenu = STATE.SONG;
-            }
-            else if(text == getText(R.string.add_style)) {
-                c = mdb.rawQuery("SELECT genre_name _id " +
-                        "FROM genre ORDER BY genre_name;",null);
-                positionMenu = STATE.STYLE;
-            }
-            else if(text == getText(R.string.add_smart_playlist)) {
-                String[] field = {getString(R.string.playlist_most_played),
-                        getString(R.string.playlist_most_played),
-                        getString(R.string.playlist_random)};
-                
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
-                setListAdapter(adapter);
-                
-                positionMenu = STATE.SMART_PLAYLIST;
-                return; /*quit mainMenu when the smart playlist row are added */
-                }
-                    
-            
-            startManagingCursor(c);
-            
-            try{
-                  ListAdapter adapter = new SimpleCursorAdapter(
-                      this, R.layout.add_row, c, new String[] {"_id"},  
-                      new int[] {R.id.text1});  
-                  setListAdapter(adapter);
-              }
-              catch(Exception ex)
-              {}
-        }
-        catch(Exception ex){Log.v(TAG, ex.toString());}
+	Cursor c = null;
+
+	//wich line has been selected:  add artist, albums, songs,... except Smart Playlist
+	if(text == getText(R.string.add_artist)) {
+	    c = mdb.rawQuery("SELECT artist_name _id " +
+		    "FROM artist ORDER BY artist_name;",null);
+	    positionMenu = STATE.ARTIST;
+	}
+	else if(text == getText(R.string.add_album)) {
+	    c = mdb.rawQuery("SELECT album_name _id " +
+		    "FROM album ORDER BY album_name;",null);
+	    positionMenu = STATE.ALBUM;
+	}
+	else if(text == getText(R.string.add_song)) {
+	    c = mdb.rawQuery("SELECT title _id " +
+		    "FROM song ORDER BY title;",null);
+	    positionMenu = STATE.SONG;
+	}
+	else if(text == getText(R.string.add_style)) {
+	    c = mdb.rawQuery("SELECT genre_name _id " +
+		    "FROM genre ORDER BY genre_name;",null);
+	    positionMenu = STATE.STYLE;
+	}
+	else if(text == getText(R.string.add_smart_playlist)) {
+	    String[] field = {getString(R.string.playlist_most_played),
+		    getString(R.string.playlist_most_played),
+		    getString(R.string.playlist_random)};
+
+	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
+	    setListAdapter(adapter);
+
+	    positionMenu = STATE.SMART_PLAYLIST;
+	    return; /*quit mainMenu when the smart playlist row are added */
+	}
+
+
+	startManagingCursor(c);
+	ListAdapter adapter = new SimpleCursorAdapter(
+		this, R.layout.add_row, c, new String[] {"_id"},  
+		new int[] {R.id.text1});  
+	setListAdapter(adapter);
     }
 
 }
