@@ -54,7 +54,7 @@ public class AddUI extends ListActivity
     protected void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
-        
+        setContentView(R.layout.add);
         try
         {
             mdb = new MusicDB(this);
@@ -91,10 +91,10 @@ public class AddUI extends ListActivity
             finish();
             break;
         }
-        
         return true;
     }
     
+    /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
     private void displayMainMenu()
     {
         String[] field = {getString(R.string.add_artist),
@@ -166,12 +166,12 @@ public class AddUI extends ListActivity
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
         if(text == getText(R.string.add_artist)) {
             c = mdb.rawQuery("SELECT artist_name _id " +
-                    "FROM artist ORDER BY artist_name;",null);
+                    "FROM artist, song WHERE "+ Music.SONG.ARTIST + " = " + Music.ARTIST.ID + " ORDER BY artist_name;",null);
             positionMenu = STATE.ARTIST;
         }
         else if(text == getText(R.string.add_album)) {
             c = mdb.rawQuery("SELECT album_name _id " +
-                    "FROM album ORDER BY album_name;",null);
+                    "FROM album, song WHERE " + Music.ALBUM.ID +" = "+Music.SONG.ALBUM +" ORDER BY album_name;",null);
             positionMenu = STATE.ALBUM;
         }
         else if(text == getText(R.string.add_song)) {
@@ -180,8 +180,8 @@ public class AddUI extends ListActivity
             positionMenu = STATE.SONG;
         }
         else if(text == getText(R.string.add_style)) {
-            c = mdb.rawQuery("SELECT genre_name _id " +
-                    "FROM genre ORDER BY genre_name;",null);
+            c = mdb.rawQuery("SELECT DISTINCT genre_name _id " +
+                    "FROM genre,song WHERE " + Music.GENRE.ID + " = "+ Music.SONG.GENRE +" ORDER BY genre_name;",null);
             positionMenu = STATE.STYLE;
         }
         else if(text == getText(R.string.add_smart_playlist)) {
@@ -196,7 +196,20 @@ public class AddUI extends ListActivity
             return; /*quit mainMenu when the smart playlist row are added */
             }
                     
+        /*if the cursor is empty, we adjust the text in function of the submenu*/
         startManagingCursor(c);
+        if( c.count() == 0){
+            TextView emptyText = (TextView) findViewById(android.R.id.empty);
+            if( positionMenu == STATE.ARTIST){
+                emptyText.setText(R.string.add_empty_artist);
+            }
+            if( positionMenu == STATE.ALBUM){
+                emptyText.setText(R.string.add_empty_album);
+            }
+            if( positionMenu == STATE.SONG || positionMenu == STATE.STYLE){
+                emptyText.setText(R.string.add_empty_album);
+            }
+        }
         ListAdapter adapter = new SimpleCursorAdapter(
         this, R.layout.add_row, c, new String[] {"_id"},  
         new int[] {R.id.text1});  
@@ -209,8 +222,13 @@ public class AddUI extends ListActivity
             Log.v(TAG,"KEY UP");
             refreshMenu( getListView().getSelectedView());
         }
-        /*useless now. But if the nemu becomes more complexe, it will be usefull*/
+
         if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+            /*quit AddUI*/
+            if( positionMenu == STATE.MAIN){
+                finish();
+            }
+            /*Go deeper in the menu*/
             if(positionMenu == STATE.ALBUM ||
                     positionMenu == STATE.ARTIST ||
                     positionMenu == STATE.SMART_PLAYLIST ||
@@ -220,7 +238,7 @@ public class AddUI extends ListActivity
                 positionMenu = STATE.MAIN;
             }
 
-        }
+        }        
         return super.onKeyUp(keyCode, event);
     }
     
