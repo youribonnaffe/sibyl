@@ -40,11 +40,13 @@ public class Sibylservice extends Service
     
     public enum CsState {
         STOPPED, PAUSED, PLAYING
-    }
+    } 
     
     private MediaPlayer mp;
     private MusicDB mdb;
     private CsState playerState;
+    private boolean repAll;
+    private boolean looping;
     private int currentSong;
     private IPlayerUI uiHandler;
     private NotificationManager nm;
@@ -58,6 +60,8 @@ public class Sibylservice extends Service
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        repAll = false;
+        looping = false;
         //create or connect to the Database
         try{
             mdb = new MusicDB(this);
@@ -100,6 +104,7 @@ public class Sibylservice extends Service
     @Override
     protected void onDestroy()
     {
+        MediaPlayer mp = this.mp;
         mp.stop();
         mp.release();
         nm.cancel(R.layout.notification);
@@ -130,17 +135,24 @@ public class Sibylservice extends Service
         }
         else
         {
-            stop();
-            try 
+            if(currentSong == 1 || !repAll)
+            {
+                stop();
+                currentSong = 1;
+                try 
+                {
+                    uiHandler.handleEndPlaylist();
+                } catch (DeadObjectException e) 
+                {
+                    e.printStackTrace();
+                }   
+            }
+            else
             {
                 currentSong = 1;
-                uiHandler.handleEndPlaylist();
-            } catch (DeadObjectException e) 
-            {
-                e.printStackTrace();
+                launch();
                 // ui will have some troubles, restart app ?
             }
-            
         }
     }
     
@@ -178,12 +190,13 @@ public class Sibylservice extends Service
     
     protected void playSong(String filename) 
     {
+        MediaPlayer mp = this.mp;
         //Log.v(TAG,">>> PlaySong("+filename+") called");
-        if( playerState != CsState.PAUSED ) {
-        //we're not in pause so we start playing a new song
+        if( playerState != CsState.PAUSED ) 
+        {
             try{
                 mp.reset();
-                mp.setDataSource(/*Music.MUSIC_DIR+"/"+*/filename);
+                mp.setDataSource(filename);
                 mp.prepare();
                 uiHandler.handleEndSong();
                 mp.start();
@@ -194,13 +207,8 @@ public class Sibylservice extends Service
         	Log.v(TAG, doe.toString());
             }
         }
-        else {
-        //we're in pause so we continue playing the paused song
-            mp.start();
-            /*Toast.makeText(Sibylservice.this, "reprise", 
-                    Toast.LENGTH_LONG).show();*/
-            playerState=CsState.PLAYING;
-        }
+        mp.start();
+        playerState=CsState.PLAYING;
     }
     
     protected void playNumberI(int i)
@@ -269,8 +277,12 @@ public class Sibylservice extends Service
             mp.seekTo(msec);
         }
         
-        public void setLooping(int looping) {
-            mp.setLooping(looping);
+        public void setLooping(boolean loop) 
+        {
+            Log.v(TAG,"set looping :"+loop);
+            repAll = false;
+            looping = loop;
+            mp.setLooping(loop ? 1 : 0);
         }
         
         public void next() {
@@ -285,6 +297,13 @@ public class Sibylservice extends Service
         {
             playNumberI(pos);
         }
+
+        public void setRepeatAll()
+        {
+            Log.v(TAG,"set repeatALL");
+            repAll = true;
+            looping = false;
+        }
          
     };
     
@@ -292,7 +311,10 @@ public class Sibylservice extends Service
     {
         public void onCompletion(MediaPlayer mp) 
         {
-            play_next();
+            if(!looping)
+            {
+                play_next();
+            }
         } 
     };
    

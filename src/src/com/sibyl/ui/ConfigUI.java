@@ -24,12 +24,23 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.sibyl.ISibylservice;
+import com.sibyl.MusicDB;
+import com.sibyl.R;
+import com.sibyl.Sibylservice;
+
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.os.DeadObjectException;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -43,14 +54,19 @@ import com.sibyl.R;
 
 public class ConfigUI extends Activity
 {
+    ISibylservice mService = null;
+    
     private EditText mText;
     private Button addMusic;
     private Button delMusic;
     private Button updateMusic;
+    private Button repeatMusic;
     private ArrayList<String> listFile;
     private static final int BACK_ID = Menu.FIRST;
-    
+    private int repeatMod = 0; 
     private static final String TAG = "CONFIG";
+    
+    private static final String PREF_NAME = "SibylPref";
     
     private MusicDB mdb;    //the database
     
@@ -60,13 +76,17 @@ public class ConfigUI extends Activity
     {
         super.onCreate(icicle);
         setContentView(R.layout.config);
+        launchService();
         mText = (EditText) findViewById(R.id.musicData);
         addMusic = (Button) findViewById(R.id.addMusic);
         delMusic = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
+        repeatMusic = (Button) findViewById(R.id.repMusic);
         addMusic.setOnClickListener(mAddMusic);
         delMusic.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
+        repeatMusic.setOnClickListener(mRepeatMusic);
+        repeatMusic.setFocusable(false);
         try
         {
             mdb = new MusicDB(this);
@@ -74,7 +94,7 @@ public class ConfigUI extends Activity
         catch(SQLiteDiskIOException ex)
         {
             Log.v(TAG, ex.toString());
-        }   
+        }
     }
     
     @Override
@@ -96,6 +116,13 @@ public class ConfigUI extends Activity
         mText.setText(str);
     }
     
+    @Override
+    protected void onStop()
+    {
+        super.onStart();
+
+    }
+    
     private void displayAddDir() 
     {
         Intent i = new Intent(this, AddDirUI.class);
@@ -113,15 +140,6 @@ public class ConfigUI extends Activity
         public void onClick(View v)
         {
             displayAddDir();
-            /*
-            Log.v(TAG,"VALIDATION REP");
-            StringTokenizer str = new StringTokenizer(mText.getText().toString(),";");
-            while (str.hasMoreTokens())
-            {
-                String token = str.nextToken();
-                Log.v(TAG,"répertoire : "+token);
-                listFile.add(token);
-            }*/
         }
     };
     
@@ -145,6 +163,88 @@ public class ConfigUI extends Activity
         }
     };
     
+    private OnClickListener mRepeatMusic = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            repeatMod = (repeatMod + 1) % 3;
+            try 
+            {
+                switch(repeatMod)
+                {
+                case 0 :
+                    repeatMusic.setText(R.string.rep_no);
+                    mService.setLooping(false);
+                    break;
+                case 1 :
+                    repeatMusic.setText(R.string.rep_one);
+                    mService.setLooping(true);
+                    break;
+                case 2 :
+                    repeatMusic.setText(R.string.rep_all);
+                    mService.setRepeatAll();
+                    break;
+                }
+            } catch (DeadObjectException e) { }
+        }
+    };
+    
+    public void launchService() 
+    {
+        bindService(new Intent(ConfigUI.this,
+            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
+    
+    private ServiceConnection mConnection = new ServiceConnection()
+    {
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  We are communicating with our
+            // service through an IDL interface, so get a client-side
+            // representation of that from the raw service object.
+            mService = ISibylservice.Stub.asInterface((IBinder)service);
+            repeatMusic.setFocusable(true);
+            SharedPreferences settings = getSharedPreferences(PREF_NAME,0);
+            int repeatMod = settings.getInt("repeatMod",0);
+            Log.v(TAG,"mode de repetition :"+repeatMod);
+            try 
+            {
+                switch (repeatMod) 
+                {
+                case 0:
+                    repeatMusic.setText(R.string.rep_no);
+                    mService.setLooping(false);    
+                    break;
+                case 1:
+                    repeatMusic.setText(R.string.rep_one);
+                    mService.setLooping(true);
+                    break;
+                case 2:
+                    repeatMusic.setText(R.string.rep_all);
+                    mService.setRepeatAll();
+                    break;
+                default :
+                    repeatMusic.setText(R.string.play);
+                    mService.setLooping(false);
+                    break;
+                }
+            } catch (DeadObjectException doe) 
+            {
+                Log.v(TAG,doe.toString());
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className)
+        {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mService = null;
+                        
+        }
+    };
+    
     //  Fill the table Song with mp3 found in path
     private void fillBD (String path)
     {
@@ -165,26 +265,27 @@ public class ConfigUI extends Activity
             // insert them in the database    
             for(String s : dir.list(filter))
             {
-        	try{
+                try{
                     // ?? long t = System.currentTimeMillis();
                     mdb.insert(path+s);
                     //Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-        	}catch(SQLiteException sqle){
+                }catch(SQLiteException sqle){
                     Log.v(TAG, sqle.toString());
                     // warn user
-        	}catch(FileNotFoundException fnfe){
+                }catch(FileNotFoundException fnfe){
                     Log.v(TAG, fnfe.toString());
                     // warn user
-        	}catch(IOException ioe){
+                }catch(IOException ioe){
                     Log.v(TAG, ioe.toString());
                     // warn user
-        	}        	
+                }               
             }
         }
         catch(NullPointerException ex)
         {
            // will never happen
         }
+
     }
     
     public boolean onCreateOptionsMenu(Menu menu) 
@@ -197,7 +298,14 @@ public class ConfigUI extends Activity
     @Override
     protected void onDestroy() 
     {
-        super.onDestroy();     
+        super.onDestroy();
+        
+        SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("repeatMod",repeatMod);
+
+        editor.commit();
+        unbindService(mConnection);
     }
     
     @Override
