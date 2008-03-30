@@ -133,9 +133,9 @@ public class MusicDB {
 	    "END;");
 
 	    // default values for undefined tags
-	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
-	    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
-	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+usedC.getString(R.string.tags_unknow)+"')");
+	    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+usedC.getString(R.string.tags_unknown)+"')");
+	    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+usedC.getString(R.string.tags_unknown)+"')");
+	    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+usedC.getString(R.string.tags_unknown)+"')");
 	    // read id3v1 genres from file
 	    try{
 		// kind of boring ...

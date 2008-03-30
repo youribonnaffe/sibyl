@@ -48,11 +48,15 @@
     <string name="playlistsep"> - </string>
     <string name="dial_deldir">Do you want to Delete this directory ?</string>
     
+    <!--  AddUI -->
     <string name="add_artist">Artiste</string>
     <string name="add_album">Album</string>
     <string name="add_song">Musique</string>
     <string name="add_style">Genre</string>
     <string name="add_smart_playlist">Smart Playlist</string>
+    <string name="add_empty_artist">No artist</string>
+    <string name="add_empty_album">No album</string>
+    <string name="add_empty_song">No song</string>
 
     <string name="rep_no">No repeat</string>
     <string name="rep_one">Repeat song</string>
@@ -64,7 +68,7 @@
     <string name="playlist_most_played">Most played songs</string>
     
     <!-- META DATA, TAGS -->
-    <string name="tags_unknow">Unknow</string>
+    <string name="tags_unknown">unknown</string>
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>
