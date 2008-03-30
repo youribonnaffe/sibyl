@@ -28,14 +28,30 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
+// notes
 //optimize string concat and static ?
 //optimize database -> if needed try triggers
 
+
+/**
+ * Connection to the database
+ * 
+ * When deleting a song from the database, you just need to delete it from the
+ * table song, triggers will do for other tables
+ * 
+ * When querying for data:
+ * - if returned value is a cursor, you'll have to check
+ * the cursor content
+ * - if returned value is a String, you'll have to check if it isn't null
+ *  
+ * @author sibyl
+ */
 public class MusicDB {
 
     private SQLiteDatabase mDb;
@@ -131,7 +147,7 @@ public class MusicDB {
 		    mDb.execSQL(line);
 		}
 	    }catch(FileNotFoundException fnfe){
-		// todo ?
+		// todo ? should we fill the database with unknow tags ?
 	    }catch(IOException ioe){
 		// todo ?
 	    }
@@ -151,6 +167,7 @@ public class MusicDB {
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_genre");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_artist");
 	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
+	    mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_current_playlist");
 	    onCreate(mDb);
 	}
 
@@ -165,9 +182,12 @@ public class MusicDB {
      * exist yet, it is created
      * @param c the application context
      */
-    public MusicDB( Context c ) { 
+    public MusicDB( Context c ) throws SQLiteDiskIOException { 
 	// exceptions ??
 	mDb = (new MusicDBHelper()).openDatabase(c, DB_NAME, null, DB_VERSION);
+	if( mDb == null ){
+	    throw new SQLiteDiskIOException("Error when creating database");
+	}
     }
 
     /**
@@ -265,14 +285,16 @@ public class MusicDB {
 
     /** 
      * delete a song from the database with the url given
+     * shouldn't throw SQLException since the query is right
      * @param url
      */
-    public void deleteSong(String url){
+    public void deleteSong(String url){ 
 	mDb.execSQL("DELETE FROM song WHERE url='"+url+"'");
     }
 
     /**
      * delete a song from the database with the url given
+     * shouldn't throw SQLException since the query is right
      * @param id
      */
     public void deleteSong(int id){
@@ -340,6 +362,7 @@ public class MusicDB {
     }
 
     /**
+     * DEPRECATED
      * execute SQL statement that is not a query (INSERT, DELETE ...)
      * 
      * @see android.database.sqlite.SQLiteDatabase#execSQL(String)
@@ -352,7 +375,7 @@ public class MusicDB {
 
     /**
      * insert several songs in the playlist
-     * 
+     * the song ids are not verified !
      * @param ids the songs ids
      */
     public void insertPlaylist( int[] ids ){
@@ -361,9 +384,6 @@ public class MusicDB {
 	}
     }
 
-    // add song where column = value
-    // use column name from Music.SONG 
-    // artist, album and genre implemented
     /**
      * add song where column = value
      * use column name from Music.SONG 
@@ -395,6 +415,10 @@ public class MusicDB {
 	}
     }
     
+    /**
+     * @param sp the smartplaylist you want to load in the current playlist
+     * @see com.sibyl.Music
+     */
     public void insertPlaylist(Music.SmartPlaylist sp){
 	mDb.execSQL(sp.getQuery());
     }
@@ -430,19 +454,19 @@ public class MusicDB {
 	    mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
 	}
     }
+    
     public Cursor getDir()
     {
 	return mDb.rawQuery("SELECT dir FROM directory",null);
     }
+    
     public void delDir(String dir)
     {
         mDb.execSQL("DELETE FROM directory WHERE dir='"+dir+"'");
     }
+    
     public void clearDB()
     {
 	mDb.execSQL("DELETE FROM song");
-	//mDb.execSQL("DELETE FROM artist");
-	//mDb.execSQL("DELETE FROM album");
-	//mDb.execSQL("DELETE FROM genre");
     }
 }

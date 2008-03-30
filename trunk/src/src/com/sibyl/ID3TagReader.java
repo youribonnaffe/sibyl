@@ -97,10 +97,6 @@ public class ID3TagReader {
 		    skipSure(f, 1);
 		    f.read(buff2, 0, size-1);
 		    pos+=size;
-
-		    //String str = new String(buff2).trim();
-		    // if (str.compareTo("")==0)
-		    //   str="Unknown";
 		    cv.put(cols[i], new String(buff2).trim().replace("'", "''"));
 		    break;
 		}
@@ -117,23 +113,13 @@ public class ID3TagReader {
 
     private void readID3v1Tags(BufferedReader f) throws IOException{
 	char[] buff = new char[30];
-	//String str;
 	f.read(buff, 0, 30);
-	//str = new String(buff).trim();
-	//if (str.compareTo("")==0)
-	//    str="Unknown";
 	cv.put(Music.SONG.TITLE, new String(buff).trim());
 
 	f.read(buff, 0, 30);
-	//str = new String(buff).trim();
-	//if (str.compareTo("")==0)
-	 //   str="Unknown";
 	cv.put(Music.ARTIST.NAME, new String(buff).trim());
 
 	f.read(buff, 0, 30);
-	//str = new String(buff).trim();
-	//if (str.compareTo("")==0)
-	  //  str="Unknown";
 	cv.put(Music.ALBUM.NAME, new String(buff).trim());
 
 	skipSure(f, 32);

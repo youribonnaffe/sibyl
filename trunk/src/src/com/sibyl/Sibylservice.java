@@ -18,17 +18,19 @@
 
 package com.sibyl;
 
+import java.io.IOException;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
-import android.os.DeadObjectException;
 
 import com.sibyl.ui.IPlayerUI;
 
@@ -57,13 +59,13 @@ public class Sibylservice extends Service
         mp.setOnCompletionListener(endSongListener);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         //create or connect to the Database
-    	try{
-    	    mdb = new MusicDB(this);
-    	    Log.v(TAG,"BD OK");
-    	}
-        catch(Exception ex){
-    	    Log.v(TAG, ex.toString()+" Create");
-    	}
+        try{
+            mdb = new MusicDB(this);
+        }catch (SQLiteDiskIOException e){
+            Log.v("SibylService", e.getMessage());
+            // what sould we do ? updateNotification ?
+        }
+        
         updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
     }
     
@@ -136,6 +138,7 @@ public class Sibylservice extends Service
             } catch (DeadObjectException e) 
             {
                 e.printStackTrace();
+                // ui will have some troubles, restart app ?
             }
             
         }
@@ -152,6 +155,7 @@ public class Sibylservice extends Service
         mp.start();
         playerState=CsState.PLAYING;
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
+        // should test songInfo != null if playlist is empty
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
     }
     
@@ -174,7 +178,7 @@ public class Sibylservice extends Service
     
     protected void playSong(String filename) 
     {
-        Log.v(TAG,">>> PlaySong("+filename+") called");
+        //Log.v(TAG,">>> PlaySong("+filename+") called");
         if( playerState != CsState.PAUSED ) {
         //we're not in pause so we start playing a new song
             try{
@@ -182,20 +186,13 @@ public class Sibylservice extends Service
                 mp.setDataSource(/*Music.MUSIC_DIR+"/"+*/filename);
                 mp.prepare();
                 uiHandler.handleEndSong();
+                mp.start();
             }
-            catch ( Exception e) {
-                //remplacant du NotificationManager/notifyWithText
-                Log.v(TAG, "playSong: exception: "+e.toString());
-                //Notifications removed else they throw an exception
-                //surely a problem of multithreading
-               /* Toast.makeText(Sibylservice.this, "Exception: "+e.toString(), 
-                    Toast.LENGTH_SHORT).show();*/
+            catch ( IOException ioe) {
+                Log.v(TAG, ioe.toString());
+            }catch (DeadObjectException doe){
+        	Log.v(TAG, doe.toString());
             }
-            mp.start();
-            
-            //remplacant du NotificationManager/notifyWithText
-            /*Toast.makeText(Sibylservice.this, "Playing song: "+filename, 
-                    Toast.LENGTH_LONG).show();*/
         }
         else {
         //we're in pause so we continue playing the paused song
@@ -204,7 +201,6 @@ public class Sibylservice extends Service
                     Toast.LENGTH_LONG).show();*/
             playerState=CsState.PLAYING;
         }
-
     }
     
     protected void playNumberI(int i)
@@ -215,7 +211,10 @@ public class Sibylservice extends Service
         try 
         {
             uiHandler.handleEndSong();
-        } catch(DeadObjectException e) {}
+        } catch(DeadObjectException e) {
+            Log.v(TAG, e.toString());
+            // what are the consequences ?
+        }
     }
 
     @Override
@@ -294,9 +293,6 @@ public class Sibylservice extends Service
         public void onCompletion(MediaPlayer mp) 
         {
             play_next();
-            /*try {
-                uiHandler.handleEndSong();
-            } catch(DeadObjectException e) {}*/
         } 
     };
    

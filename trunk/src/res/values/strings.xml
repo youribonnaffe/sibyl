@@ -54,9 +54,15 @@
     <string name="add_style">Genre</string>
     <string name="add_smart_playlist">Smart Playlist</string>
 
+    <!-- PLAYLIST -->
     <string name="playlist_random">Random songs</string>
     <string name="playlist_less_played">Less played songs</string>
     <string name="playlist_most_played">Most played songs</string>
     
+    <!-- META DATA, TAGS -->
     <string name="tags_unknow">Unknow</string>
+    
+    <!-- ERRORS : Some errors messages and titles -->
+    <string name="error_core_service_title">Audio player error</string>
+    <string name="error_core_service">The audio player isn't working properly, please try to relaunch the application.</string>
 </resources>
