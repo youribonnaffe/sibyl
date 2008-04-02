@@ -46,9 +46,8 @@ public class AddUI extends ListActivity
     private MusicDB mdb;    //the database
     
     private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
-
-    
     private STATE positionMenu = STATE.MAIN; //position in the menu
+    private int positionRow = 0; //row position in main menu
 
     @Override
     protected void onCreate(Bundle icicle) 
@@ -104,7 +103,8 @@ public class AddUI extends ListActivity
                 getString(R.string.add_smart_playlist)};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
-        setListAdapter(adapter);      
+        setListAdapter(adapter);
+        getListView().setSelection(positionRow);
     }
     
     /*When a row is selected, the UI is update by this method*/
@@ -120,10 +120,12 @@ public class AddUI extends ListActivity
         TextView text = (TextView) row.findViewById(R.id.text1);
         
         if( positionMenu == STATE.MAIN){
-                mainMenu(text.getText());
+            positionRow = getListView().getSelectedItemPosition();
+            mainMenu(text.getText());
         }
         else
-        {   if(positionMenu == STATE.ARTIST){
+        {   
+            if(positionMenu == STATE.ARTIST){
                 mdb.insertPlaylist(Music.SONG.ARTIST, text.getText().toString());
             }
             else if(positionMenu == STATE.ALBUM){
@@ -165,23 +167,33 @@ public class AddUI extends ListActivity
             
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
         if(text == getText(R.string.add_artist)) {
-            c = mdb.rawQuery("SELECT artist_name _id " +
-                    "FROM artist, song WHERE "+ Music.SONG.ARTIST + " = " + Music.ARTIST.ID + " ORDER BY artist_name;",null);
+            c = mdb.rawQuery("SELECT " + Music.ARTIST.NAME + "  || ' ( ' || COUNT(*) || ' )' _id " +
+                    " FROM artist, song " +
+                    " WHERE "+ Music.SONG.ARTIST + " = " + Music.ARTIST.ID + 
+                    " GROUP BY "  + Music.ARTIST.NAME +
+                    " ORDER BY " + Music.ARTIST.NAME + " ;",null);
             positionMenu = STATE.ARTIST;
         }
         else if(text == getText(R.string.add_album)) {
-            c = mdb.rawQuery("SELECT album_name _id " +
-                    "FROM album, song WHERE " + Music.ALBUM.ID +" = "+Music.SONG.ALBUM +" ORDER BY album_name;",null);
+            c = mdb.rawQuery("SELECT " + Music.ALBUM.NAME + " || ' ( ' || COUNT(*) || ' )'_id " +
+                    "FROM album, song "+
+                    " WHERE " + Music.ALBUM.ID +" = "+Music.SONG.ALBUM +
+                    " GROUP BY "+ Music.ALBUM.NAME +
+                    " ORDER BY "+ Music.ALBUM.NAME + ";",null);
             positionMenu = STATE.ALBUM;
         }
         else if(text == getText(R.string.add_song)) {
-            c = mdb.rawQuery("SELECT title _id " +
-                    "FROM song ORDER BY title;",null);
+            c = mdb.rawQuery("SELECT "+ Music.SONG.TITLE + " _id " +
+                    "FROM song "+
+                    " ORDER BY "+ Music.SONG.TITLE +";",null);
             positionMenu = STATE.SONG;
         }
         else if(text == getText(R.string.add_style)) {
-            c = mdb.rawQuery("SELECT DISTINCT genre_name _id " +
-                    "FROM genre,song WHERE " + Music.GENRE.ID + " = "+ Music.SONG.GENRE +" ORDER BY genre_name;",null);
+            c = mdb.rawQuery("SELECT DISTINCT " + Music.GENRE.NAME + " || ' ( ' || COUNT(*) || ' )' _id " +
+                    "FROM genre,song "+
+                    " WHERE " + Music.GENRE.ID + " = "+ Music.SONG.GENRE +
+                    " GROUP BY " + Music.GENRE.NAME +
+                    " ORDER BY " + Music.GENRE.NAME + ";",null);
             positionMenu = STATE.STYLE;
         }
         else if(text == getText(R.string.add_smart_playlist)) {
