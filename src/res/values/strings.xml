@@ -68,7 +68,7 @@
     <string name="playlist_most_played">Most played songs</string>
     
     <!-- META DATA, TAGS -->
-    <string name="tags_unknown">unknown</string>
+    <string name="tags_unknown">Unknown</string>
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>
