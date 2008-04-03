@@ -57,11 +57,10 @@ public class AddUI extends ListActivity
         try
         {
             mdb = new MusicDB(this);
-            Log.v(TAG,"BD OK");
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString()+" Create");
+            Log.v(TAG, ex.toString());
         }   
        displayMainMenu(); 
     }
@@ -167,33 +166,19 @@ public class AddUI extends ListActivity
             
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
         if(text == getText(R.string.add_artist)) {
-            c = mdb.rawQuery("SELECT " + Music.ARTIST.NAME + "  || ' ( ' || COUNT(*) || ' )' _id " +
-                    " FROM artist, song " +
-                    " WHERE "+ Music.SONG.ARTIST + " = " + Music.ARTIST.ID + 
-                    " GROUP BY "  + Music.ARTIST.NAME +
-                    " ORDER BY " + Music.ARTIST.NAME + " ;",null);
+            c = mdb.getTableList(Music.Table.ARTIST);
             positionMenu = STATE.ARTIST;
         }
         else if(text == getText(R.string.add_album)) {
-            c = mdb.rawQuery("SELECT " + Music.ALBUM.NAME + " || ' ( ' || COUNT(*) || ' )'_id " +
-                    "FROM album, song "+
-                    " WHERE " + Music.ALBUM.ID +" = "+Music.SONG.ALBUM +
-                    " GROUP BY "+ Music.ALBUM.NAME +
-                    " ORDER BY "+ Music.ALBUM.NAME + ";",null);
+            c = mdb.getTableList(Music.Table.ALBUM);
             positionMenu = STATE.ALBUM;
         }
         else if(text == getText(R.string.add_song)) {
-            c = mdb.rawQuery("SELECT "+ Music.SONG.TITLE + " _id " +
-                    "FROM song "+
-                    " ORDER BY "+ Music.SONG.TITLE +";",null);
+            c = mdb.getTableList(Music.Table.SONG);
             positionMenu = STATE.SONG;
         }
         else if(text == getText(R.string.add_style)) {
-            c = mdb.rawQuery("SELECT DISTINCT " + Music.GENRE.NAME + " || ' ( ' || COUNT(*) || ' )' _id " +
-                    "FROM genre,song "+
-                    " WHERE " + Music.GENRE.ID + " = "+ Music.SONG.GENRE +
-                    " GROUP BY " + Music.GENRE.NAME +
-                    " ORDER BY " + Music.GENRE.NAME + ";",null);
+            c = mdb.getTableList(Music.Table.GENRE);
             positionMenu = STATE.STYLE;
         }
         else if(text == getText(R.string.add_smart_playlist)) {
