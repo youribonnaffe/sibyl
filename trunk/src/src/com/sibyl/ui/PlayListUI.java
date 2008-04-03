@@ -129,7 +129,7 @@ public class PlayListUI extends ListActivity
 	/* TODO l'ui doit pas connaitre les champs de la base, donc a changer*/
 	ListAdapter adapter = new SimpleCursorAdapter(
 		this, R.layout.playlist_row, c, new String[] {Music.SONG.ID,Music.ARTIST.NAME},  
-		new int[] {R.id.text1, R.id.text2});  
+		new int[] {R.id.text1, R.id.text2});
 	setListAdapter(adapter);
     }
 

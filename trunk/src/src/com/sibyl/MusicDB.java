@@ -492,23 +492,23 @@ public class MusicDB {
     public Cursor getTableList(Music.Table table){
         switch(table){
         case SONG :
-            return mDb.rawQuery("SELECT title _id " +
+            return mDb.rawQuery("SELECT title _id, ' ' num " +
                     "FROM song "+
                     "ORDER BY title",null);
         case ALBUM :
-            return mDb.rawQuery("SELECT album_name || ' ( ' || COUNT(*) || ' )'_id " +
+            return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num " +
                     "FROM album, song "+
                     "WHERE id = album "+
                     "GROUP BY album_name "+
                     "ORDER BY album_name",null);
         case ARTIST :
-            return mDb.rawQuery("SELECT artist_name || ' ( ' || COUNT(*) || ' )' _id " +
+            return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num " +
                     "FROM artist, song " +
                     "WHERE id = artist "+
                     "GROUP BY artist_name " +
                     "ORDER BY artist_name",null);
         case GENRE :
-            return mDb.rawQuery("SELECT DISTINCT genre_name || ' ( ' || COUNT(*) || ' )' _id " +
+            return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num " +
                     "FROM genre,song "+
                     "WHERE id = genre "+
                     "GROUP BY genre_name "+

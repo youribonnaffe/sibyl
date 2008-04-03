@@ -101,7 +101,7 @@ public class AddUI extends ListActivity
                 getString(R.string.add_style),
                 getString(R.string.add_smart_playlist)};
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield, field);
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
     }
@@ -115,9 +115,9 @@ public class AddUI extends ListActivity
     
     /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
     private void refreshMenu(View vu){
-        LinearLayout row = (LinearLayout) vu;
-        TextView text = (TextView) row.findViewById(R.id.text1);
         
+        LinearLayout row = (LinearLayout) vu;
+        TextView text = (TextView) row.findViewById(R.id.textfield);
         if( positionMenu == STATE.MAIN){
             positionRow = getListView().getSelectedItemPosition();
             mainMenu(text.getText());
@@ -156,9 +156,7 @@ public class AddUI extends ListActivity
         }
         
     }
-    
-    
-    /* TODO C'est moche les requetes faites directement par l'activity... */
+     
     
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
     private void mainMenu(CharSequence text){
@@ -185,13 +183,12 @@ public class AddUI extends ListActivity
             String[] field = {getString(R.string.playlist_most_played),
                     getString(R.string.playlist_most_played),
                     getString(R.string.playlist_random)};
-            
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.text1, field);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield, field);
             setListAdapter(adapter);
             
             positionMenu = STATE.SMART_PLAYLIST;
             return; /*quit mainMenu when the smart playlist row are added */
-            }
+        }
                     
         /*if the cursor is empty, we adjust the text in function of the submenu*/
         startManagingCursor(c);
@@ -207,9 +204,14 @@ public class AddUI extends ListActivity
                 emptyText.setText(R.string.add_empty_album);
             }
         }
+        Log.v(TAG,"cursoradapter");
         ListAdapter adapter = new SimpleCursorAdapter(
-        this, R.layout.add_row, c, new String[] {"_id"},  
-        new int[] {R.id.text1});  
+                        this, 
+                        R.layout.add_row, 
+                        c, 
+                        new String[] {"_id","num"},  
+                        new int[] {R.id.textfield, R.id.textnum});
+        Log.v(TAG,"set");
         setListAdapter(adapter);
     }
 
