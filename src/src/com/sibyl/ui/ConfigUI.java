@@ -49,9 +49,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.sibyl.MusicDB;
-import com.sibyl.R;
-
 public class ConfigUI extends Activity
 {
     ISibylservice mService = null;
