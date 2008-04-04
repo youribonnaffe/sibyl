@@ -57,19 +57,19 @@ public class AddDirUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
     	super.onCreate(icicle);
-    	setContentView(R.layout.add);
-    	path = "/data/music";
-        ipla = fillBD(path);
-    	setListAdapter(ipla);
+        setContentView(R.layout.add_dir);
+        path = "/data/music";
+        setTitle(getText(R.string.dir)+path);
     	try
     	{
+            ipla = fillBD(path);
+            setListAdapter(ipla);
     	    mdb = new MusicDB(this);
     	}
     	catch(SQLiteDiskIOException ex)
     	{
     	    Log.v(TAG, ex.toString());
     	}   
-        setTitle("Répertoire : "+path);
     }
 
     @Override

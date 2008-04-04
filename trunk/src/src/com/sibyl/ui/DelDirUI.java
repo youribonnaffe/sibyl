@@ -46,34 +46,34 @@ public class DelDirUI extends ListActivity
 
     private MusicDB mdb;    //the database
     
-    private ArrayList<String> mStrings;
+    private ArrayList<String> mStrings = new ArrayList<String>();
     
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
-        setContentView(R.layout.add);
+        setContentView(R.layout.del_dir);
         try
         {
             mdb = new MusicDB(this);
-            mStrings = fillBD();
-            setListAdapter(new ArrayAdapter<String>(this,R.layout.add_row,R.id.text1, mStrings));
+            fillBD();
+            setListAdapter(new ArrayAdapter<String>(this,R.layout.del_dir_row,R.id.text1, mStrings));
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            Log.v(TAG, ex.toString() + "MERDE !");
         }   
     }
     
-    private ArrayList<String> fillBD ()
+    private void fillBD ()
     {
-        ArrayList<String> listDir = new ArrayList<String>();
+        ArrayList<String> listDir = mStrings;
         Cursor c = mdb.getDir();
         while (c.next())
         {
-            //Log.v(TAG,"ADD !"+c.getString(0));
+            Log.v(TAG,"ADD !"+c.getString(0));
             listDir.add(c.getString(0));
         }
-        return listDir;
+        //return listDir;
     }
     
     @Override
