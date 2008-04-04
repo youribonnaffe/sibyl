@@ -58,9 +58,12 @@
     <string name="add_empty_album">No album</string>
     <string name="add_empty_song">No song</string>
 
-    <string name="rep_no">No repeat</string>
+    <!-- CONFIG -->
+	<string name="rep_no">No repeat</string>
     <string name="rep_one">Repeat song</string>
     <string name="rep_all">Repeat playlist</string>
+    <string name="dir">Directory: </string>
+        
 
     <!-- PLAYLIST -->
     <string name="playlist_random">Random songs</string>
