@@ -392,26 +392,23 @@ public class MusicDB {
      * @param column the selected column
      * @param value  the value for the selected column
      */
-    public void insertPlaylist(String column, String value){
+    public void insertPlaylist(String column, String valId){
         if(column == Music.SONG.ARTIST){
             mDb.execSQL("INSERT INTO current_playlist(id) " +
-                    "SELECT song._id FROM song, artist " +
-                    "WHERE artist.artist_name = \""+value+"\"" +
-            "AND song.artist = artist.id");
+                    "SELECT song._id FROM song " +
+                    "WHERE song.artist = " + valId);
         }else if(column == Music.SONG.ALBUM){
             mDb.execSQL("INSERT INTO current_playlist(id) " +
-                    "SELECT song._id FROM song, album " +
-                    "WHERE album.album_name = \""+value+"\"" +
-            "AND song.album = album.id");
+                    "SELECT song._id FROM song " +
+                    "WHERE song.album = "+valId);
         }else if(column == Music.SONG.GENRE){
             mDb.execSQL("INSERT INTO current_playlist(id) " +
-                    "SELECT song._id FROM song, genre " +
-                    "WHERE genre.genre_name =\""+value+"\"" +
-            "AND song.genre = genre.id");
+                    "SELECT song._id FROM song " +
+                    "WHERE song.genre = "+valId);
         }else if(column == Music.SONG.TITLE){
             mDb.execSQL("INSERT INTO current_playlist(id) " +
                     "SELECT song._id FROM song " +
-                    "WHERE song.title=\""+value+"\"");
+                    "WHERE song._id= "+valId);
         }
     }
 
@@ -492,23 +489,23 @@ public class MusicDB {
     public Cursor getTableList(Music.Table table){
         switch(table){
         case SONG :
-            return mDb.rawQuery("SELECT title _id, ' ' num " +
+            return mDb.rawQuery("SELECT title _id, ' ' num , song._id id "+
                     "FROM song "+
                     "ORDER BY title",null);
         case ALBUM :
-            return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num " +
+            return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album.id id " +
                     "FROM album, song "+
                     "WHERE id = album "+
                     "GROUP BY album_name "+
                     "ORDER BY album_name",null);
         case ARTIST :
-            return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num " +
+            return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist.id id " +
                     "FROM artist, song " +
                     "WHERE id = artist "+
                     "GROUP BY artist_name " +
                     "ORDER BY artist_name",null);
         case GENRE :
-            return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num " +
+            return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre.id id " +
                     "FROM genre,song "+
                     "WHERE id = genre "+
                     "GROUP BY genre_name "+
