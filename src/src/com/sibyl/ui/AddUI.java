@@ -18,6 +18,9 @@
 
 package com.sibyl.ui;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
@@ -41,9 +44,13 @@ import com.sibyl.R;
 public class AddUI extends ListActivity 
 {
     private static final int BACK_ID = Menu.FIRST;
-    
+    private static final int ID = 2; /*position of the column in the cursor*/
     private static final String TAG = "AddUI";
     private MusicDB mdb;    //the database
+    
+    private Cursor mCursor = null;
+    private ArrayList<Integer> field; /*string id List for main menu */
+    private ArrayList<Integer> fieldSMP; /*string id list for Smart Play List menu*/
     
     private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
     private STATE positionMenu = STATE.MAIN; //position in the menu
@@ -53,6 +60,21 @@ public class AddUI extends ListActivity
     protected void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        Log.v(TAG,"AddUI start");
+        
+        field = new ArrayList<Integer>();
+        field.add(R.string.add_artist);
+        field.add(R.string.add_album);
+        field.add(R.string.add_song);
+        field.add(R.string.add_style);
+        field.add(R.string.add_smart_playlist);
+        
+        fieldSMP = new ArrayList<Integer>();
+        fieldSMP.add(R.string.playlist_most_played);
+        fieldSMP.add(R.string.playlist_most_played);
+        fieldSMP.add(R.string.playlist_random);
+
+
         setContentView(R.layout.add);
         try
         {
@@ -62,7 +84,7 @@ public class AddUI extends ListActivity
         {
             Log.v(TAG, ex.toString());
         }   
-       displayMainMenu(); 
+       displayMainMenu();
     }
     
     @Override
@@ -91,17 +113,14 @@ public class AddUI extends ListActivity
         }
         return true;
     }
-    
+
     /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
     private void displayMainMenu()
     {
-        String[] field = {getString(R.string.add_artist),
-                getString(R.string.add_album),
-                getString(R.string.add_song),
-                getString(R.string.add_style),
-                getString(R.string.add_smart_playlist)};
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield, field);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
+        for( int i = 0; i < field.size(); i++){ //add all strings to the adapter
+            adapter.addObject(getString(field.get(i)));
+        }
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
     }
@@ -109,90 +128,91 @@ public class AddUI extends ListActivity
     /*When a row is selected, the UI is update by this method*/
     protected void onListItemClick(ListView l, View vu, int position, long id) 
     {
-        refreshMenu(vu);
+        refreshMenu(position);
     }
     
     
     /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
-    private void refreshMenu(View vu){
+    private void refreshMenu(int pos){
         
-        LinearLayout row = (LinearLayout) vu;
-        TextView text = (TextView) row.findViewById(R.id.textfield);
+        /*LinearLayout row = (LinearLayout) vu;
+        TextView text = (TextView) row.findViewById(R.id.textfield);*/
         if( positionMenu == STATE.MAIN){
             positionRow = getListView().getSelectedItemPosition();
-            mainMenu(text.getText());
+            mainMenu();/*text.getText());*/
         }
         else
         {   
-            if(positionMenu == STATE.ARTIST){
-                mdb.insertPlaylist(Music.SONG.ARTIST, text.getText().toString());
-            }
-            else if(positionMenu == STATE.ALBUM){
-                mdb.insertPlaylist(Music.SONG.ALBUM, text.getText().toString());
-            }
-            else if(positionMenu == STATE.SONG){
-                mdb.insertPlaylist(Music.SONG.TITLE, text.getText().toString());
-            }
-            else if(positionMenu == STATE.STYLE){
-                mdb.insertPlaylist(Music.SONG.GENRE, text.getText().toString());
-            }
-            else if(positionMenu == STATE.SMART_PLAYLIST){
+            if(positionMenu == STATE.SMART_PLAYLIST){
                 Music.SmartPlaylist sp = null;
-                String spSelected = text.getText().toString();
-                if(spSelected.equals(getString(R.string.playlist_less_played))){
+                if( fieldSMP.get(pos) ==  R.string.playlist_less_played){
                     sp = Music.SmartPlaylist.LESS_PLAYED;
                 }
-                if(spSelected.equals(getString(R.string.playlist_most_played))){
+                if( fieldSMP.get(pos) ==  R.string.playlist_most_played){
                     sp = Music.SmartPlaylist.MOST_PLAYED;
                 }
-                if(spSelected.equals(getString(R.string.playlist_random))){
+                if( fieldSMP.get(pos) ==  R.string.playlist_random){
                     sp = Music.SmartPlaylist.RANDOM;
                 }
                 mdb.insertPlaylist(sp);
             }
+            else{
+                mCursor.moveTo(pos);
+                Log.v(TAG,mCursor.getString(2));
+                if(positionMenu == STATE.ARTIST){
+                    mdb.insertPlaylist(Music.SONG.ARTIST, mCursor.getString(ID));
+                }
+                else if(positionMenu == STATE.ALBUM){
+                    mdb.insertPlaylist(Music.SONG.ALBUM, mCursor.getString(ID));
+                }
+                else if(positionMenu == STATE.SONG){
+                    mdb.insertPlaylist(Music.SONG.TITLE, mCursor.getString(ID));
+                }
+                else if(positionMenu == STATE.STYLE){
+                    mdb.insertPlaylist(Music.SONG.GENRE, mCursor.getString(ID));
+                }
+            }
             positionMenu = STATE.MAIN;
             displayMainMenu();
-            Log.v(TAG,text.toString());
         }
         
     }
      
     
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
-    private void mainMenu(CharSequence text){
-        Cursor c = null;
-            
+    private void mainMenu(){ /*CharSequence text){*/
+           
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
-        if(text == getText(R.string.add_artist)) {
-            c = mdb.getTableList(Music.Table.ARTIST);
+        if(field.get(positionRow) == R.string.add_artist) {
+            mCursor = mdb.getTableList(Music.Table.ARTIST);
             positionMenu = STATE.ARTIST;
         }
-        else if(text == getText(R.string.add_album)) {
-            c = mdb.getTableList(Music.Table.ALBUM);
+        else if(field.get(positionRow) == R.string.add_album) {
+            mCursor = mdb.getTableList(Music.Table.ALBUM);
             positionMenu = STATE.ALBUM;
         }
-        else if(text == getText(R.string.add_song)) {
-            c = mdb.getTableList(Music.Table.SONG);
+        else if(field.get(positionRow) == R.string.add_song) {
+            mCursor = mdb.getTableList(Music.Table.SONG);
             positionMenu = STATE.SONG;
         }
-        else if(text == getText(R.string.add_style)) {
-            c = mdb.getTableList(Music.Table.GENRE);
+        else if(field.get(positionRow) == R.string.add_style) {
+            mCursor = mdb.getTableList(Music.Table.GENRE);
             positionMenu = STATE.STYLE;
         }
-        else if(text == getText(R.string.add_smart_playlist)) {
-            String[] field = {getString(R.string.playlist_most_played),
-                    getString(R.string.playlist_most_played),
-                    getString(R.string.playlist_random)};
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield, field);
-            setListAdapter(adapter);
+        else if(field.get(positionRow)  == R.string.add_smart_playlist) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
+            for( int i = 0; i < fieldSMP.size(); i++){
+                adapter.addObject(getString(fieldSMP.get(i)));
+            }
             
+            setListAdapter(adapter);
             positionMenu = STATE.SMART_PLAYLIST;
             return; /*quit mainMenu when the smart playlist row are added */
         }
                     
         /*if the cursor is empty, we adjust the text in function of the submenu*/
-        startManagingCursor(c);
-        if( c.count() == 0){
+        startManagingCursor(mCursor);
+        if( mCursor.count() == 0){
             TextView emptyText = (TextView) findViewById(android.R.id.empty);
             if( positionMenu == STATE.ARTIST){
                 emptyText.setText(R.string.add_empty_artist);
@@ -204,22 +224,22 @@ public class AddUI extends ListActivity
                 emptyText.setText(R.string.add_empty_album);
             }
         }
-        Log.v(TAG,"cursoradapter");
         ListAdapter adapter = new SimpleCursorAdapter(
                         this, 
                         R.layout.add_row, 
-                        c, 
+                        mCursor, 
                         new String[] {"_id","num"},  
                         new int[] {R.id.textfield, R.id.textnum});
-        Log.v(TAG,"set");
         setListAdapter(adapter);
     }
 
     /*allow to use arrow in the menu*/
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        /*go deeper into menu*/
         if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT){
-            Log.v(TAG,"KEY UP");
-            refreshMenu( getListView().getSelectedView());
+            if(getListView().getSelectedItemPosition() != -1){
+                refreshMenu( getListView().getSelectedItemPosition());
+            }
         }
 
         if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
@@ -227,7 +247,7 @@ public class AddUI extends ListActivity
             if( positionMenu == STATE.MAIN){
                 finish();
             }
-            /*Go deeper in the menu*/
+            /*Go upper in the menu*/
             if(positionMenu == STATE.ALBUM ||
                     positionMenu == STATE.ARTIST ||
                     positionMenu == STATE.SMART_PLAYLIST ||
@@ -236,8 +256,8 @@ public class AddUI extends ListActivity
                 displayMainMenu();
                 positionMenu = STATE.MAIN;
             }
-
-        }        
+        }
+        
         return super.onKeyUp(keyCode, event);
     }
     
