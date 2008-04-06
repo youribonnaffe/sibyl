@@ -1,20 +1,21 @@
 #summary Features.
 
-  * Features (Done)
-      * Supported formats: mp3(with tags)
-      * dynamic playlists: most/less played; by artists, albums, types
-      * Navigation through the music library (order by artists / albums)
-  * Features (Started)
+* Features (Done)
 
-  * Features (To Do)
+  * Supported formats: mp3(with tags)
+  * dynamic playlists: most/less played; by artists, albums, types
+  * Navigation through the music library (order by artists / albums)
 
-    * Playlist management: 
-      * import/export m3u files
+* Features (Started)
 
-    * Play modes: 
-      * Normal
-      * Random
-      * Loop track/playlist
-    * Coverflow: display the cover associated with the album
+  * Play modes: 
+    * Normal
+    * Random
+    * Loop track/playlist
 
-    * i18n
+* Features (To Do)
+
+  * Playlist management: 
+    * import/export m3u files  
+  * Coverflow: display the cover associated with the album
+  * i18n
