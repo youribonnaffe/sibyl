@@ -18,9 +18,6 @@
 
 package com.sibyl.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
@@ -31,7 +28,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -49,8 +45,14 @@ public class AddUI extends ListActivity
     private MusicDB mdb;    //the database
     
     private Cursor mCursor = null;
-    private ArrayList<Integer> field; /*string id List for main menu */
-    private ArrayList<Integer> fieldSMP; /*string id list for Smart Play List menu*/
+    private int[] field ={R.string.add_artist, R.string.add_album, R.string.add_song, 
+                            R.string.add_style, R.string.add_smart_playlist}; /* id List for main menu */
+    private static int nbField = 5; /*number of row in field*/
+    
+    private int[]  fieldSMP = { R.string.playlist_most_played, 
+                                R.string.playlist_most_played,
+                                R.string.playlist_random}; /*string id list for Smart Play List menu*/
+    private static int nbFieldSMP = 3;/*number of smart playlist*/
     
     private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
     private STATE positionMenu = STATE.MAIN; //position in the menu
@@ -61,20 +63,6 @@ public class AddUI extends ListActivity
     {
         super.onCreate(icicle);
         Log.v(TAG,"AddUI start");
-        
-        field = new ArrayList<Integer>();
-        field.add(R.string.add_artist);
-        field.add(R.string.add_album);
-        field.add(R.string.add_song);
-        field.add(R.string.add_style);
-        field.add(R.string.add_smart_playlist);
-        
-        fieldSMP = new ArrayList<Integer>();
-        fieldSMP.add(R.string.playlist_most_played);
-        fieldSMP.add(R.string.playlist_most_played);
-        fieldSMP.add(R.string.playlist_random);
-
-
         setContentView(R.layout.add);
         try
         {
@@ -118,8 +106,8 @@ public class AddUI extends ListActivity
     private void displayMainMenu()
     {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
-        for( int i = 0; i < field.size(); i++){ //add all strings to the adapter
-            adapter.addObject(getString(field.get(i)));
+        for( int i = 0; i < nbField; i++){ //add all strings to the adapter
+            adapter.addObject(getString(field[i]));
         }
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
@@ -138,21 +126,23 @@ public class AddUI extends ListActivity
         /*LinearLayout row = (LinearLayout) vu;
         TextView text = (TextView) row.findViewById(R.id.textfield);*/
         if( positionMenu == STATE.MAIN){
-            positionRow = getListView().getSelectedItemPosition();
+            positionRow = pos;
             mainMenu();/*text.getText());*/
         }
         else
         {   
             if(positionMenu == STATE.SMART_PLAYLIST){
                 Music.SmartPlaylist sp = null;
-                if( fieldSMP.get(pos) ==  R.string.playlist_less_played){
-                    sp = Music.SmartPlaylist.LESS_PLAYED;
-                }
-                if( fieldSMP.get(pos) ==  R.string.playlist_most_played){
-                    sp = Music.SmartPlaylist.MOST_PLAYED;
-                }
-                if( fieldSMP.get(pos) ==  R.string.playlist_random){
-                    sp = Music.SmartPlaylist.RANDOM;
+                switch(fieldSMP[pos]) {
+                    case R.string.playlist_less_played:
+                        sp = Music.SmartPlaylist.LESS_PLAYED;
+                        break;
+                    case R.string.playlist_most_played:
+                        sp = Music.SmartPlaylist.MOST_PLAYED;
+                        break;
+                    case R.string.playlist_random:
+                        sp = Music.SmartPlaylist.RANDOM;
+                        break;
                 }
                 mdb.insertPlaylist(sp);
             }
@@ -183,31 +173,36 @@ public class AddUI extends ListActivity
     private void mainMenu(){ /*CharSequence text){*/
            
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
-        if(field.get(positionRow) == R.string.add_artist) {
-            mCursor = mdb.getTableList(Music.Table.ARTIST);
-            positionMenu = STATE.ARTIST;
-        }
-        else if(field.get(positionRow) == R.string.add_album) {
-            mCursor = mdb.getTableList(Music.Table.ALBUM);
-            positionMenu = STATE.ALBUM;
-        }
-        else if(field.get(positionRow) == R.string.add_song) {
-            mCursor = mdb.getTableList(Music.Table.SONG);
-            positionMenu = STATE.SONG;
-        }
-        else if(field.get(positionRow) == R.string.add_style) {
-            mCursor = mdb.getTableList(Music.Table.GENRE);
-            positionMenu = STATE.STYLE;
-        }
-        else if(field.get(positionRow)  == R.string.add_smart_playlist) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
-            for( int i = 0; i < fieldSMP.size(); i++){
-                adapter.addObject(getString(fieldSMP.get(i)));
-            }
+        switch( field[positionRow]){
+            case R.string.add_artist: 
+                mCursor = mdb.getTableList(Music.Table.ARTIST);
+                positionMenu = STATE.ARTIST;
+                break;
             
-            setListAdapter(adapter);
-            positionMenu = STATE.SMART_PLAYLIST;
-            return; /*quit mainMenu when the smart playlist row are added */
+            case R.string.add_album:    
+                mCursor = mdb.getTableList(Music.Table.ALBUM);
+                positionMenu = STATE.ALBUM;
+                break;
+                
+            case R.string.add_song:
+                mCursor = mdb.getTableList(Music.Table.SONG);
+                positionMenu = STATE.SONG;
+                break;
+                
+            case R.string.add_style:
+                mCursor = mdb.getTableList(Music.Table.GENRE);
+                positionMenu = STATE.STYLE;
+                break;
+                
+            case R.string.add_smart_playlist:
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
+                for( int i = 0; i < nbFieldSMP; i++){
+                    adapter.addObject(getString(fieldSMP[i]));
+                }
+                
+                setListAdapter(adapter);
+                positionMenu = STATE.SMART_PLAYLIST;
+                return; /*quit mainMenu when the smart playlist row are added */
         }
                     
         /*if the cursor is empty, we adjust the text in function of the submenu*/
