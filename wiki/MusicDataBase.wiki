@@ -1,0 +1,6 @@
+#summary About the database where songs meta data is stored
+
+= Introduction =
+To avoid reading tags from music files when playing it, we have created a database where they are stored. When songs are added to the player library they are read and tags extracted. Then you can quickly and easily get informations about the songs in your library.
+
+= Database scheme =
