@@ -12,4 +12,5 @@
 
 = Les composants principaux de l'applicaiton =
   * [Core_Service]
+  * [MusicDataBase]
  
