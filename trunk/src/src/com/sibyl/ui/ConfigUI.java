@@ -18,16 +18,9 @@
 
 package com.sibyl.ui;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.sibyl.ISibylservice;
-import com.sibyl.MusicDB;
-import com.sibyl.R;
-import com.sibyl.Sibylservice;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -48,6 +41,12 @@ import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.sibyl.Directory;
+import com.sibyl.ISibylservice;
+import com.sibyl.MusicDB;
+import com.sibyl.R;
+import com.sibyl.Sibylservice;
 
 public class ConfigUI extends Activity
 {
@@ -91,6 +90,11 @@ public class ConfigUI extends Activity
         catch(SQLiteDiskIOException ex)
         {
             Log.v(TAG, ex.toString());
+        }
+        
+        ArrayList<String> al = Directory.scanFiles("/data/music/",".mp3");
+        for(String s : al){
+            Log.v("LIST", s);
         }
     }
     
@@ -245,44 +249,23 @@ public class ConfigUI extends Activity
     //  Fill the table Song with mp3 found in path
     private void fillBD (String path)
     {
-        // get all mp3 files in path
-        try
-        {
-            path += '/';
-            File dir = new File(path);
-            //Log.v(TAG, "Insert"+path);
-            FilenameFilter filter = new FilenameFilter() 
-            {
-                public boolean accept(File dir, String name) 
-                {
-                    return name.endsWith(".mp3"); // extension should be a parameter
-                }
-            };
-
-            // insert them in the database    
-            for(String s : dir.list(filter))
-            {
-                try{
-                    // ?? long t = System.currentTimeMillis();
-                    mdb.insert(path+s);
-                    //Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-                }catch(SQLiteException sqle){
-                    Log.v(TAG, sqle.toString());
-                    // warn user
-                }catch(FileNotFoundException fnfe){
-                    Log.v(TAG, fnfe.toString());
-                    // warn user
-                }catch(IOException ioe){
-                    Log.v(TAG, ioe.toString());
-                    // warn user
-                }               
+        try{
+            // ?? long t = System.currentTimeMillis();
+            // get all mp3 files in path & insert them in the database
+            for(String file : Directory.scanFiles(path, ".mp3")){ //ugly string .mp3
+                mdb.insert(file);                
             }
+            //Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
+        }catch(SQLiteException sqle){
+            Log.v(TAG, sqle.toString());
+            // warn user
+        }catch(FileNotFoundException fnfe){
+            Log.v(TAG, fnfe.toString());
+            // warn user
+        }catch(IOException ioe){
+            Log.v(TAG, ioe.toString());
+            // warn user
         }
-        catch(NullPointerException ex)
-        {
-           // will never happen
-        }
-
     }
     
     public boolean onCreateOptionsMenu(Menu menu) 
