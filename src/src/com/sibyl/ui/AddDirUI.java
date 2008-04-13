@@ -48,7 +48,7 @@ public class AddDirUI extends ListActivity
     private static final int BACK_ID = Menu.FIRST +1;
 
     private static final String TAG = "ADD_DIR";
-    private IconifiedPathListAdapter ipla;
+    private IconifiedTextListAdapter ipla;
     private String parent;
     private String path;
 
@@ -78,7 +78,7 @@ public class AddDirUI extends ListActivity
         
         if( ipla.isSelectable(position))
         {
-            String lPath = ((IconifiedPath) ipla.getItem(position)).getText();
+            String lPath = ((IconifiedText) ipla.getItem(position)).getText();
             if(lPath == "..")
             {
                 path = parent;
@@ -99,9 +99,9 @@ public class AddDirUI extends ListActivity
     }
 
 //  Fill the table Song with mp3 found in path
-    private IconifiedPathListAdapter fillBD (String path)
+    private IconifiedTextListAdapter fillBD (String path)
     {
-        IconifiedPathListAdapter str = new IconifiedPathListAdapter(this);
+        IconifiedTextListAdapter str = new IconifiedTextListAdapter(this);
         // get all mp3 files in path
         File dir = new File(path);
         String parent = dir.getParent();
@@ -109,7 +109,7 @@ public class AddDirUI extends ListActivity
         if (parent != null)
         {
             this.parent = parent;
-            str.add(new IconifiedPath("..",getResources().getDrawable(R.drawable.folder)));
+            str.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
         }
         
         //Log.v(TAG,"taille dir : "+dir.list().length);
@@ -119,13 +119,13 @@ public class AddDirUI extends ListActivity
             {
             	if (f.isDirectory())
             	{
-            	    str.add(new IconifiedPath(f.getPath(),getResources().getDrawable(R.drawable.folder)));
+            	    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
             	}
                 else
                 {
                     if(f.getName().endsWith(".mp3"))
                     {
-                        str.add(new IconifiedPath(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                        str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
                     }
                 }
             }
@@ -172,7 +172,8 @@ public class AddDirUI extends ListActivity
     }
 }
 
-class IconifiedPath implements Comparable<IconifiedPath>
+
+/*class IconifiedPath implements Comparable<IconifiedPath>
 {
     private String mText ="";
     private Drawable mIcon;
@@ -223,9 +224,9 @@ class IconifiedPath implements Comparable<IconifiedPath>
         else
             throw new IllegalArgumentException();
     }
-}
+}*/
 
-class IconifiedPathView extends LinearLayout
+/*class IconifiedPathView extends LinearLayout
 {
     private TextView mText;
     private ImageView mIcon;
@@ -257,8 +258,9 @@ class IconifiedPathView extends LinearLayout
     {
         mIcon.setImageDrawable(icon);
     }   
-}
+}*/
 
+/*
 class IconifiedPathListAdapter extends BaseAdapter
 {
     private Context mContext;
@@ -328,5 +330,5 @@ class IconifiedPathListAdapter extends BaseAdapter
         return ipv;
     }
     
-}
+}*/
     

@@ -17,6 +17,8 @@
  * limitations under the License.
  -->
 <resources>
+
+    <!--  PlayerUI -->
     <string name="app_name">Sibyl, mobile your music</string>
     <string name="short_text">lll</string>
     <string name="medium_text">kkkoooppp</string>
@@ -35,11 +37,12 @@
     <string name="next">N</string>
     <string name="previous">P</string>
 
+    <!--  PlayListUI -->
     <string name="playList">Playlist</string>
-        
     <string name="menu_quit">Quit</string>
     <string name="menu_playList">Playlist</string>
     <string name="menu_option">Option</string>
+    <string name="sep_artiste_song">  -  </string>
     
     <string name="menu_add">Add...</string>
     <string name="menu_new">New...</string>
