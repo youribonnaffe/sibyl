@@ -166,6 +166,8 @@ public class Sibylservice extends Service
                         {
                             e.printStackTrace();
                         }
+                        //don't play anything
+                        return false;
                     }
                     else 
                     {// we restart playing from the beginning of the playlist
@@ -192,7 +194,13 @@ public class Sibylservice extends Service
         mp.start();
         playerState=Music.State.PLAYING;
         
-        
+        try 
+        {// informs UI that we start playing a song
+            uiHandler.handleStartPlaying();
+        } catch (DeadObjectException e) 
+        {
+            e.printStackTrace();
+        }
         
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);

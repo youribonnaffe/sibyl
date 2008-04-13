@@ -48,7 +48,7 @@ import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
 
-//Main activity: the playeur
+//Main activity: the player
 public class PlayerUI extends Activity
 {
 
@@ -75,8 +75,8 @@ public class PlayerUI extends Activity
     private Button previous;
     private Button avance;
 
-    private boolean play = false; //indicate if Sibyl is playing a song
-    private boolean pause = false; //indicate if a stop is paused  /* TODO what ?!? */
+    private boolean play = false; //indicates if Sibyl is playing a song
+    private boolean pause = false; //indicates if a stop is paused  /* TODO what ?!? */
     private boolean stopped = false;
 
     private MusicDB mdb;    //the database
@@ -84,8 +84,8 @@ public class PlayerUI extends Activity
     //handler to call function when datas are received from the service
     private Handler mServHandler = new Handler();
 
-    // time elapsed when playing a song
-    private Handler mHandler = new Handler();
+    //handler for calculating elapsed time when playing a song
+    private Handler mTimeHandler = new Handler();
     //thread which shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
@@ -104,7 +104,7 @@ public class PlayerUI extends Activity
         }
         elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
         // again in 0.1s
-        mHandler.postDelayed(this, 1000);
+        mTimeHandler.postDelayed(this, 1000);
     }
     };
 
@@ -135,22 +135,39 @@ public class PlayerUI extends Activity
     }
     }
 
-    /*
-     * get views and initialize them
+    /**
+    * Enables or disables the buttons
+    *
+    * @param enable     if true, enables the buttons, else disables them
+    */
+    private void enableButtons(boolean enable)
+    {
+        lecture.setEnabled(enable);
+        next.setEnabled(enable);
+        previous.setEnabled(enable);
+        avance.setEnabled(enable);
+    }
+    
+    /**
+     * gets views and initialize them
      */
     private void initializeViews(){        
-        //get buttons + set listenners + set focus
+        //get buttons
         lecture = (Button) findViewById(R.id.lecture);
         next = (Button) findViewById(R.id.next);
         previous = (Button) findViewById(R.id.prec);
         avance = (Button) findViewById(R.id.avance);
-        /*lecture.setEnabled(false);
-        next.setEnabled(false);
-        previous.setEnabled(false);*/
+        
+        //disable buttons until we are connected to the service
+        enableButtons(false);
+        
+        //set listeners
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
         avance.setOnClickListener(mAvanceListener);
+        
+        //set focusable
         next.setFocusableInTouchMode(true);
         previous.setFocusableInTouchMode(true);
         lecture.setFocusableInTouchMode(true);
@@ -179,7 +196,7 @@ public class PlayerUI extends Activity
     {
     super.onStop();
     stopped = true;
-    mHandler.removeCallbacks(timerTask); // stop the timer update
+    mTimeHandler.removeCallbacks(timerTask); // stop the timer update
     }
 
     @Override
@@ -191,7 +208,7 @@ public class PlayerUI extends Activity
     {
         if(mService.isPlaying())
         {
-        mHandler.post(timerTask);
+        mTimeHandler.post(timerTask);
         lecture.setText(R.string.pause);
         play = true;
         pause = false;
@@ -284,6 +301,10 @@ public class PlayerUI extends Activity
         Log.v(TAG, ex.toString());
         // user should be warned
         }
+        
+        //now that we are connected to the service, user can click on buttons
+        //to start playing music
+        enableButtons(true);
 
     }
 
@@ -296,7 +317,11 @@ public class PlayerUI extends Activity
 
         //remplacant du NotificationManager/notifyWithText
         Toast.makeText(PlayerUI.this, "Deconnexion du service", 
-            Toast.LENGTH_SHORT).show();                              
+            Toast.LENGTH_SHORT).show(); 
+        
+        //as we are disconnected from the service, user can't play music anymore
+        //so we disable the buttons
+        enableButtons(false);
     }
     };
 
@@ -328,7 +353,7 @@ public class PlayerUI extends Activity
             lecture.setText(R.string.play);
             pause = true;
             // remove timer task from ui thread
-            mHandler.removeCallbacks(timerTask);
+            mTimeHandler.removeCallbacks(timerTask);
         }
         catch (DeadObjectException ex) {
             Log.v(TAG, ex.toString());
@@ -341,7 +366,7 @@ public class PlayerUI extends Activity
             mService.start();
             lecture.setText(R.string.pause);
             //updateUI(); //display informations about the song
-            mHandler.post(timerTask);
+            mTimeHandler.post(timerTask);
             pause = false;
         }
         catch (DeadObjectException ex) {
@@ -389,8 +414,8 @@ public class PlayerUI extends Activity
         mService.setCurrentPosition(newTime);
 
         //update of the current time displayed
-        mHandler.removeCallbacks(timerTask);
-        mHandler.post(timerTask);
+        mTimeHandler.removeCallbacks(timerTask);
+        mTimeHandler.post(timerTask);
         }
         catch (DeadObjectException ex){
         Log.v(TAG, ex.toString());
@@ -428,11 +453,11 @@ public class PlayerUI extends Activity
         titre.setText(songInfo[0]);
         artiste.setText(songInfo[1]);
         //remove timer
-        mHandler.removeCallbacks(timerTask);
+        mTimeHandler.removeCallbacks(timerTask);
         // add timer task to ui thread
         if (!stopped)
         {
-        mHandler.post(timerTask);
+        mTimeHandler.post(timerTask);
         }
     }
     catch (DeadObjectException ex){
@@ -445,6 +470,20 @@ public class PlayerUI extends Activity
     //communication from the service
     private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() 
     {
+    
+    public void handleStartPlaying() 
+    {
+        Log.v(TAG, "Starting playing a song handled in PlayerUI");
+        mServHandler.post(new Runnable()
+        {
+        public void run()
+        {
+            updateUI();
+        }
+        });
+
+    } 
+    
     public void handleEndSong() 
     {
         Log.v(TAG, "End song handled in PlayerUI");
@@ -472,7 +511,7 @@ public class PlayerUI extends Activity
 
     private void noSongToPlay()
     {
-    mHandler.removeCallbacks(timerTask);
+    mTimeHandler.removeCallbacks(timerTask);
     elapsedTime.setText(DateUtils.formatElapsedTime(0));
     artiste.setText(R.string.artiste);
     tempsTotal.setText(R.string.time_zero);
