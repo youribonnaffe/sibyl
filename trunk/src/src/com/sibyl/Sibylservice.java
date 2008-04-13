@@ -33,18 +33,15 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.sibyl.ui.IPlayerUI;
+import com.sibyl.Music;
 
 
 public class Sibylservice extends Service
 {
     
-    public enum CsState {
-        STOPPED, PAUSED, PLAYING
-    } 
-    
     private MediaPlayer mp;
     private MusicDB mdb;
-    private CsState playerState;
+    private int playerState;
     private boolean repAll;
     private boolean looping;
     private int currentSong;
@@ -55,13 +52,16 @@ public class Sibylservice extends Service
     @Override
     protected void onCreate()
     {        
-        playerState=CsState.STOPPED;
+        /* initialization of the state of the service */
+        playerState=Music.State.STOPPED;
         currentSong=1;
+        repAll = false;
+        looping = false;
+        
+        /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        repAll = false;
-        looping = false;
         //create or connect to the Database
         try{
             mdb = new MusicDB(this);
@@ -73,12 +73,14 @@ public class Sibylservice extends Service
         updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
     }
     
-    @Override
-    protected void onStart(int startId, Bundle arguments)
-    {
-
-    }
-    
+    /**
+    * to be corrected by the right usage of idIcon
+    * Updates the text of the notification identified by idIcon with the value
+    * of the text argument
+    * 
+    * @param idIcon     identifier of the notification
+    * @param text       new text to be displayed by the notification manager
+    */
     public void updateNotification(int idIcon, String text)
     {
         Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
@@ -92,7 +94,7 @@ public class Sibylservice extends Service
                     idIcon,                             // the icon for the status bar
                     text,                               // the text to display in the ticker
                     System.currentTimeMillis(),         // the timestamp for the notification
-                    "Sibyl",                            // the title for the notification
+                    Music.APPNAME,                            // the title for the notification
                     text,                               // the details to display in the notification
                     appIntent,                               // the contentIntent (see above)
                     R.drawable.icon,                    // the app icon
@@ -104,29 +106,84 @@ public class Sibylservice extends Service
     @Override
     protected void onDestroy()
     {
-        MediaPlayer mp = this.mp;
         mp.stop();
         mp.release();
         nm.cancel(R.layout.notification);
     }
     
-    protected void play() 
+    /**
+    * Resets the media player, sets its source to the file given by the filename 
+    * parameter
+    * After having called this method, the media player is ready to play.
+    *
+    * @param filename   name of the file which should be played by the media player
+    *   when play is called
+    */
+    protected void preparePlaying(String filename)
     {
-        if( playerState != CsState.PAUSED ) 
+        try 
         {
-            launch();
+            mp.reset();
+            mp.setDataSource(filename);
+            mp.prepare();
         }
-        else 
+        catch ( IOException ioe) 
         {
-            resume();
+            Log.v(TAG, ioe.toString());
         }
-
+    }
+    
+    /**
+    * Start playing song at the current position in the playlist. If the player 
+    * was in pause, the paused song is resumed.
+    *
+    * @return   true in case of success, false otherwise
+    */
+    protected boolean play() 
+    {
+        if( playerState != Music.State.PAUSED ) 
+        {// if we are not in pause we prepare the mediaplayer to play the next song
+            String filename = mdb.getSong(currentSong);
+            if( filename == null ) 
+            {
+                if ( currentSong > mdb.getPlaylistSize() )
+                {
+                    //end of playlist
+                }
+                else 
+                {
+                    // error
+                    playerState = Music.State.ERROR;
+                    return false;
+                }
+            }
+            // Stop mediaplayer so that if it was playing, it doesn't play anymore
+            // in the other states, it does nothing
+            mp.stop();
+            // filename OK so preparing playing of this file
+            preparePlaying(filename);
+        }
+        
+        // Start playing if it wasn't paused or continue playing the paused song
+        // if it was in pause 
+        mp.start();
+        playerState=Music.State.PLAYING;
+        
+        // Updating notification
+        String [] songInfo = mdb.getSongInfoFromCP(currentSong);
+        if( songInfo == null )
+        {
+            //what to do??? is the error critical or not important and so can be skipped???
+        }
+        updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
+        
+        return true;
     }
     
     protected void launch()
     {
         String filename = mdb.getSong(currentSong);
-        playerState = CsState.PLAYING;
+        playerState = Music.State.PLAYING;
         if(filename != null)
         {
             playSong(filename);
@@ -159,13 +216,13 @@ public class Sibylservice extends Service
     protected void stop()
     {
         mp.stop();
-        playerState=CsState.STOPPED;
+        playerState=Music.State.STOPPED;
     }
     
     protected void resume()
     {
         mp.start();
-        playerState=CsState.PLAYING;
+        playerState=Music.State.PLAYING;
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         // should test songInfo != null if playlist is empty
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
@@ -181,7 +238,7 @@ public class Sibylservice extends Service
     protected void play_prev() 
     {
         Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
-        if (playerState != CsState.STOPPED)
+        if (playerState != Music.State.STOPPED)
         {
             currentSong--; 
             launch();  
@@ -192,7 +249,7 @@ public class Sibylservice extends Service
     {
         MediaPlayer mp = this.mp;
         //Log.v(TAG,">>> PlaySong("+filename+") called");
-        if( playerState != CsState.PAUSED ) 
+        if( playerState != Music.State.PAUSED ) 
         {
             try{
                 mp.reset();
@@ -208,7 +265,7 @@ public class Sibylservice extends Service
             }
         }
         mp.start();
-        playerState=CsState.PLAYING;
+        playerState=Music.State.PLAYING;
     }
     
     protected void playNumberI(int i)
@@ -244,21 +301,21 @@ public class Sibylservice extends Service
         
         public void stop() {
             mp.stop();
-            playerState=CsState.STOPPED;
+            playerState=Music.State.STOPPED;
         }
         
         public void pause() {
             mp.pause();
-            playerState=CsState.PAUSED;
+            playerState=Music.State.PAUSED;
             updateNotification(R.drawable.pause,"pause");
         }
         
-        public CsState getState() {
+        public int getState() {
             return playerState;
         }
         
         public boolean isPlaying() {
-            return playerState==CsState.PLAYING;
+            return playerState==Music.State.PLAYING;
         }
         
         public int getCurrentSongIndex() {

@@ -480,6 +480,22 @@ public class MusicDB {
             //Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
         }
     }
+    
+    /**
+     * Returns the size of the current playlist
+     *
+     * @return  size of the playlist or -1 if an error occurs
+     */
+    public int getPlaylistSize()
+    {
+        int size = -1;
+        Cursor c = mDb.rawQuery("SELECT COUNT(id) FROM current_playlist" ,null);
+        if(c.first())
+        {
+            size = c.getInt(0);
+        }
+        return size;
+    }
 
     /**
      * to get all artists, genres, albums and songs with the count of it

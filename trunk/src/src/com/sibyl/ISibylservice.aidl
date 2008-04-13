@@ -35,11 +35,12 @@ interface ISibylservice {
         use start */
     
     boolean isPlaying();
-    /* returns true if the service is playing */
+    /* returns true if the service is playing: /!\ deprecated */
     
-    /*CsState getState();*/
-    /* returns the state of the core service: CsState is an enum of the possible
-       states (PAUSED, PLAYING, STOPPED) */
+    int getState();
+    /* returns the state of the core service: CsState is an enum as defined in 
+       Music.java of the possible states
+       This function replaces isPlaying() */
        
     int getCurrentSongIndex();
     /* returns the index in the playlist of the song currently played */

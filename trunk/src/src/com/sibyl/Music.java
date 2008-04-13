@@ -19,7 +19,20 @@
 package com.sibyl;
 
 public class Music {
-
+    
+    /* printed name of the application */
+    public static String APPNAME = "Sibyl";
+    
+    /* states of the service */
+    public static class State {
+        public static int ERROR = -1;
+        public static int PLAYING = 0;
+        public static int PAUSED = 1;
+        public static int STOPPED = 2;
+        public static int END_PLAYLIST_REACHED = 0x10;
+    }
+    
+    /* other stuff to be commented */
     public static enum Table { 
         SONG, ARTIST, GENRE, ALBUM, CURRENT_PLAYLIST, DIR; 
     }
