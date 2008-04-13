@@ -19,12 +19,13 @@ public class IconifiedTextView extends LinearLayout
         
         mIcon = new ImageView(context);
         mIcon.setImageDrawable(aIconifiedPath.getIcon());
-        mIcon.setPadding(0, 2, 5, 0);
+        mIcon.setPadding(0, 5, 5, 0);
         
         addView(mIcon, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
         mText = new TextView(context);
         mText.setText(aIconifiedPath.getText());
+        mText.setTextSize(20);
         
         addView(mText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }

@@ -229,10 +229,17 @@ public class Sibylservice extends Service
     */
     protected void play_next() 
     {
+        int add = 1;
+        if( playerState == Music.State.STOPPED) { //we can launch the player with the button next. it must play
+            add = 0;                               // the first song of the playlist
+        }
         stop();
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-        currentSong++;
-        play();
+        currentSong += add;
+        if( !play()){ //cancel the changement if nothing is played
+            currentSong -=add;
+        }
+            
     }
     
     /**
@@ -248,7 +255,9 @@ public class Sibylservice extends Service
         {
             currentSong--; 
         }
-        play();  
+        if( ! play()){  //cancel the changement if nothing is played
+            currentSong++;
+        }
     }
     
     /**
@@ -284,6 +293,7 @@ public class Sibylservice extends Service
         public void stop() {
             mp.stop();
             playerState=Music.State.STOPPED;
+            currentSong = 1; /*initialize currentSong for the next launch of the service*/
         }
         
         public void pause() {
