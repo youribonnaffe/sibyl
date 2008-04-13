@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sibyl.ISibylservice;
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
@@ -115,6 +116,7 @@ public class PlayerUI extends Activity
     super.onCreate(icicle);
     setContentView(R.layout.main);
     initializeViews();
+    lecture.requestFocus();
     //launch the service.
     launchService();
     elapsedTime.setText(DateUtils.formatElapsedTime(0));
@@ -200,30 +202,12 @@ public class PlayerUI extends Activity
     }
 
     @Override
-    protected void onRestart() 
+    protected void onResume() 
     {
-    super.onRestart();
-    stopped = false;
-    try 
-    {
-        if(mService.isPlaying())
-        {
-        mTimeHandler.post(timerTask);
-        lecture.setText(R.string.pause);
-        play = true;
-        pause = false;
+        super.onResume();
+        if( mService != null){
+            updateUI();
         }
-        else
-        {
-        lecture.setText(R.string.play);
-        play = true;
-        pause = false;
-        }
-    } catch (DeadObjectException e) 
-    {
-        Log.v(TAG, e.toString());
-        // user should be warned
-    }
     }
 
     //launch the service
@@ -236,11 +220,11 @@ public class PlayerUI extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
-    super.onCreateOptionsMenu(menu);
-    menu.add(0, QUIT_ID, R.string.menu_quit);
-    menu.add(0, PLAYLIST_ID, R.string.menu_playList);
-    menu.add(0, OPTION_ID, R.string.menu_option);
-    return true;
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, QUIT_ID, R.string.menu_quit);
+        menu.add(0, PLAYLIST_ID, R.string.menu_playList);
+        menu.add(0, OPTION_ID, R.string.menu_option);
+        return true;
     }
 
     @Override
@@ -252,12 +236,12 @@ public class PlayerUI extends Activity
     case QUIT_ID:
         try 
         {
-        mService.stop();
+            mService.stop();
         }//lors de l'appel de fonction de interface (fichier aidl)
         //il faut catcher les DeadObjectException
         catch (DeadObjectException ex) {
-        Log.v(TAG, ex.toString());
-        // user should be warned
+            Log.v(TAG, ex.toString());
+            // user should be warned
         }
         play = false;
         pause = false;
@@ -295,7 +279,8 @@ public class PlayerUI extends Activity
 
         //connection of the service to the activity
         try {
-        mService.connectToReceiver(mServiceListener);
+            mService.connectToReceiver(mServiceListener);
+            enableButtons(true);
         }
         catch(DeadObjectException ex){
         Log.v(TAG, ex.toString());
@@ -340,41 +325,35 @@ public class PlayerUI extends Activity
     }
 
 
+
     //listener for the button Play/Pause
     private OnClickListener mPlayListener = new OnClickListener()
     {
     public void onClick(View v)
     {
-        if( play) //call if a music is played (pause the music)
-        {
-        try 
-        {
-            mService.pause();
-            lecture.setText(R.string.play);
-            pause = true;
-            // remove timer task from ui thread
-            mTimeHandler.removeCallbacks(timerTask);
+        try{ 
+                if( mService.getState() == Music.State.PLAYING) //call if a music is played (pause the music)
+                {
+                    mService.pause();
+                    lecture.setText(R.string.play);
+                    // remove timer task from ui thread
+                    mTimeHandler.removeCallbacks(timerTask);
+                }
+                else // to start listening a music or resume.
+                {
+                    mService.start();
+                    if( mService.getState() != Music.State.ERROR){
+                        lecture.setText(R.string.pause);
+                        //updateUI(); //display informations about the song
+                        mTimeHandler.post(timerTask);
+                    }
+                    else{
+                        noSongToPlay();
+                    }
+                }
         }
-        catch (DeadObjectException ex) {
-            Log.v(TAG, ex.toString());
-        }
-        }
-        else // to start listening a music or resume.
-        {
-        try 
-        {
-            mService.start();
-            lecture.setText(R.string.pause);
-            //updateUI(); //display informations about the song
-            mTimeHandler.post(timerTask);
-            pause = false;
-        }
-        catch (DeadObjectException ex) {
-            Log.v(TAG, ex.toString());
-        }
-        }
-        play = !play;
-    }
+        catch(DeadObjectException ex) {}
+        }     
     };
 
 
@@ -441,29 +420,40 @@ public class PlayerUI extends Activity
     //display the artist, the song, the new total time
     private void updateUI() 
     {
-    try 
-    {
-        elapsedTime.setText(DateUtils.formatElapsedTime(0));//reset the time
-        setTotalTime();
-        int pos=0;
-        //display the song and artist name
-        pos=mService.getCurrentSongIndex();
-        Log.v(TAG, "updateUI: pos="+pos);
-        String [] songInfo = mdb.getSongInfoFromCP(pos);
-        titre.setText(songInfo[0]);
-        artiste.setText(songInfo[1]);
-        //remove timer
-        mTimeHandler.removeCallbacks(timerTask);
-        // add timer task to ui thread
-        if (!stopped)
-        {
-        mTimeHandler.post(timerTask);
+    try{
+        if( mService.getState() == Music.State.PLAYING || mService.getState() == Music.State.PAUSED){
+            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));//reset the time
+            setTotalTime();
+            int pos=0;
+            //display the song and artist name
+            pos=mService.getCurrentSongIndex();
+            Log.v(TAG, "updateUI: pos="+pos);
+            String [] songInfo = mdb.getSongInfoFromCP(pos);
+            titre.setText(songInfo[0]);
+            artiste.setText(songInfo[1]);
+            if( mService.getState() == Music.State.PLAYING) {
+                //remove timer
+                mTimeHandler.removeCallbacks(timerTask);
+                // add timer task to ui thread
+                mTimeHandler.post(timerTask);
+                lecture.setText(R.string.pause);
+            }             
+            else {
+                lecture.setText(R.string.play);
+            }
+            enableButtons(true);
         }
+        else if(mService.getState() == Music.State.STOPPED){
+            noSongToPlay();
+            enableButtons(true);
+        }
+        else if(mService.getState() == Music.State.END_PLAYLIST_REACHED){
+            noSongToPlay();
+            enableButtons(false);
+        }
+        
     }
-    catch (DeadObjectException ex){
-        Log.v(TAG, ex.toString());
-        // ui changes ?
-    }
+    catch( DeadObjectException ex){} 
     }
 
     /* TODO Supprimer la communication avec le service quand la fenetre n'est plus affichée ? */
@@ -503,22 +493,24 @@ public class PlayerUI extends Activity
         {
         public void run()
         {
-            noSongToPlay();
+            updateUI();
+            enableButtons(false);
         }
         });
     }
     };
 
+
+
     private void noSongToPlay()
     {
-    mTimeHandler.removeCallbacks(timerTask);
-    elapsedTime.setText(DateUtils.formatElapsedTime(0));
-    artiste.setText(R.string.artiste);
-    tempsTotal.setText(R.string.time_zero);
-    titre.setText(R.string.titre);
-    lecture.setText(R.string.play);
-    pause = true;
-    play = false;
+        mTimeHandler.removeCallbacks(timerTask);
+        elapsedTime.setText(DateUtils.formatElapsedTime(0));
+        artiste.setText(R.string.artiste);
+        tempsTotal.setText(R.string.time_zero);
+        titre.setText(R.string.titre);
+        lecture.setText(R.string.play);
+        //previous.setEnabled(false);
     }
 
     public boolean onTouchEvent(MotionEvent ev){
@@ -531,25 +523,32 @@ public class PlayerUI extends Activity
     public boolean onKeyUp(int keycode, KeyEvent event){
     //Log.v("event up", event.toString());
     switch(event.getKeyCode()){
-    case KeyEvent.KEYCODE_DPAD_DOWN :
-        return true;
-    case KeyEvent.KEYCODE_DPAD_UP :
-        return true;
-    case KeyEvent.KEYCODE_DPAD_LEFT :
-        previous.performClick();
-        previous.setBackground(android.R.drawable.btn_default);
-        //lecture.requestFocus();
-        return true;
-    case KeyEvent.KEYCODE_DPAD_RIGHT :
-        next.performClick();
-        next.setBackground(android.R.drawable.btn_default);
-        //lecture.requestFocus();
-        return true;
-    case KeyEvent.KEYCODE_DPAD_CENTER :
-        //lecture.requestFocus();
-        lecture.performClick();
-        return true;
-    }
+        case KeyEvent.KEYCODE_DPAD_DOWN :
+            return true;
+        case KeyEvent.KEYCODE_DPAD_UP :
+            return true;
+        case KeyEvent.KEYCODE_DPAD_LEFT :
+            if(previous.isEnabled()){
+                playSong(PLAY.PREV);
+                previous.setBackground(android.R.drawable.btn_default);
+            }
+            
+            //lecture.requestFocus();
+            return true;
+        case KeyEvent.KEYCODE_DPAD_RIGHT :
+            if( next.isEnabled()){
+                playSong(PLAY.NEXT);
+                next.setBackground(android.R.drawable.btn_default);
+            }
+            //lecture.requestFocus();
+            return true;
+        case KeyEvent.KEYCODE_DPAD_CENTER :
+            //lecture.requestFocus();
+            if( lecture.isEnabled()){
+                lecture.performClick();
+            }
+            return true;
+        }
     return super.onKeyUp(keycode, event);
     }
 
@@ -561,10 +560,14 @@ public class PlayerUI extends Activity
     case KeyEvent.KEYCODE_DPAD_UP :
         return true;
     case KeyEvent.KEYCODE_DPAD_LEFT :
-        previous.setBackground(android.R.drawable.btn_default_selected);
+        if( previous.isEnabled()){
+            previous.setBackground(android.R.drawable.btn_default_selected);
+        }
         return true;
     case KeyEvent.KEYCODE_DPAD_RIGHT :
-        next.setBackground(android.R.drawable.btn_default_selected);
+        if( next.isEnabled()){
+            next.setBackground(android.R.drawable.btn_default_selected);
+        }
         return true;
     case KeyEvent.KEYCODE_DPAD_CENTER :
         return true;
@@ -578,18 +581,13 @@ public class PlayerUI extends Activity
     try
     {
         if( type == PLAY.NEXT) {
-        mService.next();
+            mService.next();
         }
         else{
-        mService.prev();
+            mService.prev();
         }
-        if( mService.isPlaying())
-        {
-        play = true;
-        pause = false;
-        lecture.setText(R.string.pause);
-        //updateUI();
-        }
+        updateUI();
+
     }
         catch (DeadObjectException ex) {
             Log.v(TAG, ex.toString());
