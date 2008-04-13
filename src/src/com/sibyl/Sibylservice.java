@@ -134,8 +134,13 @@ public class Sibylservice extends Service
     }
     
     /**
-    * Start playing song at the current position in the playlist. If the player 
+    * Starts playing song at the current position in the playlist. If the player 
     * was in pause, the paused song is resumed.
+    * If the end of the playlist is reached and playlist repetition is false, 
+    * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
+    * informed.
+    * If an error occured, no song will be played and the service will be in the
+    * error state.
     *
     * @return   true in case of success, false otherwise
     */
@@ -146,9 +151,27 @@ public class Sibylservice extends Service
             String filename = mdb.getSong(currentSong);
             if( filename == null ) 
             {
-                if ( currentSong > mdb.getPlaylistSize() )
+                int playListSize = mdb.getPlaylistSize();
+                if ( currentSong > playListSize && playListSize > 0 )
                 {
                     //end of playlist
+                    if( !repAll ) 
+                    {
+                        playerState = Music.State.END_PLAYLIST_REACHED;
+                        currentSong = 1;
+                        try 
+                        {//the UI is informed that the end of the playlist has been reached
+                            uiHandler.handleEndPlaylist();
+                        } catch (DeadObjectException e) 
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                    else 
+                    {// we restart playing from the beginning of the playlist
+                        currentSong = 1;
+                        return play();
+                    }
                 }
                 else 
                 {
@@ -169,6 +192,8 @@ public class Sibylservice extends Service
         mp.start();
         playerState=Music.State.PLAYING;
         
+        
+        
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
@@ -180,106 +205,55 @@ public class Sibylservice extends Service
         return true;
     }
     
-    protected void launch()
-    {
-        String filename = mdb.getSong(currentSong);
-        playerState = Music.State.PLAYING;
-        if(filename != null)
-        {
-            playSong(filename);
-            String [] songInfo = mdb.getSongInfoFromCP(currentSong);
-            updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
-        }
-        else
-        {
-            if(currentSong == 1 || !repAll)
-            {
-                stop();
-                currentSong = 1;
-                try 
-                {
-                    uiHandler.handleEndPlaylist();
-                } catch (DeadObjectException e) 
-                {
-                    e.printStackTrace();
-                }   
-            }
-            else
-            {
-                currentSong = 1;
-                launch();
-                // ui will have some troubles, restart app ?
-            }
-        }
-    }
-    
+    /**
+    * Stops playing and puts the service in the stopped state
+    *
+    */
     protected void stop()
     {
         mp.stop();
         playerState=Music.State.STOPPED;
     }
     
-    protected void resume()
-    {
-        mp.start();
-        playerState=Music.State.PLAYING;
-        String [] songInfo = mdb.getSongInfoFromCP(currentSong);
-        // should test songInfo != null if playlist is empty
-        updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
-    }
-    
+    /**
+    * Plays the following song in the playlist
+    *
+    */
     protected void play_next() 
     {
+        stop();
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
         currentSong++;
-        launch();
+        play();
     }
     
+    /**
+    * Plays the previous song in the playlist
+    * If we are at the first song of the playlist, the first song will be played
+    * from the beginning.
+    */
     protected void play_prev() 
     {
+        stop();
         Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
-        if (playerState != Music.State.STOPPED)
+        if ( currentSong > 1 )
         {
             currentSong--; 
-            launch();  
         }
+        play();  
     }
     
-    protected void playSong(String filename) 
-    {
-        MediaPlayer mp = this.mp;
-        //Log.v(TAG,">>> PlaySong("+filename+") called");
-        if( playerState != Music.State.PAUSED ) 
-        {
-            try{
-                mp.reset();
-                mp.setDataSource(filename);
-                mp.prepare();
-                uiHandler.handleEndSong();
-                mp.start();
-            }
-            catch ( IOException ioe) {
-                Log.v(TAG, ioe.toString());
-            }catch (DeadObjectException doe){
-        	Log.v(TAG, doe.toString());
-            }
-        }
-        mp.start();
-        playerState=Music.State.PLAYING;
-    }
-    
+    /**
+    * Sets the current position in the playlist to i, and plays the song at the 
+    * current position.
+    *
+    * @param i  new position in the playlist
+    */
     protected void playNumberI(int i)
     {
         stop();
         currentSong = i;
         play();
-        try 
-        {
-            uiHandler.handleEndSong();
-        } catch(DeadObjectException e) {
-            Log.v(TAG, e.toString());
-            // what are the consequences ?
-        }
     }
 
     @Override
@@ -339,7 +313,8 @@ public class Sibylservice extends Service
             Log.v(TAG,"set looping :"+loop);
             repAll = false;
             looping = loop;
-            mp.setLooping(loop ? 1 : 0);
+            mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
+            //and java doesn't do the implicit conversion from bool to int
         }
         
         public void next() {
