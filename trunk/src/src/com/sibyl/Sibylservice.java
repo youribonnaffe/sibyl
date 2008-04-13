@@ -231,7 +231,7 @@ public class Sibylservice extends Service
     {
         int add = 1;
         if( playerState == Music.State.STOPPED) { //we can launch the player with the button next. it must play
-            add = 0;                               // the first song of the playlist
+            add = 0;                               // the first song of the playlist the first time.
         }
         stop();
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);

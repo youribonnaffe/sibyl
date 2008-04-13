@@ -49,7 +49,11 @@ import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
 
-//Main activity: the player
+/**
+ * The player activity. It launches the service and you can control the music: play, stop, play next/previous.
+ * You have access to the other activities: options et playlist
+ * @author Sibyl-dev
+ */
 public class PlayerUI extends Activity
 {
 
@@ -76,6 +80,7 @@ public class PlayerUI extends Activity
     private Button previous;
     private Button avance;
 
+    //not used
     private boolean play = false; //indicates if Sibyl is playing a song
     private boolean pause = false; //indicates if a stop is paused  /* TODO what ?!? */
     private boolean stopped = false;
@@ -90,51 +95,50 @@ public class PlayerUI extends Activity
     //thread which shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
-    private int timer;
-    public void run() 
-    {
-        // re adjusting time
-        try
+        private int timer;
+        public void run() 
         {
-        // display time
-        timer = mService.getCurrentPosition(); // seems to avoid ANR
+            // re adjusting time
+            try
+            {
+            // display time
+            timer = mService.getCurrentPosition(); // seems to avoid ANR
+            }
+            catch(DeadObjectException ex){
+            // old value will be kept, if the song can't be played anymore
+            // an error should be thrown by the service (or not)
+            }
+            elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
+            // again in 0.1s
+            mTimeHandler.postDelayed(this, 1000);
         }
-        catch(DeadObjectException ex){
-        // old value will be kept, if the song can't be played anymore
-        // an error should be thrown by the service (or not)
-        }
-        elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
-        // again in 0.1s
-        mTimeHandler.postDelayed(this, 1000);
-    }
     };
 
-    /** Called when the activity is first created. */
+    /** 
+     * Called when the activity is first created. It initialize the ui: buttons, labels.
+     * Launches the service.
+     * connect the ui to the database
+     */
     @Override
     public void onCreate(Bundle icicle) 
     {
-    super.onCreate(icicle);
-    setContentView(R.layout.main);
-    initializeViews();
-    lecture.requestFocus();
-    //launch the service.
-    launchService();
-    elapsedTime.setText(DateUtils.formatElapsedTime(0));
-    //create or connect to the Database
-    try
-    {
-        mdb = new MusicDB(this);
-        //display the artist and the song in the playlist
-        /* playlist could be empty
-            String [] songInfo = mdb.getSongInfoFromCP(1);
-            titre.setText(songInfo[0]);
-            artiste.setText(songInfo[1]);*/
-    }
-    catch(SQLiteDiskIOException e)
-    {
-        Log.v(TAG, e.getMessage());
-        // user sould be warned
-    }
+        super.onCreate(icicle);
+        setContentView(R.layout.main);
+        initializeViews();
+        lecture.requestFocus();
+        //launch the service.
+        launchService();
+        elapsedTime.setText(DateUtils.formatElapsedTime(0));
+        //create or connect to the Database
+        try
+        {
+            mdb = new MusicDB(this);
+        }
+        catch(SQLiteDiskIOException e)
+        {
+            Log.v(TAG, e.getMessage());
+            // user sould be warned
+        }
     }
 
     /**
@@ -189,16 +193,16 @@ public class PlayerUI extends Activity
     @Override
     protected void onDestroy() 
     {
-    super.onDestroy();
-    unbindService(mConnection);
+        super.onDestroy();
+        unbindService(mConnection);
     }
 
     @Override
     protected void onStop() 
     {
-    super.onStop();
-    stopped = true;
-    mTimeHandler.removeCallbacks(timerTask); // stop the timer update
+        super.onStop();
+        stopped = true;
+        mTimeHandler.removeCallbacks(timerTask); // stop the timer update
     }
 
     @Override
@@ -210,11 +214,13 @@ public class PlayerUI extends Activity
         }
     }
 
-    //launch the service
+    /*
+     * launch the service
+     */
     public void launchService()    
     {
-    bindService(new Intent(PlayerUI.this,
-        Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(PlayerUI.this,
+            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -230,103 +236,106 @@ public class PlayerUI extends Activity
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
-    super.onMenuItemSelected(featureId, item);
-    switch(item.getId()) 
-    {
-    case QUIT_ID:
-        try 
+        super.onMenuItemSelected(featureId, item);
+        switch(item.getId()) 
         {
-            mService.stop();
-        }//lors de l'appel de fonction de interface (fichier aidl)
-        //il faut catcher les DeadObjectException
-        catch (DeadObjectException ex) {
-            Log.v(TAG, ex.toString());
-            // user should be warned
+            case QUIT_ID:
+                try 
+                {
+                    mService.stop();
+                }
+                catch (DeadObjectException ex) {
+                    Log.v(TAG, ex.toString());
+                    // user should be warned
+                }
+                play = false;
+                pause = false;
+                lecture.setText(R.string.play);
+                finish();
+                break;
+            case PLAYLIST_ID:
+                //launch the playlist's activity
+                displayPlaylist();
+                break;
+            case OPTION_ID:
+                //launch the option's activity
+                displayConfig();
+                break;
         }
-        play = false;
-        pause = false;
-        lecture.setText(R.string.play);
-        finish();
-        break;
-    case PLAYLIST_ID:
-        //launch the playlist's activity
-        displayPlaylist();
-        break;
-    case OPTION_ID:
-        //launch the option's activity
-        displayConfig();
-        break;
-    }
-
-    return true;
+    
+        return true;
     }
 
 
     private ServiceConnection mConnection = new ServiceConnection()
     {
-    public void onServiceConnected(ComponentName className, IBinder service)
-    {
-        // This is called when the connection with the service has been
-        // established, giving us the service object we can use to
-        // interact with the service.  We are communicating with our
-        // service through an IDL interface, so get a client-side
-        // representation of that from the raw service object.
-        mService = ISibylservice.Stub.asInterface((IBinder)service);
-
-        //DEBUG remplacant du NotificationManager/notifyWithText
-        Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
-            Toast.LENGTH_SHORT).show();
-
-        //connection of the service to the activity
-        try {
-            mService.connectToReceiver(mServiceListener);
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  We are communicating with our
+            // service through an IDL interface, so get a client-side
+            // representation of that from the raw service object.
+            mService = ISibylservice.Stub.asInterface((IBinder)service);
+    
+            //DEBUG remplacant du NotificationManager/notifyWithText
+            Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
+                Toast.LENGTH_SHORT).show();
+    
+            //connection of the service to the activity
+            try {
+                mService.connectToReceiver(mServiceListener);
+                enableButtons(true);
+            }
+            catch(DeadObjectException ex){
+            Log.v(TAG, ex.toString());
+            // user should be warned
+            }
+            
+            //now that we are connected to the service, user can click on buttons
+            //to start playing music
             enableButtons(true);
+    
         }
-        catch(DeadObjectException ex){
-        Log.v(TAG, ex.toString());
-        // user should be warned
+    
+        public void onServiceDisconnected(ComponentName className)
+        {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mService = null;
+            // IMPORTANT : should freeze the application and user has to relaunch it
+    
+            //remplacant du NotificationManager/notifyWithText
+            Toast.makeText(PlayerUI.this, "Deconnexion du service", 
+                Toast.LENGTH_SHORT).show(); 
+            
+            //as we are disconnected from the service, user can't play music anymore
+            //so we disable the buttons
+            enableButtons(false);
         }
-        
-        //now that we are connected to the service, user can click on buttons
-        //to start playing music
-        enableButtons(true);
-
-    }
-
-    public void onServiceDisconnected(ComponentName className)
-    {
-        // This is called when the connection with the service has been
-        // unexpectedly disconnected -- that is, its process crashed.
-        mService = null;
-        // IMPORTANT : should freeze the application and user has to relaunch it
-
-        //remplacant du NotificationManager/notifyWithText
-        Toast.makeText(PlayerUI.this, "Deconnexion du service", 
-            Toast.LENGTH_SHORT).show(); 
-        
-        //as we are disconnected from the service, user can't play music anymore
-        //so we disable the buttons
-        enableButtons(false);
-    }
     };
 
 
-    //set the total time of the song which is played
+    /*
+     * set the total time of the song which is played
+     */
     private void setTotalTime ()
     {
-    try 
-    {
-        tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
-    }
-    catch (DeadObjectException ex){
-        Log.v(TAG, ex.toString());
-        // user should be warned or maybe it is not that important
-    }
+        try 
+        {
+            tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
+        }
+        catch (DeadObjectException ex){
+            Log.v(TAG, ex.toString());
+            // user should be warned or maybe it is not that important
+        }
     }
 
 
 
-    //listener for the button Play/Pause
+    /*
+     * listener for the button Play/Pause. It stops the reading if the service is stopped or start/resume it.
+     */
     private OnClickListener mPlayListener = new OnClickListener()
     {
     public void onClick(View v)
@@ -357,22 +366,26 @@ public class PlayerUI extends Activity
     };
 
 
-    //Listenner for the Button Next. Play the next song in the playlist
+    /*
+     * Listenner for the Button Next. Play the next song in the playlist
+     */
     private OnClickListener mNextListener = new OnClickListener()
     {
-    public void onClick(View v)
-    {
-        playSong(PLAY.NEXT);
-    }
+        public void onClick(View v)
+        {
+            playSong(PLAY.NEXT);
+        }
     };
 
-    //Listenner for the button previous. Play the previous sont in the playlist
+    /*
+     * Listenner for the button previous. Play the previous sont in the playlist
+     */
     private OnClickListener mPreviousListener = new OnClickListener()
     {
-    public void onClick(View v)
-    {
-        playSong(PLAY.PREV);
-    }
+        public void onClick(View v)
+        {
+            playSong(PLAY.PREV);
+        }
     };
 
 
@@ -403,105 +416,118 @@ public class PlayerUI extends Activity
     }
     };
 
-    //launch the activity PlayerListUI: show and manage the playlist
+    /*
+     *launch the activity PlayerListUI: show and manage the playlist 
+     */
     private void displayPlaylist() 
     {
-    Intent i = new Intent(this, PlayListUI.class);
-    startSubActivity(i, 0);
+        Intent i = new Intent(this, PlayListUI.class);
+        startSubActivity(i, 0);
     }
 
-
+    /*
+     * launch the activity ConfigUI.
+     */
     private void displayConfig() 
     {
-    Intent i = new Intent(this, ConfigUI.class);
-    startSubActivity(i, 0);
+        Intent i = new Intent(this, ConfigUI.class);
+        startSubActivity(i, 0);
     }
 
-    //display the artist, the song, the new total time
+    /*
+     * Manage the display of the UI. Displays artist and song's name, total time, and launch the timer when a song is played
+     * If nothing is played (end of playlist or playlist empty), it shows: Sibyl, mobile your music
+     * disable the button when the end of playlist is reached
+     */
     private void updateUI() 
     {
-    try{
-        if( mService.getState() == Music.State.PLAYING || mService.getState() == Music.State.PAUSED){
-            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));//reset the time
-            setTotalTime();
-            int pos=0;
-            //display the song and artist name
-            pos=mService.getCurrentSongIndex();
-            Log.v(TAG, "updateUI: pos="+pos);
-            String [] songInfo = mdb.getSongInfoFromCP(pos);
-            titre.setText(songInfo[0]);
-            artiste.setText(songInfo[1]);
-            if( mService.getState() == Music.State.PLAYING) {
-                //remove timer
-                mTimeHandler.removeCallbacks(timerTask);
-                // add timer task to ui thread
-                mTimeHandler.post(timerTask);
-                lecture.setText(R.string.pause);
-            }             
-            else {
-                lecture.setText(R.string.play);
+        try{
+            if( mService.getState() == Music.State.PLAYING || mService.getState() == Music.State.PAUSED){
+                //reset the timer's tiùe
+                elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));
+                setTotalTime();
+                
+                //display the song and artist name
+                int pos=0;
+                pos=mService.getCurrentSongIndex();
+                Log.v(TAG, "updateUI: pos="+pos);
+                String [] songInfo = mdb.getSongInfoFromCP(pos);
+                titre.setText(songInfo[0]);
+                artiste.setText(songInfo[1]);
+                
+                if( mService.getState() == Music.State.PLAYING) {
+                    //remove timer
+                    mTimeHandler.removeCallbacks(timerTask);
+                    // add timer task to ui thread
+                    mTimeHandler.post(timerTask);
+                    lecture.setText(R.string.pause);
+                }             
+                else {
+                    lecture.setText(R.string.play);
+                }
+                enableButtons(true);
             }
-            enableButtons(true);
+            else if(mService.getState() == Music.State.STOPPED){
+                noSongToPlay();
+                enableButtons(true);
+            }
+            else if(mService.getState() == Music.State.END_PLAYLIST_REACHED){
+                noSongToPlay();
+                enableButtons(false);
+            }
+            
         }
-        else if(mService.getState() == Music.State.STOPPED){
-            noSongToPlay();
-            enableButtons(true);
-        }
-        else if(mService.getState() == Music.State.END_PLAYLIST_REACHED){
-            noSongToPlay();
-            enableButtons(false);
-        }
-        
-    }
-    catch( DeadObjectException ex){} 
+        catch( DeadObjectException ex){} 
     }
 
     /* TODO Supprimer la communication avec le service quand la fenetre n'est plus affichée ? */
     //communication from the service
     private final IPlayerUI.Stub mServiceListener = new IPlayerUI.Stub() 
     {
+        
+        public void handleStartPlaying() 
+        {
+            Log.v(TAG, "Starting playing a song handled in PlayerUI");
+            mServHandler.post(new Runnable()
+            {
+            public void run()
+            {
+                updateUI();
+            }
+            });
     
-    public void handleStartPlaying() 
-    {
-        Log.v(TAG, "Starting playing a song handled in PlayerUI");
-        mServHandler.post(new Runnable()
+        } 
+        
+        public void handleEndSong() 
         {
-        public void run()
-        {
-            updateUI();
-        }
-        });
+            Log.v(TAG, "End song handled in PlayerUI");
+            mServHandler.post(new Runnable()
+            {
+            public void run()
+            {
+                updateUI();
+            }
+            });
+        
+        }   
 
-    } 
-    
-    public void handleEndSong() 
-    {
-        Log.v(TAG, "End song handled in PlayerUI");
-        mServHandler.post(new Runnable()
+        public void handleEndPlaylist()
         {
-        public void run()
-        {
-            updateUI();
+            mServHandler.post(new Runnable()
+            {
+            public void run()
+            {
+                updateUI();
+                enableButtons(false);
+            }
+            });
         }
-        });
-
-    }   
-
-    public void handleEndPlaylist()
-    {
-        mServHandler.post(new Runnable()
-        {
-        public void run()
-        {
-            updateUI();
-            enableButtons(false);
-        }
-        });
-    }
     };
 
 
-
+    /*
+     * When nothing is played; it's the default display 
+     */
     private void noSongToPlay()
     {
         mTimeHandler.removeCallbacks(timerTask);
@@ -512,6 +538,7 @@ public class PlayerUI extends Activity
         lecture.setText(R.string.play);
         //previous.setEnabled(false);
     }
+
 
     public boolean onTouchEvent(MotionEvent ev){
     //Log.v("touche event", ev.toString()+ " focus : "+ this.getCurrentFocus());
@@ -532,7 +559,6 @@ public class PlayerUI extends Activity
                 playSong(PLAY.PREV);
                 previous.setBackground(android.R.drawable.btn_default);
             }
-            
             //lecture.requestFocus();
             return true;
         case KeyEvent.KEYCODE_DPAD_RIGHT :
@@ -553,30 +579,31 @@ public class PlayerUI extends Activity
     }
 
     public boolean onKeyDown(int keycode, KeyEvent event){
-    //Log.v("event down", event.toString());
-    switch(keycode){
-    case KeyEvent.KEYCODE_DPAD_DOWN :
-        return true;
-    case KeyEvent.KEYCODE_DPAD_UP :
-        return true;
-    case KeyEvent.KEYCODE_DPAD_LEFT :
-        if( previous.isEnabled()){
-            previous.setBackground(android.R.drawable.btn_default_selected);
+        //Log.v("event down", event.toString());
+        switch(keycode){
+            case KeyEvent.KEYCODE_DPAD_DOWN :
+                return true;
+            case KeyEvent.KEYCODE_DPAD_UP :
+                return true;
+            case KeyEvent.KEYCODE_DPAD_LEFT :
+                if( previous.isEnabled()){
+                    previous.setBackground(android.R.drawable.btn_default_selected);
+                }
+                return true;
+            case KeyEvent.KEYCODE_DPAD_RIGHT :
+                if( next.isEnabled()){
+                    next.setBackground(android.R.drawable.btn_default_selected);
+                }
+                return true;
+            case KeyEvent.KEYCODE_DPAD_CENTER :
+                return true;
         }
-        return true;
-    case KeyEvent.KEYCODE_DPAD_RIGHT :
-        if( next.isEnabled()){
-            next.setBackground(android.R.drawable.btn_default_selected);
-        }
-        return true;
-    case KeyEvent.KEYCODE_DPAD_CENTER :
-        return true;
-    }
-    return super.onKeyDown(keycode, event);
+        return super.onKeyDown(keycode, event);
     }
 
-    //call the service methods prev() or next() in function of type
-    //and refresh the UI
+    /*call the service methods prev() or next() in function of type and refresh the UI
+     * @param type indicates wich buttons: next or previous has been clicked
+    */
     private void playSong( int type){
     try
     {
@@ -586,7 +613,7 @@ public class PlayerUI extends Activity
         else{
             mService.prev();
         }
-        updateUI();
+        updateUI(); //refresh the display
 
     }
         catch (DeadObjectException ex) {
