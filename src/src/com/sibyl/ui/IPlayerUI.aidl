@@ -21,6 +21,8 @@ package com.sibyl.ui;
 
 interface IPlayerUI {
 
+    void handleStartPlaying();
+    
     void handleEndSong();
     
     void handleEndPlaylist();
