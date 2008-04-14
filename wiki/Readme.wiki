@@ -11,7 +11,7 @@ Contact : http://code.google.com/p/sibyl
 
 SDK version: M5-RC15
 
-Screen type: HVGA-P
+Emulator Skins: HVGA-P
 
 ** INSTALL **
 
