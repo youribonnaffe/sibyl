@@ -40,6 +40,7 @@ import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.sibyl.Directory;
 import com.sibyl.ISibylservice;
@@ -47,42 +48,67 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 
+/**
+ * 
+ * Activité - Interface Utilisateur - permettant la configuration des options de Sibyl
+ * On y gère en autre, la mise à jour des répertoires de musique, le mode de musique joué.
+ * 
+ * @author Sibyl-project
+ *
+ */
 public class ConfigUI extends Activity
 {
-    ISibylservice mService = null;
+    private static final int BACK_ID = Menu.FIRST; // Elément du ménu permettant l'arret de l'activité
+    private static final String TAG = "CONFIG"; // Tag servant au débugage
     
-    private EditText mText;
-    private Button addMusic;
-    private Button delMusic;
-    private Button updateMusic;
-    private Button repeatMusic;
-    private ArrayList<String> listFile;
-    private static final int BACK_ID = Menu.FIRST;
-    private int repeatMod = 0; 
-    private static final String TAG = "CONFIG";
-    
+    private ISibylservice mService = null;  //core service s'occupant de la lecture
+    private EditText mListDir;  // liste des répertoires de musique
+    private Button addDir;    // bouton permettant l'ajout de répertoires musiques
+    private Button delDir;    // bouton permettant la suppression de répertoires de musiques
+    private Button updateMusic; // bouton servant à mettre a jour la base de donnée
+    private TextView repeatMode;    // Affichage du mode de lecture en cours
+    private Button repeatMusicNo; // bouton permettant de changer de mode de lecture
+    private Button repeatMusicOne; // bouton permettant de changer de mode de lecture
+    private Button repeatMusicAll; // bouton permettant de changer de mode de lecture
+    private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
     
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created. 
+     */
     @Override
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
         setContentView(R.layout.config);
-        launchService();
-        mText = (EditText) findViewById(R.id.musicData);
-        addMusic = (Button) findViewById(R.id.addMusic);
-        delMusic = (Button) findViewById(R.id.delMusic);
-        updateMusic = (Button) findViewById(R.id.updateMusic);
-        repeatMusic = (Button) findViewById(R.id.repMusic);
-        addMusic.setOnClickListener(mAddMusic);
-        delMusic.setOnClickListener(mDelMusic);
+        
+        launchService(); // lancement du service
+        
+        /* Association des élément aux fichiers XML */
+        mListDir = (EditText) findViewById(R.id.musicData);
+        addDir = (Button) findViewById(R.id.addMusic);
+        delDir = (Button) findViewById(R.id.addMusic);
+        updateMusic = (Button) findViewById(R.id.addMusic);
+        repeatMusicNo = (Button) findViewById(R.id.repMusicNo);
+        repeatMusicOne = (Button) findViewById(R.id.repMusicOne);
+        repeatMusicAll = (Button) findViewById(R.id.repMusicAll);
+        repeatMode = (TextView) findViewById(R.id.repMode);
+        
+        /* Mise en place des actions correspondantes aux boutons */
+        addDir.setOnClickListener(mAddMusic);
+        delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
-        repeatMusic.setOnClickListener(mRepeatMusic);
-        repeatMusic.setFocusable(false);
+        repeatMusicNo.setOnClickListener(mRepeatMusicNo);
+        repeatMusicOne.setOnClickListener(mRepeatMusicOne);
+        repeatMusicAll.setOnClickListener(mRepeatMusicAll);
+        
+        Log.v(TAG,"ICI");
+        
+        /* connexion à la base de données */
         try
         {
             mdb = new MusicDB(this);
+            updateMusic.setFocusable(true);
         }
         catch(SQLiteDiskIOException ex)
         {
@@ -90,44 +116,48 @@ public class ConfigUI extends Activity
         }
     }
     
+    /**
+     * Appellé quand l'UI devient visible à l'utilisateur
+     */
     @Override
     protected void onStart()
     {
         super.onStart();
+        
+        /* MAJ de la liste des répertoires */
         listFile = new ArrayList<String>();
         Cursor c = mdb.getDir();
+        String str ="";
         while (c.next())
         {
-            //Log.v(TAG,"ADD !"+c.getString(0));
             listFile.add(c.getString(0));
+            str += c.getString(0)+'\n';
+            //Log.v(TAG,"ADD "+c.getString(0));
         }
-        String str = "";
-        for (int i = 0; i < listFile.size(); i++)
-        {
-            str += listFile.get(i)+'\n';
-        }
-        mText.setText(str);
+        mListDir.setText(str);
     }
     
-    @Override
-    protected void onStop()
-    {
-        super.onStart();
-
-    }
-    
+    /**
+     * Lance l'UI permettant d'ajouter un répertoire de musiques
+     */
     private void displayAddDir() 
     {
         Intent i = new Intent(this, AddDirUI.class);
         startSubActivity(i, 0);
     }
     
+    /**
+     * Lance l'UI permettant la suppréssion d'un répertoire de musiques
+     */
     private void displayDelDir() 
     {
         Intent i = new Intent(this, DelDirUI.class);
         startSubActivity(i, 0);
     }
     
+    /**
+     * Écouteur placé sur le bouton permettant l'ajout de répertoires de musiques
+     */
     private OnClickListener mAddMusic = new OnClickListener()
     {
         public void onClick(View v)
@@ -136,6 +166,9 @@ public class ConfigUI extends Activity
         }
     };
     
+    /**
+     * Écouteur placé sur le bouton permettant la suppression de répertoires de musiques
+     */
     private OnClickListener mDelMusic = new OnClickListener()
     {
         public void onClick(View v)
@@ -144,11 +177,82 @@ public class ConfigUI extends Activity
         }
     };
     
+    /**
+     * Écouteur placé sur le bouton permettant la mise à jour de la bibliothèque de musiques
+     */
     private OnClickListener mUpdateMusic = new OnClickListener()
     {
         public void onClick(View v)
         {
-            mdb.clearDB();
+            // lancement de la mise à jour dans un thread
+            UpdateTask updateTask = new UpdateTask(mdb);
+            Thread t = new Thread (updateTask);
+            t.start();
+        }
+    };
+    
+    /**
+     * Classe gérant la mise a jour de la collection de musiques
+     * Gestion faite dans un thread d'ou l'utilisation de Runnable
+     * 
+     * @author Sibyl-project
+     *
+     */
+    private class UpdateTask implements Runnable 
+    {
+        private static final String TAG = "UPDATETASK"; /** TAG servant au débugage */
+        private MusicDB mDB; /** Base de donnée */
+        
+        /**
+         * Constructeur
+         * 
+         * @param mDB base de donnée contenant la collection à mettre à jour
+         */
+        public UpdateTask(MusicDB mDB)
+        {
+            this.mDB=mDB;
+        }
+        
+        /**
+         * Méthode mettant effectivement à jour la collection
+         * 
+         * @param path Répertoire contenant des musiques à ajouter à la collection
+         */
+        private void fillBD (String path)
+        {
+            // get all mp3 files in path
+            try
+            {
+                // long t = System.currentTimeMillis();
+                
+                // get all mp3 files in path & insert them in the database
+                for(String file : Directory.scanFiles(path, ".mp3"))
+                { 
+                    //ugly string .mp3
+                    mdb.insert(file);                
+                }
+                
+                //Log.v(TAG, "temps "+(System.currentTimeMillis()-t)); // Permet de calculer le temps d'ajout
+                
+            }catch(SQLiteException sqle){
+                Log.v(TAG, sqle.toString());
+                // warn user
+            }catch(FileNotFoundException fnfe){
+                Log.v(TAG, fnfe.toString());
+                // warn user
+            }catch(IOException ioe){
+                Log.v(TAG, ioe.toString());
+                // warn user
+            }
+        }
+        
+        /**
+         * Moteur de la tâche permettant la mise à jour de la collection
+         */
+        public void run() 
+        {
+            /* TODO Peut ne pas être judicieux de faire ainsi (on vide tout et on remet tout) */
+            mDB.clearDB(); 
             for(int i=0; i<listFile.size(); i++)
             {
                 fillBD(listFile.get(i));
@@ -156,64 +260,93 @@ public class ConfigUI extends Activity
         }
     };
     
-    private OnClickListener mRepeatMusic = new OnClickListener()
+    
+    /**
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     */
+    private OnClickListener mRepeatMusicNo = new OnClickListener()
     {
         public void onClick(View v)
         {
-            repeatMod = (repeatMod + 1) % 3;
             try 
             {
-                switch(repeatMod)
-                {
-                case 0 :
-                    repeatMusic.setText(R.string.rep_no);
-                    mService.setLooping(false);
-                    break;
-                case 1 :
-                    repeatMusic.setText(R.string.rep_one);
-                    mService.setLooping(true);
-                    break;
-                case 2 :
-                    repeatMusic.setText(R.string.rep_all);
-                    mService.setRepeatAll();
-                    break;
-                }
+                repeatMode.setText(R.string.rep_no);
+                mService.setLooping(false);
             } catch (DeadObjectException e) { }
         }
     };
     
+    /**
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     */
+    private OnClickListener mRepeatMusicOne = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            try 
+            {
+                repeatMode.setText(R.string.rep_one);
+                mService.setLooping(true);   
+            } catch (DeadObjectException e) { }
+        }
+    };
+    
+    /**
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     */
+    private OnClickListener mRepeatMusicAll = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            try 
+            {
+                repeatMode.setText(R.string.rep_all);
+                mService.setRepeatAll();
+            } catch (DeadObjectException e) { }
+        }
+    };
+    /**
+     * lancement du service
+     */
     public void launchService() 
     {
-        bindService(new Intent(ConfigUI.this,
-            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+        Intent i = new Intent(ConfigUI.this, Sibylservice.class);
+        bindService(i, mConnection, Context.BIND_AUTO_CREATE);
     }
     
+    /**
+     * gestion de la connection et de la deconnexion du service
+     */
     private ServiceConnection mConnection = new ServiceConnection()
     {
+        /**
+         * This is called when the connection with the service has been
+         * established, giving us the service object we can use to
+         * interact with the service.  We are communicating with our
+         * service through an IDL interface, so get a client-side
+         * representation of that from the raw service object.
+         */
         public void onServiceConnected(ComponentName className, IBinder service)
         {
-            // This is called when the connection with the service has been
-            // established, giving us the service object we can use to
-            // interact with the service.  We are communicating with our
-            // service through an IDL interface, so get a client-side
-            // representation of that from the raw service object.
             mService = ISibylservice.Stub.asInterface((IBinder)service);
-            repeatMusic.setFocusable(true);
+            repeatMusicNo.setFocusable(true);
+            repeatMusicOne.setFocusable(true);
+            repeatMusicAll.setFocusable(true);
             try 
             {
                 switch (mService.getLooping()) 
                 {
                 case 0:
-                    repeatMusic.setText(R.string.rep_no);
+                    repeatMode.setText(R.string.rep_no);
                     break;
                 case 1:
-                    repeatMusic.setText(R.string.rep_one);
+                    repeatMode.setText(R.string.rep_one);
                     break;
                 case 2:
-                    repeatMusic.setText(R.string.rep_all);
+                    repeatMode.setText(R.string.rep_all);
                     break;
                 default :
-                    repeatMusic.setText(R.string.play);
+                    repeatMode.setText("");
                     break;
                 }
             } catch (DeadObjectException doe) 
@@ -222,37 +355,21 @@ public class ConfigUI extends Activity
             }
         }
 
+        /**
+         * This is called when the connection with the service has been
+         * unexpectedly disconnected -- that is, its process crashed. 
+         */
         public void onServiceDisconnected(ComponentName className)
         {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
             mService = null;
                         
         }
     };
     
-    //  Fill the table Song with mp3 found in path
-    private void fillBD (String path)
-    {
-        try{
-            // ?? long t = System.currentTimeMillis();
-            // get all mp3 files in path & insert them in the database
-            for(String file : Directory.scanFiles(path, ".mp3")){ //ugly string .mp3
-                mdb.insert(file);                
-            }
-            //Log.v(TAG, "temps "+(System.currentTimeMillis()-t));
-        }catch(SQLiteException sqle){
-            Log.v(TAG, sqle.toString());
-            // warn user
-        }catch(FileNotFoundException fnfe){
-            Log.v(TAG, fnfe.toString());
-            // warn user
-        }catch(IOException ioe){
-            Log.v(TAG, ioe.toString());
-            // warn user
-        }
-    }
-    
+    /**
+     * Création du menu et ajout des différentes options
+     */
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
@@ -260,6 +377,9 @@ public class ConfigUI extends Activity
         return true;
     }
     
+    /**
+     * Appellé à la destruction de l'activité
+     */
     @Override
     protected void onDestroy() 
     {
@@ -267,6 +387,10 @@ public class ConfigUI extends Activity
         unbindService(mConnection);
     }
     
+    /**
+     * Appellé lorsqu'un élément du ménu est sélectionné.
+     * Gère les actions mises sur les éléments du menu
+     */
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) 
     {

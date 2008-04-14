@@ -36,46 +36,62 @@ import android.widget.ListView;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
+/**
+ * Activité - Interface Utilisateur - permettant la suppression de répertoires contenant des musiques
+ * L'interface se présente comment une liste d'éléments
+ * 
+ * @author Sibyl-project
+ */
 public class DelDirUI extends ListActivity
 {
 
-    private static final int DEL_ID = Menu.FIRST;
-    private static final int BACK_ID = Menu.FIRST +1;
-    
-    private static final String TAG = "DEL_DIR";
+    private static final int DEL_ID = Menu.FIRST; // Elément du ménu permettant la suppression d'un répertoire
+    private static final int BACK_ID = Menu.FIRST +1; // Elément du ménu permettant l'arret de l'activité
+    private static final String TAG = "DEL_DIR"; // TAG servant au débugage
 
     private MusicDB mdb;    //the database
+    private ArrayList<String> mStrings; // Liste des répertoires de musiques
     
-    private ArrayList<String> mStrings = new ArrayList<String>();
-    
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
         setContentView(R.layout.del_dir);
+        
+        mStrings = new ArrayList<String>();
+        
         try
         {
             mdb = new MusicDB(this);
             fillBD();
-            setListAdapter(new ArrayAdapter<String>(this,R.layout.del_dir_row,R.id.text1, mStrings));
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString() + "MERDE !");
+            Log.v(TAG, ex.toString());
         }   
+        
+        setListAdapter(new ArrayAdapter<String>(this,R.layout.del_dir_row,R.id.text1, mStrings));
     }
     
+    /**
+     * Met a jour la liste des répertoires contenant des musiques
+     */
     private void fillBD ()
     {
         ArrayList<String> listDir = mStrings;
         Cursor c = mdb.getDir();
         while (c.next())
         {
-            Log.v(TAG,"ADD !"+c.getString(0));
             listDir.add(c.getString(0));
         }
-        //return listDir;
     }
     
+    /**
+     * Création du menu et ajout des différentes options
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
@@ -85,6 +101,10 @@ public class DelDirUI extends ListActivity
         return true;
     }
     
+    /**
+     * Appellé lorsqu'un élément du ménu est sélectionné.
+     * Gère les actions mises sur les éléments du menu
+     */
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
@@ -93,7 +113,6 @@ public class DelDirUI extends ListActivity
         {
         case DEL_ID:
             int i = getSelectedItemPosition();
-            Log.v(TAG,""+i);
             mdb.delDir(mStrings.get(i));
             finish();
             break;
@@ -104,29 +123,25 @@ public class DelDirUI extends ListActivity
         return true;
     }
     
+    /**
+     * Méthode gérant les actions a effectuer en fonction de l'objet de la liste sélectionné
+     */
     @Override
     protected void onListItemClick(ListView l, View v, final int position, long id) 
     {
-        //Log.v(TAG,"test <<<<<<<<<<<< >>>>>>>>>>>>>"+position); 
         new AlertDialog.Builder(DelDirUI.this)
                 .setIcon(R.drawable.play)
                 .setTitle(R.string.dial_deldir)
-                .setPositiveButton("yes", new DialogInterface.OnClickListener() 
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int whichButton) 
                     {
                         int i = position;
-                        //Log.v(TAG,""+i);
                         mdb.delDir(mStrings.get(i));
                         finish();
                     }
                 })
-                .setNegativeButton("no", new DialogInterface.OnClickListener() 
-                {
-                    public void onClick(DialogInterface dialog, int whichButton) 
-                    {
-                    }
-                })
+                .setNegativeButton("No", null)
                 .show();
     }
 }

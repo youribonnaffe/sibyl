@@ -19,51 +19,63 @@
 package com.sibyl.ui;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.ListActivity;
-import android.content.Context;
 import android.database.sqlite.SQLiteDiskIOException;
-import android.database.sqlite.SQLiteException;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Menu.Item;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
+/**
+ * Activité - Interface Utilisateur - permettant l'ajout de répertoires contenant des musiques
+ * L'interface se présente comment une liste d'éléments
+ * Elle se présente comme un navigateur dans l'arboressence d'android
+ * 
+ * @author Sibyl-project
+ *
+ */
 public class AddDirUI extends ListActivity
 {
-    private static final int ADD_ID = Menu.FIRST;
-    private static final int BACK_ID = Menu.FIRST +1;
-
-    private static final String TAG = "ADD_DIR";
-    private IconifiedTextListAdapter ipla;
-    private String parent;
-    private String path;
-
+    private static final int ADD_ID = Menu.FIRST; // Elément du ménu permettant l'ajout d'un répertoire
+    private static final int BACK_ID = Menu.FIRST +1; // Elément du ménu permettant l'arret de l'activité
+    private static final String TAG = "ADD_DIR"; // TAG servant au débugage
+    
+    private IconifiedTextListAdapter ipla; // liste des éléments à afficher (texte + icone associée) 
+    private String parent;  // répertoire parent
+    private String path;    // répertoire courant
     private MusicDB mdb;    //the database
+        /* TODO sachant qu'on l'utilise effectivement que dans une 
+         * seule méthode, est il judicieux d'en faire une variable à ce 
+         * niveau, ou une simple variable locale suffirait*/
 
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
     public void onCreate(Bundle icicle) 
     {
     	super.onCreate(icicle);
         setContentView(R.layout.add_dir);
+        
+        // répertoire par défaut : /data/musique
         path = "/data/music";
+        
+        /* Association des élément aux fichiers XML */
         setTitle(getText(R.string.dir)+path);
+
+        /* création du navigateur */
+        ipla = fillBD(path);
+        setListAdapter(ipla); 
+        
+        /* TODO utile ?*/
     	try
     	{
-            ipla = fillBD(path);
-            setListAdapter(ipla);
     	    mdb = new MusicDB(this);
     	}
     	catch(SQLiteDiskIOException ex)
@@ -72,10 +84,12 @@ public class AddDirUI extends ListActivity
     	}   
     }
 
+    /**
+     * Méthode gérant les actions a effectuer en fonction de l'objet de la liste sélectionné
+     */
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) 
     {
-        
         if( ipla.isSelectable(position))
         {
             String lPath = ((IconifiedText) ipla.getItem(position)).getText();
@@ -87,10 +101,10 @@ public class AddDirUI extends ListActivity
             else
             {
                 path = lPath;
-                ipla = fillBD(lPath);   
+                ipla = fillBD(lPath);
             }
         	setListAdapter(ipla);
-            setTitle("Répertoire : "+path);
+            setTitle(getText(R.string.dir)+path);
         }
         else
         {
@@ -98,13 +112,18 @@ public class AddDirUI extends ListActivity
         }
     }
 
-//  Fill the table Song with mp3 found in path
+    /**
+     * Fill the table Song with mp3 found in path 
+     * @param path chemin du répertoire a afficher dans le navigateur
+     * @return liste iconnifiée contenant tous les élément a afficher
+     */
     private IconifiedTextListAdapter fillBD (String path)
     {
         IconifiedTextListAdapter str = new IconifiedTextListAdapter(this);
-        // get all mp3 files in path
+        
         File dir = new File(path);
         String parent = dir.getParent();
+        
         // might have to check !=null
         if (parent != null)
         {
@@ -112,37 +131,27 @@ public class AddDirUI extends ListActivity
             str.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
         }
         
-        //Log.v(TAG,"taille dir : "+dir.list().length);
         for(File f: dir.listFiles())
         {
-            try
+        	if (f.isDirectory())
+        	{
+        	    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
+        	}
+            else
             {
-            	if (f.isDirectory())
-            	{
-            	    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
-            	}
-                else
+                if(f.getName().endsWith(".mp3"))
                 {
-                    if(f.getName().endsWith(".mp3"))
-                    {
-                        str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
-                    }
+                    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
                 }
-            }
-            catch(SQLiteException sqle)
-            {
-                Log.v(TAG,sqle.toString());
             }
         }
         return str;
     }
 
+    /**
+     * Création du menu et ajout des différentes options
+     */
     @Override
-    protected void onDestroy() 
-    {
-        super.onDestroy();     
-    }
-
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
@@ -151,15 +160,18 @@ public class AddDirUI extends ListActivity
         return true;
     }
 
+    /**
+     * Appellé lorsqu'un élément du ménu est sélectionné.
+     * Gère les actions mises sur les éléments du menu
+     */
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
         super.onMenuItemSelected(featureId, item);
+        
         switch(item.getId()) 
         {
         case ADD_ID:
-            Log.v(TAG, "Insert");
-            Log.v(TAG,"Ajout dans la table du repertoire :"+path);
             mdb.insertDir(path);
             finish();
             break;
@@ -171,164 +183,4 @@ public class AddDirUI extends ListActivity
         return true;
     }
 }
-
-
-/*class IconifiedPath implements Comparable<IconifiedPath>
-{
-    private String mText ="";
-    private Drawable mIcon;
-    private boolean mSelectable = true;
-    
-    public IconifiedPath(String text, Drawable img)
-    {
-        mIcon = img;
-        mText = text;
-    }
-    
-    public IconifiedPath(String text, Drawable img, boolean selectable)
-    {
-        mIcon = img;
-        mText = text;
-        mSelectable = selectable;
-    }
-    
-    public boolean isSelectable()
-    {
-        return mSelectable;
-    }
-    
-    public String getText()
-    {
-        return mText;
-    }
-    
-    public void setText(String text)
-    {
-        mText = text;
-    }
-    
-    public void setIcon(Drawable icon)
-    {
-        mIcon = icon;
-    }
-    
-    public Drawable getIcon()
-    {
-        return mIcon;
-    }
-    
-    public int compareTo(IconifiedPath iP) 
-    {
-        if(this.mText !=null)
-            return this.mText.compareTo(iP.getText());
-        else
-            throw new IllegalArgumentException();
-    }
-}*/
-
-/*class IconifiedPathView extends LinearLayout
-{
-    private TextView mText;
-    private ImageView mIcon;
-    
-    public IconifiedPathView(Context context, IconifiedPath aIconifiedPath)
-    {
-        super(context);
-        
-        this.setOrientation(HORIZONTAL);
-        
-        mIcon = new ImageView(context);
-        mIcon.setImageDrawable(aIconifiedPath.getIcon());
-        mIcon.setPadding(0, 2, 5, 0);
-        
-        addView(mIcon, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        
-        mText = new TextView(context);
-        mText.setText(aIconifiedPath.getText());
-        
-        addView(mText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-    }
-    
-    public void setText(String texte)
-    {
-        mText.setText(texte);
-    }
-    
-    public void setIcon(Drawable icon)
-    {
-        mIcon.setImageDrawable(icon);
-    }   
-}*/
-
-/*
-class IconifiedPathListAdapter extends BaseAdapter
-{
-    private Context mContext;
-
-    private List<IconifiedPath> mList = new ArrayList<IconifiedPath>();
-    
-    public IconifiedPathListAdapter(Context context)
-    {
-        mContext = context;
-    }
-    
-    public void add(IconifiedPath i)
-    {
-        mList.add(i);
-    }
-    
-    public void setList(List<IconifiedPath> list)
-    {
-        mList = list;
-    }
-    
-    public int getCount() 
-    {
-        return mList.size();
-    }
-
-    public Object getItem(int position) 
-    {
-        return mList.get(position);
-    }
-    
-    public boolean areAllListSelectable()
-    {
-        return false;
-    }
-    
-    public boolean isSelectable(int position)
-    {
-        try
-        {
-            return mList.get(position).isSelectable();
-        }
-        catch (IndexOutOfBoundsException iobe)
-        {
-            return super.isSelectable(position);
-        }
-    }
-
-    public long getItemId(int position) 
-    {
-        return position;
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) 
-    {
-        IconifiedPathView ipv;
-        if(convertView == null)
-        {
-            ipv = new IconifiedPathView(mContext, mList.get(position));
-        }
-        else
-        {
-            ipv = (IconifiedPathView) convertView;
-            ipv.setText(mList.get(position).getText());
-            ipv.setIcon(mList.get(position).getIcon());
-        }
-        return ipv;
-    }
-    
-}*/
     
