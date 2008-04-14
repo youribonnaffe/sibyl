@@ -7,9 +7,15 @@ By : Youri Bonnaffé, Sylvain Jeanne, Bertrand Mandrin, Ismael Merzaq
 Contact : http://code.google.com/p/sibyl
           sibyl-dev@googlegroups.com
 
+*****
+
+SDK version: M5-RC15
+
+Screen type: HVGA-P
+
 ** INSTALL **
 
-- Push sibyl.apk file to the emulator
+- Push Sibyl.apk file to the emulator
 - Push mp3 files to /data/music (or somewhere else, this is the default folder for the library) on the emulator
 - Launch Sibyl program
 - Add /data/music to your library with Menu > Option 
