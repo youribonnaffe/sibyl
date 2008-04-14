@@ -34,8 +34,8 @@
     <string name="time_zero">00:00</string>
     <string name="separateur">/</string>
     <string name="time_total">05:00</string>
-    <string name="next">&gt;</string>
-    <string name="previous">&lt;</string>
+    <string name="next">&gt;&gt;</string>
+    <string name="previous">&lt;&lt;</string>
 
     <!--  PlayListUI -->
     <string name="playList">Playlist</string>
