@@ -59,6 +59,12 @@ interface ISibylservice {
         If looping is set to 0: the current song is played once 
         If looping is set to 1: the current song is repeated while looping is not 0 */
         
+    int getLooping();
+    /* get looping state :
+        0 : no loop
+        1 : loop song
+        2 : loop all songs  */
+        
     void playSongPlaylist(int pos);
     /* joue la chanson pos de la playlist */
     

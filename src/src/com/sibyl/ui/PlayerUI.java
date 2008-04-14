@@ -80,11 +80,6 @@ public class PlayerUI extends Activity
     private Button previous;
     private Button avance;
 
-    //not used
-    private boolean play = false; //indicates if Sibyl is playing a song
-    private boolean pause = false; //indicates if a stop is paused  /* TODO what ?!? */
-    private boolean stopped = false;
-
     private MusicDB mdb;    //the database
 
     //handler to call function when datas are received from the service
@@ -128,7 +123,6 @@ public class PlayerUI extends Activity
         lecture.requestFocus();
         //launch the service.
         launchService();
-        elapsedTime.setText(DateUtils.formatElapsedTime(0));
         //create or connect to the Database
         try
         {
@@ -181,9 +175,12 @@ public class PlayerUI extends Activity
         //get labels
         artiste = (TextView) findViewById(R.id.artiste);
         titre = (TextView) findViewById(R.id.titre);
-        elapsedTime = (TextView) findViewById(R.id.tpsEcoule);
         tempsTotal = (TextView) findViewById(R.id.tpsTotal);
-       
+        elapsedTime = (TextView) findViewById(R.id.tpsEcoule);
+
+        elapsedTime.setText(DateUtils.formatElapsedTime(0));
+        tempsTotal.setText(DateUtils.formatElapsedTime(0));
+        
         //set cover
         ImageView cover = (ImageView) findViewById(R.id.cover);
         cover.setImageDrawable(Drawable.createFromPath("/data/music/cover.jpg"));  
@@ -201,7 +198,6 @@ public class PlayerUI extends Activity
     protected void onStop() 
     {
         super.onStop();
-        stopped = true;
         mTimeHandler.removeCallbacks(timerTask); // stop the timer update
     }
 
@@ -248,8 +244,6 @@ public class PlayerUI extends Activity
                     Log.v(TAG, ex.toString());
                     // user should be warned
                 }
-                play = false;
-                pause = false;
                 lecture.setText(R.string.play);
                 finish();
                 break;
@@ -285,17 +279,15 @@ public class PlayerUI extends Activity
             //connection of the service to the activity
             try {
                 mService.connectToReceiver(mServiceListener);
+                //now that we are connected to the service, user can click on buttons
+                //to start playing music
                 enableButtons(true);
+                updateUI();
             }
             catch(DeadObjectException ex){
             Log.v(TAG, ex.toString());
             // user should be warned
             }
-            
-            //now that we are connected to the service, user can click on buttons
-            //to start playing music
-            enableButtons(true);
-    
         }
     
         public void onServiceDisconnected(ComponentName className)
@@ -312,6 +304,7 @@ public class PlayerUI extends Activity
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
             enableButtons(false);
+            // updateUI(); ??
         }
     };
 
@@ -444,28 +437,30 @@ public class PlayerUI extends Activity
         try{
             if( mService.getState() == Music.State.PLAYING || mService.getState() == Music.State.PAUSED){
                 //reset the timer's tiùe
-                elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));
-                setTotalTime();
+                //elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));
+                
                 
                 //display the song and artist name
-                int pos=0;
-                pos=mService.getCurrentSongIndex();
+                int pos=mService.getCurrentSongIndex();
                 Log.v(TAG, "updateUI: pos="+pos);
-                String [] songInfo = mdb.getSongInfoFromCP(pos);
-                titre.setText(songInfo[0]);
-                artiste.setText(songInfo[1]);
-                
-                if( mService.getState() == Music.State.PLAYING) {
-                    //remove timer
-                    mTimeHandler.removeCallbacks(timerTask);
-                    // add timer task to ui thread
-                    mTimeHandler.post(timerTask);
-                    lecture.setText(R.string.pause);
-                }             
-                else {
-                    lecture.setText(R.string.play);
+                if(pos > 0){
+                    setTotalTime();
+                    String [] songInfo = mdb.getSongInfoFromCP(pos);
+                    titre.setText(songInfo[0]);
+                    artiste.setText(songInfo[1]);
+
+                    if( mService.getState() == Music.State.PLAYING) {
+                        //remove timer
+                        mTimeHandler.removeCallbacks(timerTask);
+                        // add timer task to ui thread
+                        mTimeHandler.post(timerTask);
+                        lecture.setText(R.string.pause);
+                    }             
+                    else {
+                        lecture.setText(R.string.play);
+                    }
+                    enableButtons(true);
                 }
-                enableButtons(true);
             }
             else if(mService.getState() == Music.State.STOPPED){
                 noSongToPlay();

@@ -27,7 +27,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
@@ -62,8 +61,6 @@ public class ConfigUI extends Activity
     private int repeatMod = 0; 
     private static final String TAG = "CONFIG";
     
-    private static final String PREF_NAME = "SibylPref";
-    
     private MusicDB mdb;    //the database
     
     /** Called when the activity is first created. */
@@ -90,11 +87,6 @@ public class ConfigUI extends Activity
         catch(SQLiteDiskIOException ex)
         {
             Log.v(TAG, ex.toString());
-        }
-        
-        ArrayList<String> al = Directory.scanFiles("/data/music/",".mp3");
-        for(String s : al){
-            Log.v("LIST", s);
         }
     }
     
@@ -207,28 +199,21 @@ public class ConfigUI extends Activity
             // representation of that from the raw service object.
             mService = ISibylservice.Stub.asInterface((IBinder)service);
             repeatMusic.setFocusable(true);
-            SharedPreferences settings = getSharedPreferences(PREF_NAME,0);
-            int repeatMod = settings.getInt("repeatMod",0);
-            Log.v(TAG,"mode de repetition :"+repeatMod);
             try 
             {
-                switch (repeatMod) 
+                switch (mService.getLooping()) 
                 {
                 case 0:
                     repeatMusic.setText(R.string.rep_no);
-                    mService.setLooping(false);    
                     break;
                 case 1:
                     repeatMusic.setText(R.string.rep_one);
-                    mService.setLooping(true);
                     break;
                 case 2:
                     repeatMusic.setText(R.string.rep_all);
-                    mService.setRepeatAll();
                     break;
                 default :
                     repeatMusic.setText(R.string.play);
-                    mService.setLooping(false);
                     break;
                 }
             } catch (DeadObjectException doe) 
@@ -279,12 +264,6 @@ public class ConfigUI extends Activity
     protected void onDestroy() 
     {
         super.onDestroy();
-        
-        SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("repeatMod",repeatMod);
-
-        editor.commit();
         unbindService(mConnection);
     }
     
