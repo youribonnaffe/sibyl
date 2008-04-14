@@ -119,6 +119,7 @@ public class PlayerUI extends Activity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setTitle(R.string.app_name);
         setContentView(R.layout.main);
         initializeViews();
         lecture.requestFocus();
