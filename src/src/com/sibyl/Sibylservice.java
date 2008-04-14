@@ -46,17 +46,16 @@ public class Sibylservice extends Service
     private int currentSong;
     private IPlayerUI uiHandler;
     private NotificationManager nm;
-    static private final String PREFS = "sibyl_prefs";
 
     /** creation of the service */
     @Override
     protected void onCreate()
     {        
         /* initialization of the state of the service */
-        playerState=Music.State.PAUSED;
+        playerState=Music.State.STOPPED;
         
         // retrieve preferences
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
         currentSong= prefs.getInt("currentSong", 1);
         repAll = prefs.getBoolean("repAll", false);
         looping = prefs.getBoolean("looping", false);
@@ -115,7 +114,7 @@ public class Sibylservice extends Service
         mp.release();
         nm.cancel(R.layout.notification);
         // save preferences
-        SharedPreferences.Editor prefs = getSharedPreferences(PREFS, MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE).edit();
         prefs.putInt("currentSong", currentSong);
         prefs.putBoolean("repAll", repAll);
         prefs.putBoolean("looping", looping);

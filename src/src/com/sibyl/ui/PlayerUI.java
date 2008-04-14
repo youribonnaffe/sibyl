@@ -90,14 +90,16 @@ public class PlayerUI extends Activity
     //thread which shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
-        private int timer;
+        private int timer = 0;
         public void run() 
         {
             // re adjusting time
             try
             {
-            // display time
-            timer = mService.getCurrentPosition(); // seems to avoid ANR
+                // get time
+                if(mService.getState() == Music.State.PLAYING){
+                    timer = mService.getCurrentPosition(); // seems to avoid ANR
+                }
             }
             catch(DeadObjectException ex){
             // old value will be kept, if the song can't be played anymore
@@ -435,15 +437,16 @@ public class PlayerUI extends Activity
     private void updateUI() 
     {
         try{
-            if( mService.getState() == Music.State.PLAYING || mService.getState() == Music.State.PAUSED){
+            int state = mService.getState();
+            if( state == Music.State.PLAYING 
+                    || state == Music.State.PAUSED
+                    || state == Music.State.STOPPED){
                 //reset the timer's tiùe
-                //elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()));
-                
-                
                 //display the song and artist name
                 int pos=mService.getCurrentSongIndex();
                 Log.v(TAG, "updateUI: pos="+pos);
-                if(pos > 0){
+                // is there a song to display ?
+                if(pos > 0 && pos <= mdb.getPlaylistSize() ){
                     setTotalTime();
                     String [] songInfo = mdb.getSongInfoFromCP(pos);
                     titre.setText(songInfo[0]);
@@ -459,14 +462,12 @@ public class PlayerUI extends Activity
                     else {
                         lecture.setText(R.string.play);
                     }
-                    enableButtons(true);
+                }else{
+                    noSongToPlay();
                 }
-            }
-            else if(mService.getState() == Music.State.STOPPED){
-                noSongToPlay();
                 enableButtons(true);
             }
-            else if(mService.getState() == Music.State.END_PLAYLIST_REACHED){
+            else if(state == Music.State.END_PLAYLIST_REACHED){
                 noSongToPlay();
                 enableButtons(false);
             }

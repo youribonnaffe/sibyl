@@ -23,6 +23,8 @@ public class Music {
     /* printed name of the application */
     public static String APPNAME = "Sibyl";
     
+   public static final String PREFS = "sibyl_prefs";
+    
     /* states of the service */
     public static class State {
         public static int ERROR = -1;
