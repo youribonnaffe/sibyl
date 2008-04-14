@@ -57,7 +57,7 @@ public class Sibylservice extends Service
         
         // retrieve preferences
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        currentSong= prefs.getInt("currentSong", 0);
+        currentSong= prefs.getInt("currentSong", 1);
         repAll = prefs.getBoolean("repAll", false);
         looping = prefs.getBoolean("looping", false);
 
@@ -308,7 +308,7 @@ public class Sibylservice extends Service
         public void stop() {
             mp.stop();
             playerState=Music.State.STOPPED;
-            currentSong = 0; /*initialize currentSong for the next launch of the service*/
+            currentSong = 1; /*initialize currentSong for the next launch of the service*/
         }
         
         public void pause() {
