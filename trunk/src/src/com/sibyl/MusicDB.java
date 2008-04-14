@@ -153,6 +153,10 @@ public class MusicDB {
             }
 
             // how to ensure that ?
+
+            //reset preferences because the playlist is deleted
+            usedC.getSharedPreferences(Music.PREFS, Context.MODE_PRIVATE).edit().clear();
+            usedC.getSharedPreferences(Music.PREFS, Context.MODE_PRIVATE).edit().commit();
         }
 
         @Override
@@ -169,9 +173,6 @@ public class MusicDB {
             mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_album");
             mDb.execSQL("DROP TRIGGER IF EXISTS t_del_song_current_playlist");
             onCreate(mDb);
-            //reset preferences because the playlist is deleted
-            usedC.getSharedPreferences(Music.PREFS, Context.MODE_PRIVATE).edit().clear();
-            usedC.getSharedPreferences(Music.PREFS, Context.MODE_PRIVATE).edit().commit();
         }
 
         public SQLiteDatabase openDatabase(Context context, String name, CursorFactory factory, int newVersion){
