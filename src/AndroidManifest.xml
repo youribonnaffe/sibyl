@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sibyl">
-<<<<<<< .mine
-    <application android:icon="@drawable/icon" android:label="Sibyl">
-=======
-    <application android:icon="@drawable/logo">
->>>>>>> .r179
+    <application android:icon="@drawable/logo" android:label="Sibyl">
         <service android:name=".Sibylservice" android:process=":remote" />
 
         <activity android:theme="@android:style/Theme.Dark" android:multiprocess="false" android:name=".ui.PlayerUI">
