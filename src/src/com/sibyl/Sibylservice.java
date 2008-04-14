@@ -32,6 +32,7 @@ import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.sibyl.ui.IPlayListUI;
 import com.sibyl.ui.IPlayerUI;
 
 
@@ -45,6 +46,7 @@ public class Sibylservice extends Service
     private boolean looping;
     private int currentSong;
     private IPlayerUI uiHandler;
+    private IPlayListUI playlistUiHandler;
     private NotificationManager nm;
 
     /** creation of the service */
@@ -176,6 +178,7 @@ public class Sibylservice extends Service
                         try 
                         {//the UI is informed that the end of the playlist has been reached
                             uiHandler.handleEndPlaylist();
+                            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
                         } catch (DeadObjectException e) 
                         {
                             e.printStackTrace();
@@ -211,6 +214,8 @@ public class Sibylservice extends Service
         try 
         {// informs UI that we start playing a song
             uiHandler.handleStartPlaying();
+            // informs PlayList ui as well
+            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
         } catch (DeadObjectException e) 
         {
             e.printStackTrace();
@@ -300,6 +305,10 @@ public class Sibylservice extends Service
             uiHandler=receiver;
         }
 
+        public void connectToPlayList(IPlayListUI receiver){
+            playlistUiHandler = receiver;
+        }
+        
         public void start() {
             play();
         }

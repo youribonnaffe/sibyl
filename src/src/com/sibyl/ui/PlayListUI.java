@@ -177,6 +177,7 @@ public class PlayListUI extends ListActivity
                 /* Positionner le selecteur de la liste sur la chanson en cours
                  * une fois que le service est connecté
                  * */
+                mService.connectToPlayList(mServiceListener);
                 fillData();
             } 
             catch (Exception e) 
@@ -215,6 +216,15 @@ public class PlayListUI extends ListActivity
         super.onResume();
     }
 
+    private final IPlayListUI.Stub mServiceListener = new IPlayListUI.Stub() 
+    {
+        
+        public void handleChange() 
+        {
+            Log.v("PLAYLIST", "LE CORE SERVICE M'APPELLE !");
+            //changeSongPlayed(getListView().getSelectedView());
+        }
+    };
 
 
 }
