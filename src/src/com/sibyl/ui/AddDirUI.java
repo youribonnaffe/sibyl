@@ -71,6 +71,7 @@ public class AddDirUI extends ListActivity
 
         /* création du navigateur */
         ipla = fillBD(path);
+        
         setListAdapter(ipla); 
         
         /* TODO utile ?*/
@@ -119,33 +120,36 @@ public class AddDirUI extends ListActivity
      */
     private IconifiedTextListAdapter fillBD (String path)
     {
-        IconifiedTextListAdapter str = new IconifiedTextListAdapter(this);
+        IconifiedTextListAdapter itlab = new IconifiedTextListAdapter(this);
         
         File dir = new File(path);
         String parent = dir.getParent();
-        
         // might have to check !=null
         if (parent != null)
         {
             this.parent = parent;
-            str.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
+            itlab.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
         }
-        
-        for(File f: dir.listFiles())
+        Log.v(TAG,"tooooooooyt"+itlab);
+        File[] listeFile = dir.listFiles();
+        if (listeFile != null)
         {
-        	if (f.isDirectory())
-        	{
-        	    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
-        	}
-            else
+            for(File f: listeFile)
             {
-                if(f.getName().endsWith(".mp3"))
+                if (f.isDirectory())
                 {
-                    str.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                    itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
+                }
+                else
+                {
+                    if(f.getName().endsWith(".mp3"))
+                    {
+                        itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                    }
                 }
             }
         }
-        return str;
+        return itlab;
     }
 
     /**
