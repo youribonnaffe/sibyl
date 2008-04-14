@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
@@ -151,7 +152,13 @@ public class PlayListUI extends ListActivity
     }
     
     private void changeSongPlayed(View row) {
-        ((IconifiedTextView) row).setIcon(getResources().getDrawable(R.drawable.play_white));
+        /*((IconifiedTextView) row).setIcon(getResources().getDrawable(R.drawable.play_white));
+        //((IconifiedTextView)getListView().getSelectedView()).setIcon(getResources().getDrawable(R.drawable.puce));
+         Log.v(TAG,"old="+((IconifiedTextView)getListAdapter().getView(songPlayed, null, null)).getText().toString());
+
+        songPlayed = getListView().getSelectedItemPosition();
+        Log.v(TAG,((Integer) songPlayed).toString());*/
+        fillData();
     }
 
     /* TODO verifier que l'on se connecte bien au meme service que PlayerUI 
@@ -222,7 +229,7 @@ public class PlayListUI extends ListActivity
         public void handleChange() 
         {
             Log.v("PLAYLIST", "LE CORE SERVICE M'APPELLE !");
-            //changeSongPlayed(getListView().getSelectedView());
+            changeSongPlayed(null);
         }
     };
 

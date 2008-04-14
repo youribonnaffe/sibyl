@@ -39,4 +39,8 @@ public class IconifiedTextView extends LinearLayout
     {
         mIcon.setImageDrawable(icon);
     }   
+    
+    public CharSequence getText(){
+        return mText.getText();
+    }
 }
