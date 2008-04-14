@@ -19,10 +19,13 @@
 package com.sibyl;
 
 import com.sibyl.ui.IPlayerUI;
+import com.sibyl.ui.IPlayListUI;
 
 interface ISibylservice {
 
     void connectToReceiver(in IPlayerUI receiver);
+    
+    void connectToPlayList(in IPlayListUI receiver);
     
     void start();
     /* start playing the current item in the selected playlist */
