@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDiskIOException;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
@@ -160,6 +159,8 @@ public class PlayerUI extends Activity
         previous = (Button) findViewById(R.id.prec);
         avance = (Button) findViewById(R.id.avance);
         
+        avance.setVisibility(4);
+        
         //disable buttons until we are connected to the service
         enableButtons(false);
         
@@ -185,7 +186,7 @@ public class PlayerUI extends Activity
         
         //set cover
         ImageView cover = (ImageView) findViewById(R.id.cover);
-        cover.setImageDrawable(Drawable.createFromPath("/data/music/cover.jpg"));  
+        cover.setImageResource(R.drawable.logo);  
     }
     
     

@@ -23,7 +23,7 @@
 	    
 	<View         
     	android:layout_width="fill_parent"
-    	android:layout_height="10dip"/>
+    	android:layout_height="20dip"/>
         
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="wrap_content"
@@ -36,6 +36,7 @@
                 android:layout_column="1"
                 android:minHeight="40sp"
                 android:textSize="25sp"
+                android:textStyle="bold"
 				android:text="@string/titre" />
 	    </TableRow>
 
@@ -44,6 +45,7 @@
                 android:layout_column="1"
 				android:textSize="16sp"
 				android:textStyle="italic"
+				android:paddingLeft="10.0sp"
 				android:text="@string/artiste"/>
 	    </TableRow>
 	    
@@ -63,7 +65,7 @@
 	    
 		<TableRow>
 			<Button android:id="@+id/prec"
-				android:text="P"
+				android:text="@string/previous"
 				android:focusable="true"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"/>
@@ -74,7 +76,7 @@
 				android:layout_gravity="center"/>
 
 			<Button android:id="@+id/next"
-				android:text="N"
+				android:text="@string/next"
 				android:focusable="true"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"/>
