@@ -5,7 +5,7 @@ ADC submission
 By : Youri Bonnaffé, Sylvain Jeanne, Bertrand Mandrin, Ismael Merzaq
 
 Contact : http://code.google.com/p/sibyl
-          sibyl-dev-owner@googlegroups.com
+          sibyl-dev@googlegroups.com
 
 ** INSTALL **
 
