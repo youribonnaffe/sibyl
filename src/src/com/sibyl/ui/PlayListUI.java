@@ -32,12 +32,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 import com.sibyl.ISibylservice;
-import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
@@ -109,7 +106,7 @@ public class PlayListUI extends ListActivity
             {
                 mService.stop();
                 mdb.clearPlaylist();
-                fillData();
+                //fillData();
             } catch (DeadObjectException e) {
                 Log.v(TAG, e.toString());
                 // warn user

@@ -87,8 +87,8 @@ public class ConfigUI extends Activity
         /* Association des élément aux fichiers XML */
         mListDir = (EditText) findViewById(R.id.musicData);
         addDir = (Button) findViewById(R.id.addMusic);
-        delDir = (Button) findViewById(R.id.addMusic);
-        updateMusic = (Button) findViewById(R.id.addMusic);
+        delDir = (Button) findViewById(R.id.delMusic);
+        updateMusic = (Button) findViewById(R.id.updateMusic);
         repeatMusicNo = (Button) findViewById(R.id.repMusicNo);
         repeatMusicOne = (Button) findViewById(R.id.repMusicOne);
         repeatMusicAll = (Button) findViewById(R.id.repMusicAll);
