@@ -24,16 +24,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.sibyl.ui.IPlayerUI;
-import com.sibyl.Music;
 
 
 public class Sibylservice extends Service
@@ -47,17 +46,21 @@ public class Sibylservice extends Service
     private int currentSong;
     private IPlayerUI uiHandler;
     private NotificationManager nm;
+    static private final String PREFS = "sibyl_prefs";
 
     /** creation of the service */
     @Override
     protected void onCreate()
     {        
         /* initialization of the state of the service */
-        playerState=Music.State.STOPPED;
-        currentSong=1;
-        repAll = false;
-        looping = false;
+        playerState=Music.State.PAUSED;
         
+        // retrieve preferences
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        currentSong= prefs.getInt("currentSong", 0);
+        repAll = prefs.getBoolean("repAll", false);
+        looping = prefs.getBoolean("looping", false);
+
         /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
@@ -65,12 +68,14 @@ public class Sibylservice extends Service
         //create or connect to the Database
         try{
             mdb = new MusicDB(this);
+            updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
+            // load current song
+            preparePlaying(mdb.getSong(currentSong));
+            
         }catch (SQLiteDiskIOException e){
             Log.v("SibylService", e.getMessage());
             // what sould we do ? updateNotification ?
         }
-        
-        updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
     }
     
     /**
@@ -109,6 +114,13 @@ public class Sibylservice extends Service
         mp.stop();
         mp.release();
         nm.cancel(R.layout.notification);
+        // save preferences
+        SharedPreferences.Editor prefs = getSharedPreferences(PREFS, MODE_PRIVATE).edit();
+        prefs.putInt("currentSong", currentSong);
+        prefs.putBoolean("repAll", repAll);
+        prefs.putBoolean("looping", looping);
+        prefs.commit();
+        
     }
     
     /**
@@ -130,6 +142,9 @@ public class Sibylservice extends Service
         catch ( IOException ioe) 
         {
             Log.v(TAG, ioe.toString());
+        }
+        catch (IllegalArgumentException iae){
+            Log.v(TAG, iae.toString());
         }
     }
     
@@ -293,7 +308,7 @@ public class Sibylservice extends Service
         public void stop() {
             mp.stop();
             playerState=Music.State.STOPPED;
-            currentSong = 1; /*initialize currentSong for the next launch of the service*/
+            currentSong = 0; /*initialize currentSong for the next launch of the service*/
         }
         
         public void pause() {
@@ -333,6 +348,11 @@ public class Sibylservice extends Service
             looping = loop;
             mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
             //and java doesn't do the implicit conversion from bool to int
+        }
+        
+        public int getLooping(){
+            if(repAll) return 2;
+            return looping ? 1 : 0;
         }
         
         public void next() {
