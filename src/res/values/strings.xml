@@ -64,7 +64,7 @@
     <!-- CONFIG -->
 	<string name="rep_no">No repeat</string>
     <string name="rep_one">Repeat song</string>
-    <string name="rep_all">Repeat playlist</string>
+    <string name="rep_all">Repeat All</string>
     <string name="dir">Directory: </string>
         
 
