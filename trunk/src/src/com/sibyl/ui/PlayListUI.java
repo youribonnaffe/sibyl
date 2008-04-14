@@ -51,6 +51,7 @@ public class PlayListUI extends ListActivity
     private static final String TAG = "PLAYLIST";
 
     ISibylservice mService = null;
+    private int songPlayed;
 
     //private TextView playList;
 
@@ -62,6 +63,7 @@ public class PlayListUI extends ListActivity
     {
         super.onCreate(icicle);
         launchService();
+        songPlayed = 0;
         setContentView(R.layout.playlist);
         try
         {
@@ -131,10 +133,12 @@ public class PlayListUI extends ListActivity
             this, R.layout.playlist_row, c, new String[] {Music.SONG.ID,Music.ARTIST.NAME},  
             new int[] {R.id.text1, R.id.text2});*/
         IconifiedTextListAdapter rows = new IconifiedTextListAdapter(this);
+        songPlayed = 0;
         while(c.next()){
             try{
                 if( mService!= null && mService.getCurrentSongIndex()-1 == c.position()){
                     icon = R.drawable.play_white;
+                    songPlayed = c.position();
                 }
                 else{
                     icon = R.drawable.puce;
@@ -144,12 +148,13 @@ public class PlayListUI extends ListActivity
             }
             catch(DeadObjectException ex){}
         }
-        try{
-            setSelection(mService.getCurrentSongIndex()-1);
-        }
-        catch( DeadObjectException ex){}
         c.close();        
         setListAdapter(rows);
+        setSelection(songPlayed);
+    }
+    
+    private void changeSongPlayed(View row) {
+        ((IconifiedTextView) row).setIcon(getResources().getDrawable(R.drawable.play_white));
     }
 
     /* TODO verifier que l'on se connecte bien au meme service que PlayerUI 
@@ -198,6 +203,7 @@ public class PlayListUI extends ListActivity
     position ++;
     try {
         mService.playSongPlaylist(position);
+        changeSongPlayed(v);
     } catch (DeadObjectException e) {
         Log.v(TAG, e.toString());
     }

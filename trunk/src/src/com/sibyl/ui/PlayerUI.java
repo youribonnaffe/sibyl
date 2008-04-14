@@ -284,7 +284,7 @@ public class PlayerUI extends Activity
                 //now that we are connected to the service, user can click on buttons
                 //to start playing music
                 enableButtons(true);
-                updateUI();
+                //updateUI();
             }
             catch(DeadObjectException ex){
             Log.v(TAG, ex.toString());
