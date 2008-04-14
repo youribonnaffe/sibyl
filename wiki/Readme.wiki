@@ -22,9 +22,7 @@ Contact : http://code.google.com/p/sibyl
 This project is currently under development so that version might be unstable and some (a lot) features are missing.
 Only mp3 files are managed.
 
-This project has been started within the context of a school project. We are five students from a French engineering school of Lyon called INSA. Our aim is to create an application for the Android platform, the Google operating system for mobile phones.
+This project has been started within the context of a school project. We are four students from a French engineering school of Lyon called INSA. Our aim is to create an application for the Android platform, the Google operating system for mobile phones.
 
 The application will be a music player, like Amarok, Winamp, iTunes or whatever audio player you can find. At first, we will try to get a user-friendly mobile app which can play audio files (the ones supported by Android), which can also manage a music library and playlists. Then, we will probably add a cover flow functionality. Then, maybe the interaction with social networks (last.fm for example) will be considered, as well as supporting .ogg format.
-
-
 
