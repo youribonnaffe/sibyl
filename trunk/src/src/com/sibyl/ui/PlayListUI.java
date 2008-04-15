@@ -25,9 +25,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.DeadObjectException;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
@@ -54,6 +54,8 @@ public class PlayListUI extends ListActivity
     //private TextView playList;
 
     private MusicDB mdb;    //the database
+    //handler to call function when datas are received from the service
+    private Handler mServHandler = new Handler();
 
     /** Called when the activity is first created. */
     @Override
@@ -229,7 +231,13 @@ public class PlayListUI extends ListActivity
         public void handleChange() 
         {
             Log.v("PLAYLIST", "LE CORE SERVICE M'APPELLE !");
-            changeSongPlayed(null);
+            mServHandler.post(new Runnable()
+            {
+                public void run()
+                {
+                    changeSongPlayed(null);
+                }
+            });
         }
     };
 

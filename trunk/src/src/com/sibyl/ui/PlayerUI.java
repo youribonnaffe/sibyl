@@ -160,7 +160,7 @@ public class PlayerUI extends Activity
         previous = (Button) findViewById(R.id.prec);
         avance = (Button) findViewById(R.id.avance);
         
-        avance.setVisibility(4);
+        //avance.setVisibility(4);
         
         //disable buttons until we are connected to the service
         enableButtons(false);
