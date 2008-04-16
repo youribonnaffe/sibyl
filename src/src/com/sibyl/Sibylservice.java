@@ -20,6 +20,7 @@ package com.sibyl;
 
 import java.util.Random;
 import java.io.IOException;
+import java.util.Stack;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -32,6 +33,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
+import java.util.EmptyStackException;
 
 import com.sibyl.ui.IPlayListUI;
 import com.sibyl.ui.IPlayerUI;
@@ -45,6 +47,7 @@ public class Sibylservice extends Service
     private int playerState;
     private int playMode;
     private int loopMode;
+    private Stack songHistory;
     private Random randomVal;
     private int currentSong;
     private IPlayerUI uiHandler;
@@ -57,7 +60,10 @@ public class Sibylservice extends Service
     {        
         /* initialization of the state and mode of the service */
         playerState=Music.State.STOPPED;
-        playMode=Music.Mode.NORMAL;//RANDOM
+        playMode=Music.Mode.NORMAL;//RANDOM;
+        
+        //stack to store the list of played songs
+        songHistory=new Stack<Integer>();
         
         // initialization of the random generator with the current time of day in
         // milliseconds as the initial state (by default in the constructor)
@@ -68,6 +74,12 @@ public class Sibylservice extends Service
         currentSong= prefs.getInt("currentSong", 1);
         loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
 
+        //adds the song restored from preferences to the list of played song
+        if (playMode == Music.Mode.RANDOM)
+        {
+            songHistory.push(currentSong);
+        }
+        
         /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
@@ -169,11 +181,6 @@ public class Sibylservice extends Service
     {
         if( playerState != Music.State.PAUSED ) 
         {// if we are not in pause we prepare the mediaplayer to play the next song
-            if( playMode == Music.Mode.RANDOM ) 
-            {
-                currentSong = randomVal.nextInt(mdb.getPlaylistSize())+1;
-                // nextInt(int n) returns a random value between 0 (inclusively) and n (exclusively)
-            }
             String filename = mdb.getSong(currentSong);
             if( filename == null ) 
             {
@@ -253,20 +260,40 @@ public class Sibylservice extends Service
     }
     
     /**
+    * Plays a song randomly and save its id in the playlist in the list orderList
+    *
+    */
+    private boolean play_random()
+    {
+        stop();
+        currentSong = randomVal.nextInt(mdb.getPlaylistSize())+1;
+        // nextInt(int n) returns a random value between 0 (inclusively) and n (exclusively)
+        songHistory.push(currentSong);
+        return play();
+    }
+    
+    /**
     * Plays the following song in the playlist
     *
     */
     protected void play_next() 
     {
-        int add = 1;
-        if( playerState == Music.State.STOPPED) { //we can launch the player with the button next. it must play
-            add = 0;                               // the first song of the playlist the first time.
+        if( playMode == Music.Mode.RANDOM )
+        {
+            play_random();
         }
-        stop();
-        Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-        currentSong += add;
-        if( !play() ) { //cancel the changement if nothing is played
-            currentSong -=add;
+        else 
+        {
+            int add = 1;
+            if( playerState == Music.State.STOPPED) { //we can launch the player with the button next. it must play
+                add = 0;                               // the first song of the playlist the first time.
+            }
+            stop();
+            Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
+            currentSong += add;
+            if( !play() ) { //cancel the changement if nothing is played
+                currentSong -=add;
+            }
         }
             
     }
@@ -279,13 +306,29 @@ public class Sibylservice extends Service
     protected void play_prev() 
     {
         stop();
-        Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
-        if ( currentSong > 1 )
+        if( playMode == Music.Mode.RANDOM )
         {
-            currentSong--; 
+            try
+            {
+                songHistory.pop();//remove current song, we want the previous song.
+                currentSong = ((Integer) songHistory.peek()).intValue();
+            }
+            catch(EmptyStackException e)
+            {
+                currentSong = 1;
+            }
+            play();
         }
-        if( ! play()){  //cancel the changement if nothing is played
-            currentSong++;
+        else 
+        {
+            Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
+            if ( currentSong > 1 )
+            {
+                currentSong--; 
+            }
+            if( ! play()){  //cancel the changement if nothing is played
+                currentSong++;
+            }
         }
     }
     
