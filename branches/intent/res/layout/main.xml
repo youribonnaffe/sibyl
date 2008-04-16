@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ *
+ * Copyright (C) 2007-2008 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	    
+	<View         
+    	android:layout_width="fill_parent"
+    	android:layout_height="20dip"/>
+        
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:stretchColumns="1">
+	    <!--android:shrinkColumns="1"-->
+	    
+	    <TableRow>
+	        <TextView  android:id="@+id/titre"
+                android:layout_column="1"
+                android:minHeight="40sp"
+                android:textSize="25sp"
+                android:textStyle="bold"
+				android:text="@string/titre" />
+	    </TableRow>
+
+    <TableRow>
+			<TextView android:id="@+id/artiste"
+                android:layout_column="1"
+				android:textSize="16sp"
+				android:textStyle="italic"
+				android:paddingLeft="15.0sp"
+				android:text="@string/artiste"/>
+	    </TableRow>
+	    
+	    <TableRow>
+			<Button
+	            android:text="@string/short_text"
+	            android:visibility="invisible" />
+	    	<TextView/>
+
+	    </TableRow>
+	</TableLayout>
+	
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:stretchColumns="1">
+	    
+		<TableRow>
+			<Button android:id="@+id/prec"
+				android:text="@string/previous"
+				android:focusable="true"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"/>
+				
+			<ImageView	android:id="@+id/cover" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"/>
+
+			<Button android:id="@+id/next"
+				android:text="@string/next"
+				android:focusable="true"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"/>
+		</TableRow>
+	</TableLayout>
+				
+	
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:stretchColumns="1"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
+	    android:gravity="bottom">
+	    
+		<TableRow>
+			<Button	android:id="@+id/lecture"
+				android:text="@string/play" />
+			<Button android:id="@+id/avance"
+				android:text=">>"
+				android:focusable="true"/>
+			<TextView android:id="@+id/tpsEcoule"
+				android:text="@string/time_zero"
+				android:textAlign="end" />
+			<TextView
+				android:text="@string/separateur"/>
+			<TextView android:id="@+id/tpsTotal"
+				android:text="@string/time_zero"/>
+		</TableRow>
+	</TableLayout>
+	
+</LinearLayout>
