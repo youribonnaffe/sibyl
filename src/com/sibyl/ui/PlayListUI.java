@@ -22,6 +22,8 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentReceiver;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
@@ -76,6 +78,11 @@ public class PlayListUI extends ListActivity
         }   
     }
     
+    private IntentReceiver intentHandler = new IntentReceiver(){
+        public void onReceiveIntent(Context c, Intent i){
+            Log.v("INTENT", "RECEIVE PLAYLIST "+i.toString());
+        }
+    };
 
     public boolean onCreateOptionsMenu(Menu menu) 
     {
@@ -219,6 +226,9 @@ public class PlayListUI extends ListActivity
 
     @Override
     protected void onResume() {
+        // register intent handler, so we will be aware of service changes
+        registerReceiver(intentHandler, new IntentFilter(Intent.EDIT_ACTION));
+        
         if( mService != null){
         fillData();
         }
