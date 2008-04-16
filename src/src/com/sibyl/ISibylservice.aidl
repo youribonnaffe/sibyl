@@ -60,16 +60,24 @@ interface ISibylservice {
     void setLooping(in boolean looping);
     /* activate or deactivate looping / repetition of the current song 
         If looping is set to 0: the current song is played once 
-        If looping is set to 1: the current song is repeated while looping is not 0 */
+        If looping is set to 1: the current song is repeated while looping is not 0 
+        /!\ deprecated, use setLoopMode instead */
+    
+    void setLoopMode(int mode);
+    /* sets the loop mode which is one of the loop mode defined in Music.java
+        NO_REPEAT: each song will be played once
+        REPEAT_SONG: the current song will be repeated while loopmode is REPEAT_SONG 
+        REPEAT_PLAYLIST: the current playlist will be repeated when finished  
+    */
         
     int getLooping();
-    /* get looping state :
-        0 : no loop
-        1 : loop song
-        2 : loop all songs  */
+    /* get looping state : (see Music.java)
+        NO_REPEAT : no loop
+        REPEAT_SONG : loop song
+        REPEAT_PLAYLIST : loop all songs  */
         
     void playSongPlaylist(int pos);
-    /* joue la chanson pos de la playlist */
+    /* plays the song at position pos in the playlist */
     
     void next();
     /* play the next song of the current playlist*/
@@ -78,5 +86,12 @@ interface ISibylservice {
     /* play the previous song of the current playlist */
     
     void setRepeatAll();
+    /* the playlist will be repeated when finished  
+       /!\ deprecated, use setLoopMode instead */
+    
+    void setPlayMode(int mode);
+    /* sets the play mode of the service. The mode is one of the modes defined in Music.java
+        NORMAL or RANDOM
+    */
     
 }

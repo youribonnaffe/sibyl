@@ -18,6 +18,7 @@
 
 package com.sibyl;
 
+import java.util.Random;
 import java.io.IOException;
 
 import android.app.Notification;
@@ -42,8 +43,9 @@ public class Sibylservice extends Service
     private MediaPlayer mp;
     private MusicDB mdb;
     private int playerState;
-    private boolean repAll;
-    private boolean looping;
+    private int playMode;
+    private int loopMode;
+    private Random randomVal;
     private int currentSong;
     private IPlayerUI uiHandler;
     private IPlayListUI playlistUiHandler;
@@ -53,14 +55,18 @@ public class Sibylservice extends Service
     @Override
     protected void onCreate()
     {        
-        /* initialization of the state of the service */
+        /* initialization of the state and mode of the service */
         playerState=Music.State.STOPPED;
+        playMode=Music.Mode.NORMAL;//RANDOM
+        
+        // initialization of the random generator with the current time of day in
+        // milliseconds as the initial state (by default in the constructor)
+        randomVal=new Random();
         
         // retrieve preferences
         SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
         currentSong= prefs.getInt("currentSong", 1);
-        repAll = prefs.getBoolean("repAll", false);
-        looping = prefs.getBoolean("looping", false);
+        loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
 
         /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
@@ -118,8 +124,7 @@ public class Sibylservice extends Service
         // save preferences
         SharedPreferences.Editor prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE).edit();
         prefs.putInt("currentSong", currentSong);
-        prefs.putBoolean("repAll", repAll);
-        prefs.putBoolean("looping", looping);
+        prefs.putInt("loopMode", loopMode);
         prefs.commit();
         
     }
@@ -164,6 +169,11 @@ public class Sibylservice extends Service
     {
         if( playerState != Music.State.PAUSED ) 
         {// if we are not in pause we prepare the mediaplayer to play the next song
+            if( playMode == Music.Mode.RANDOM ) 
+            {
+                currentSong = randomVal.nextInt(mdb.getPlaylistSize())+1;
+                // nextInt(int n) returns a random value between 0 (inclusively) and n (exclusively)
+            }
             String filename = mdb.getSong(currentSong);
             if( filename == null ) 
             {
@@ -171,7 +181,7 @@ public class Sibylservice extends Service
                 if ( currentSong > playListSize && playListSize > 0 )
                 {
                     //end of playlist
-                    if( !repAll ) 
+                    if( loopMode != Music.LoopMode.REPEAT_PLAYLIST ) 
                     {
                         playerState = Music.State.END_PLAYLIST_REACHED;
                         currentSong = 1;
@@ -255,7 +265,7 @@ public class Sibylservice extends Service
         stop();
         Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
         currentSong += add;
-        if( !play()){ //cancel the changement if nothing is played
+        if( !play() ) { //cancel the changement if nothing is played
             currentSong -=add;
         }
             
@@ -352,15 +362,13 @@ public class Sibylservice extends Service
         public void setLooping(boolean loop) 
         {
             Log.v(TAG,"set looping :"+loop);
-            repAll = false;
-            looping = loop;
+            loopMode = (loop) ? Music.LoopMode.REPEAT_SONG : Music.LoopMode.NO_REPEAT;
             mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
             //and java doesn't do the implicit conversion from bool to int
         }
         
         public int getLooping(){
-            if(repAll) return 2;
-            return looping ? 1 : 0;
+            return loopMode;
         }
         
         public void next() {
@@ -379,8 +387,20 @@ public class Sibylservice extends Service
         public void setRepeatAll()
         {
             Log.v(TAG,"set repeatALL");
-            repAll = true;
-            looping = false;
+            loopMode = Music.LoopMode.REPEAT_PLAYLIST;
+        }
+        
+        public void setLoopMode(int mode)
+        {
+            //we loop on the song only if mode == REPEAT_SONG
+            mp.setLooping(mode == Music.LoopMode.REPEAT_SONG ? 1 : 0);
+            
+            loopMode = mode;
+        }
+        
+        public void setPlayMode(int mode)
+        {
+            playMode=mode;
         }
          
     };
@@ -390,7 +410,7 @@ public class Sibylservice extends Service
         public void onCompletion(MediaPlayer mp) 
         {
             mdb.countUp(currentSong);
-            if(!looping)
+            if(loopMode != Music.LoopMode.REPEAT_SONG)
             {
                 play_next();
             }
