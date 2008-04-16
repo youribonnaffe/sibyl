@@ -47,7 +47,7 @@ public class Sibylservice extends Service
     private int playerState;
     private int playMode;
     private int loopMode;
-    private Stack songHistory;
+    private Stack<Integer> songHistory;
     private Random randomVal;
     private int currentSong;
     private IPlayerUI uiHandler;
@@ -311,7 +311,7 @@ public class Sibylservice extends Service
             try
             {
                 songHistory.pop();//remove current song, we want the previous song.
-                currentSong = ((Integer) songHistory.peek()).intValue();
+                currentSong = songHistory.peek();
             }
             catch(EmptyStackException e)
             {
