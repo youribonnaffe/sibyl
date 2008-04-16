@@ -21,6 +21,7 @@ package com.sibyl.ui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 
 import com.sibyl.Directory;
 import com.sibyl.ISibylservice;
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
@@ -271,7 +273,7 @@ public class ConfigUI extends Activity
             try 
             {
                 repeatMode.setText(R.string.rep_no);
-                mService.setLooping(false);
+                mService.setLoopMode(Music.LoopMode.NO_REPEAT);
             } catch (DeadObjectException e) { }
         }
     };
@@ -286,7 +288,7 @@ public class ConfigUI extends Activity
             try 
             {
                 repeatMode.setText(R.string.rep_one);
-                mService.setLooping(true);   
+                mService.setLoopMode(Music.LoopMode.REPEAT_SONG);
             } catch (DeadObjectException e) { }
         }
     };
@@ -301,7 +303,7 @@ public class ConfigUI extends Activity
             try 
             {
                 repeatMode.setText(R.string.rep_all);
-                mService.setRepeatAll();
+                mService.setLoopMode(Music.LoopMode.REPEAT_PLAYLIST);
             } catch (DeadObjectException e) { }
         }
     };
