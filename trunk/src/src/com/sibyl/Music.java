@@ -34,6 +34,18 @@ public class Music {
         public static int END_PLAYLIST_REACHED = 0x10;
     }
     
+    /* Modes of the service */
+    public static class Mode {
+        public static int NORMAL = 1; // songs are played in the order of the playlist
+        public static int RANDOM = 2; // songs are played randomly
+    }
+    
+    public static class LoopMode {
+        public static int NO_REPEAT = 0; // each song will be played once
+        public static int REPEAT_SONG = 1; // the current song will be repeated while loopmode is REPEAT_SONG 
+        public static int REPEAT_PLAYLIST = 2; // the current playlist will be repeated when finished  
+    }
+    
     /* other stuff to be commented */
     public static enum Table { 
         SONG, ARTIST, GENRE, ALBUM, CURRENT_PLAYLIST, DIR; 

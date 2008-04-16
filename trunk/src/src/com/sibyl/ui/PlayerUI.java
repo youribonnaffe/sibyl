@@ -50,7 +50,7 @@ import com.sibyl.Sibylservice;
 
 /**
  * The player activity. It launches the service and you can control the music: play, stop, play next/previous.
- * You have access to the other activities: options et playlist
+ * You have access to the other activities: options and playlist
  * @author Sibyl-dev
  */
 public class PlayerUI extends Activity
@@ -443,7 +443,7 @@ public class PlayerUI extends Activity
             if( state == Music.State.PLAYING 
                     || state == Music.State.PAUSED
                     || state == Music.State.STOPPED){
-                //reset the timer's tiùe
+                //reset the timer's time
                 //display the song and artist name
                 int pos=mService.getCurrentSongIndex();
                 Log.v(TAG, "updateUI: pos="+pos);
