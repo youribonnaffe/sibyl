@@ -33,7 +33,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.sibyl.ui.IPlayListUI;
-import com.sibyl.ui.IPlayerUI;
 
 
 public class Sibylservice extends Service
@@ -45,7 +44,6 @@ public class Sibylservice extends Service
     private boolean repAll;
     private boolean looping;
     private int currentSong;
-    private IPlayerUI uiHandler;
     private IPlayListUI playlistUiHandler;
     private NotificationManager nm;
 
@@ -77,6 +75,7 @@ public class Sibylservice extends Service
             Log.v("SibylService", e.getMessage());
             // what sould we do ? updateNotification ?
         }
+        
     }
     
     /**
@@ -177,7 +176,8 @@ public class Sibylservice extends Service
                         currentSong = 1;
                         try 
                         {//the UI is informed that the end of the playlist has been reached
-                            uiHandler.handleEndPlaylist();
+                            //uiHandler.handleEndPlaylist();
+                            broadcastIntent(new Intent(Intent.EDIT_ACTION));
                             if(playlistUiHandler != null ) playlistUiHandler.handleChange();
                         } catch (DeadObjectException e) 
                         {
@@ -210,10 +210,12 @@ public class Sibylservice extends Service
         // if it was in pause 
         mp.start();
         playerState=Music.State.PLAYING;
+
+        broadcastIntent(new Intent(Music.Action.PLAY));
         
         try 
         {// informs UI that we start playing a song
-            uiHandler.handleStartPlaying();
+            //uiHandler.handleStartPlaying();
             // informs PlayList ui as well
             if(playlistUiHandler != null ) playlistUiHandler.handleChange();
         } catch (DeadObjectException e) 
@@ -258,7 +260,7 @@ public class Sibylservice extends Service
         if( !play()){ //cancel the changement if nothing is played
             currentSong -=add;
         }
-            
+        broadcastIntent(new Intent(Music.Action.NEXT));
     }
     
     /**
@@ -277,6 +279,7 @@ public class Sibylservice extends Service
         if( ! play()){  //cancel the changement if nothing is played
             currentSong++;
         }
+        broadcastIntent(new Intent(Music.Action.PREVIOUS));
     }
     
     /**
@@ -301,10 +304,6 @@ public class Sibylservice extends Service
     //interface accessible par les autres classes (cf aidl)
     private final ISibylservice.Stub mBinder = new ISibylservice.Stub() {
         
-        public void connectToReceiver(IPlayerUI receiver) {
-            uiHandler=receiver;
-        }
-
         public void connectToPlayList(IPlayListUI receiver){
             playlistUiHandler = receiver;
         }
@@ -323,6 +322,8 @@ public class Sibylservice extends Service
             mp.pause();
             playerState=Music.State.PAUSED;
             updateNotification(R.drawable.pause,"pause");
+            // warn ui that we paused music playing
+            broadcastIntent(new Intent(Music.Action.PAUSE));
         }
         
         public int getState() {
@@ -347,6 +348,7 @@ public class Sibylservice extends Service
         
         public void setCurrentPosition(int msec) {
             mp.seekTo(msec);
+            // auto start playing
         }
         
         public void setLooping(boolean loop) 

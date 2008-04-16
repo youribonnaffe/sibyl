@@ -19,6 +19,16 @@
 package com.sibyl;
 
 public class Music {
+    
+    public static class Action {
+        // lets try to put strings with different sizes to optimize equals test
+        // or thats just totally stupid
+        public static String PLAY  =    "play";
+        public static String PAUSE =    "pause";
+        public static String NEXT  =    "next--";
+        public static String PREVIOUS = "previous";
+        public static String NO_SONG  = "no_song---";
+    }
 
     /* printed name of the application */
     public static String APPNAME = "Sibyl";
