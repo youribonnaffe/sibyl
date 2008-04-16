@@ -54,18 +54,13 @@
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"/>
 
-	
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			    android:orientation="vertical"
-				android:layout_gravity="center"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content">			
+		
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			    android:orientation="horizontal"
 				android:layout_gravity="center"
 			    android:layout_width="fill_parent"
-			    android:layout_height="fill_parent">
+			    android:layout_height="wrap_content">
 			    
 				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				    android:orientation="vertical"
@@ -115,11 +110,77 @@
 				</LinearLayout>			
 			</LinearLayout>
 			
+			 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">                
+    
+		    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		        android:layout_width="wrap_content"
+		        android:stretchColumns="1"
+		        android:layout_height="wrap_content"
+		        android:gravity="center">
+		        <!--              android:layout_weight="1" -->
+		        
+		        <TableRow>
+		        
+		            <!-- <Button android:id="@+id/avance"
+		                android:text="Debug >>"
+		                android:focusable="true"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="left"
+		                android:layout_weight="1.0"
+                        android:background="#F00FF0"
+		                android:layout_width="wrap_content"/> -->
+
+		            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="vertical"
+                        android:layout_gravity="fill"
+                        android:layout_width="fill_parent"
+                        android:layout_weight="0.0"
+                        android:layout_height="wrap_content">
+                        <!-- android:layout_weight="1.0"-->
+                        
+					    <com.sibyl.ui.ProgressBarClickable android:id="@+id/progress"
+					        style="?android:attr/progressBarStyleHorizontal"
+					        android:layout_width="200dip"
+					        android:layout_height="wrap_content"
+					        android:layout_weight="0"
+					        android:progress="0"/>
+	                </LinearLayout>
+                        
+	                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:layout_gravity="right"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1.0"
+                        android:layout_height="wrap_content">
+                        
+			            <TextView android:id="@+id/tpsEcoule"
+			                android:text="@string/time_zero"
+			                android:layout_height="wrap_content"
+			                android:layout_width="wrap_content"
+			                android:textAlign="end" />
+			            <TextView
+			                android:text="@string/separateur"
+			                android:layout_height="wrap_content"
+			                android:layout_width="wrap_content"/>
+			            <TextView android:id="@+id/tpsTotal"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/time_zero"/>
+                    </LinearLayout>
+		           </TableRow>
+		    </TableLayout>
+		    
+			
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			    android:orientation="horizontal"
 				android:layout_gravity="center"
 			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content">
+			    android:layout_height="fill_parent">
 				<Button android:id="@+id/prec"
 					android:text="&lt;&lt;"
 					android:focusable="true"
@@ -149,27 +210,5 @@
 			</LinearLayout>		
 	
 	</LinearLayout>
-				
-	
-	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="wrap_content"
-	    android:stretchColumns="1"
-	    android:layout_height="fill_parent"
-	    android:layout_weight="1"
-	    android:gravity="bottom">
-	    
-		<TableRow>
-			<Button android:id="@+id/avance"
-				android:text="Debug >>"
-				android:focusable="true"/>
-			<TextView android:id="@+id/tpsEcoule"
-				android:text="@string/time_zero"
-				android:textAlign="end" />
-			<TextView
-				android:text="@string/separateur"/>
-			<TextView android:id="@+id/tpsTotal"
-				android:text="@string/time_zero"/>
-		</TableRow>
-	</TableLayout>
-	
+
 </LinearLayout>

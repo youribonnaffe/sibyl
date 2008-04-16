@@ -55,7 +55,7 @@ public class PlayListUI extends ListActivity
 
     private MusicDB mdb;    //the database
     //handler to call function when datas are received from the service
-    private Handler mServHandler = new Handler();
+    private Handler mServHandler = new Handler();   
 
     /** Called when the activity is first created. */
     @Override

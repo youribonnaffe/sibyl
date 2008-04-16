@@ -46,6 +46,7 @@ import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
+import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
 
 
 /**
@@ -78,18 +79,21 @@ public class PlayerUI extends Activity
     private Button next;
     private Button previous;
     private Button avance;
+    private ProgressBarClickable progress;
 
     private MusicDB mdb;    //the database
 
     //handler to call function when datas are received from the service
     private Handler mServHandler = new Handler();
 
+    private Handler mProgHandler = new Handler();
     //handler for calculating elapsed time when playing a song
     private Handler mTimeHandler = new Handler();
     //thread which shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
         private int timer = 0;
+
         public void run() 
         {
             // re adjusting time
@@ -104,11 +108,13 @@ public class PlayerUI extends Activity
             // old value will be kept, if the song can't be played anymore
             // an error should be thrown by the service (or not)
             }
+            progress.setProgress(timer);
             elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
             // again in 0.1s
             mTimeHandler.postDelayed(this, 1000);
         }
     };
+    
 
     /** 
      * Called when the activity is first created. It initialize the ui: buttons, labels.
@@ -136,6 +142,14 @@ public class PlayerUI extends Activity
             // user sould be warned
         }
     }
+    
+    /*
+     * Initialize the progressbar: set the total time and elapsed time
+     */
+    private void initializeProgress(int played, int total){
+        progress.setMax(total);
+        progress.setProgress(played);
+    }
 
     /**
     * Enables or disables the buttons
@@ -147,7 +161,7 @@ public class PlayerUI extends Activity
         lecture.setEnabled(enable);
         next.setEnabled(enable);
         previous.setEnabled(enable);
-        avance.setEnabled(enable);
+       // avance.setEnabled(enable);
     }
     
     /**
@@ -158,7 +172,7 @@ public class PlayerUI extends Activity
         lecture = (Button) findViewById(R.id.lecture);
         next = (Button) findViewById(R.id.next);
         previous = (Button) findViewById(R.id.prec);
-        avance = (Button) findViewById(R.id.avance);
+        ///avance = (Button) findViewById(R.id.avance);
         
         //avance.setVisibility(4);
         
@@ -169,7 +183,7 @@ public class PlayerUI extends Activity
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
-        avance.setOnClickListener(mAvanceListener);
+        //avance.setOnClickListener(mAvanceListener);
         
         //set focusable
         next.setFocusableInTouchMode(true);
@@ -187,8 +201,35 @@ public class PlayerUI extends Activity
         
         //set cover
         ImageView cover = (ImageView) findViewById(R.id.cover);
-        cover.setImageResource(R.drawable.logo);  
+        cover.setImageResource(R.drawable.logo);
+        
+        //get progress
+        progress = (ProgressBarClickable) findViewById(R.id.progress);
+        progress.setOnProgressChangeListener(changeListener);
     }
+    
+    
+
+    
+    private OnProgressChangeListener changeListener = new OnProgressChangeListener() {
+            public void onProgressChanged(View v, int progress) {
+                try{
+                    if(mService.getState() == Music.State.PLAYING ||
+                            mService.getState() == Music.State.PAUSED ){
+                        mService.start();
+                        mService.setCurrentPosition(progress);
+                        //remove timer
+                        mTimeHandler.removeCallbacks(timerTask);
+                        // add timer task to ui thread
+                        mTimeHandler.post(timerTask);
+                    }
+                    else{
+                        PlayerUI.this.progress.setProgress(0);
+                    }
+                }
+                catch(DeadObjectException ex){}
+            }
+    };
     
     
     @Override
@@ -213,7 +254,7 @@ public class PlayerUI extends Activity
             updateUI();
         }
     }
-
+    
     /*
      * launch the service
      */
@@ -491,6 +532,10 @@ public class PlayerUI extends Activity
             public void run()
             {
                 updateUI();
+                try{
+                    initializeProgress(mService.getCurrentPosition(), mService.getDuration());
+                }
+                catch(DeadObjectException ex){}
             }
             });
     
@@ -517,6 +562,7 @@ public class PlayerUI extends Activity
             {
                 updateUI();
                 enableButtons(false);
+                progress.setProgress(0);
             }
             });
         }
