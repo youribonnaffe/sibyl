@@ -23,65 +23,132 @@
 	    
 	<View         
     	android:layout_width="fill_parent"
-    	android:layout_height="20dip"/>
+    	android:layout_height="10dip"/>
         
-	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:stretchColumns="1">
-	    <!--android:shrinkColumns="1"-->
-	    
-	    <TableRow>
+			    
 	        <TextView  android:id="@+id/titre"
-                android:layout_column="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
                 android:minHeight="40sp"
                 android:textSize="25sp"
-                android:textStyle="bold"
-				android:text="@string/titre" />
-	    </TableRow>
+				android:text="@string/titre"
+				android:layout_gravity="center" />
 
-    <TableRow>
 			<TextView android:id="@+id/artiste"
-                android:layout_column="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:textSize="16sp"
 				android:textStyle="italic"
-				android:paddingLeft="15.0sp"
-				android:text="@string/artiste"/>
-	    </TableRow>
-	    
-	    <TableRow>
+				android:text="@string/artiste"
+				android:padding="10dip"
+				android:layout_gravity="center"/>
+	    <!--
 			<Button
 	            android:text="@string/short_text"
 	            android:visibility="invisible" />
 	    	<TextView/>
-
-	    </TableRow>
-	</TableLayout>
-	
-	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:stretchColumns="1">
-	    
-		<TableRow>
-			<Button android:id="@+id/prec"
-				android:text="@string/previous"
-				android:focusable="true"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center"/>
-				
+		-->
+		
 			<ImageView	android:id="@+id/cover" 
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"/>
 
-			<Button android:id="@+id/next"
-				android:text="@string/next"
-				android:focusable="true"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center"/>
-		</TableRow>
-	</TableLayout>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			    android:orientation="vertical"
+				android:layout_gravity="center"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content">			
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			    android:orientation="horizontal"
+				android:layout_gravity="center"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent">
+			    
+				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:orientation="vertical"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+					android:layout_gravity="left">
+				    
+					<TextView  android:id="@+id/titrePrec"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+		                android:textSize="15sp"
+						android:text="Title of the previous song" />
+					
+				<!--	<TextView  android:id="@+id/AlbumPrec"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+		                android:textSize="12sp"
+						android:text="Album or artist" />-->
+				</LinearLayout>
+				
+				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:orientation="vertical"
+				    android:layout_width="20dip"
+				    android:layout_height="fill_parent"
+					android:layout_gravity="center">
+				    <!-- Separator/space between previous and next songs -->
+				</LinearLayout>
+				
+				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:orientation="vertical"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent"
+					android:layout_gravity="right">
+				    
+					<TextView  android:id="@+id/titreNext"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+		                android:textSize="15sp"
+						android:text="Next title" 
+						android:layout_gravity="right"/>
+				<!--	<TextView  android:id="@+id/AlbumNext"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+		                android:textSize="12sp"
+						android:text="Album or artist"
+						android:layout_gravity="right" />-->
+				</LinearLayout>			
+			</LinearLayout>
+			
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			    android:orientation="horizontal"
+				android:layout_gravity="center"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content">
+				<Button android:id="@+id/prec"
+					android:text="&lt;&lt;"
+					android:focusable="true"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"/>
+					
+				<Button	android:id="@+id/lecture"
+					android:text="@string/play"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center" />
+				
+				<!-- <Button android:id="@+id/stop"
+					android:text="Stop"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					 /> -->
+					
+				<Button android:id="@+id/next"
+					android:text=">>"
+					android:focusable="true"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"/>
+			</LinearLayout>		
+	
+	</LinearLayout>
 				
 	
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -92,10 +159,8 @@
 	    android:gravity="bottom">
 	    
 		<TableRow>
-			<Button	android:id="@+id/lecture"
-				android:text="@string/play" />
 			<Button android:id="@+id/avance"
-				android:text=">>"
+				android:text="Debug >>"
 				android:focusable="true"/>
 			<TextView android:id="@+id/tpsEcoule"
 				android:text="@string/time_zero"
