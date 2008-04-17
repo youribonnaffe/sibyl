@@ -66,6 +66,8 @@
     <string name="rep_one">Repeat song</string>
     <string name="rep_all">Repeat All</string>
     <string name="dir">Directory: </string>
+    <string name="normal">Normal</string>
+    <string name="random">Shuffle</string>
         
 
     <!-- PLAYLIST -->

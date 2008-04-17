@@ -66,13 +66,12 @@
 		
 			<TextView android:layout_width="wrap_content"
 	        	android:layout_height="wrap_content"
-		       	android:text="Play mode : "
+		       	android:text="Repeat mode : "
 	            android:textSize="9pt"
 	        	/>
 	        <TextView android:id="@+id/repMode"
 	        	android:layout_width="wrap_content"
 	        	android:layout_height="wrap_content"
-		       	android:text="Library folders :"
 	            android:textSize="9pt"
 	        	/>
         </TableRow>
@@ -99,6 +98,41 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="Repeat All"/>
+		</TableRow>
+		
+		<TableRow
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		
+			<TextView android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+		       	android:text="Play mode : "
+	            android:textSize="9pt"
+	        	/>
+	        <TextView android:id="@+id/playMode"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+		       	android:text=""
+	            android:textSize="9pt"
+	        	/>
+        </TableRow>
+		
+		<TableRow
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:gravity="center">
+		    
+			<Button android:id="@+id/normal"
+					android:focusable="false"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Normal"/>
+			
+			<Button android:id="@+id/random"
+					android:focusable="false"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Shuffle"/>
 		</TableRow>
 	</TableLayout>
 	
