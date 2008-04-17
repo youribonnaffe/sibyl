@@ -62,6 +62,7 @@ public class PlayerUI extends Activity
     private static final int QUIT_ID = Menu.FIRST;
     private static final int PLAYLIST_ID = Menu.FIRST +1;
     private static final int OPTION_ID = Menu.FIRST +2;
+    private static final int COVER_ID = Menu.FIRST +3;
 
     public static class PLAY {
 	public static int NEXT = 0;
@@ -210,12 +211,17 @@ public class PlayerUI extends Activity
     
     
 
-    
+    /*
+     * Manage when the progressbar is clicked.
+     * If a music was played or paused, the song is played at the new position
+     * If the service was stopped, but the playlist filled, we launch the play
+     */
     private OnProgressChangeListener changeListener = new OnProgressChangeListener() {
             public void onProgressChanged(View v, int progress) {
                 try{
                     if(mService.getState() == Music.State.PLAYING ||
-                            mService.getState() == Music.State.PAUSED ){
+                            mService.getState() == Music.State.PAUSED ||
+                            (mService.getState() == Music.State.STOPPED && mdb.getPlaylistSize() > 0)){
                         mService.start();
                         mService.setCurrentPosition(progress);
                         //remove timer
@@ -271,6 +277,7 @@ public class PlayerUI extends Activity
         menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
+        menu.add(0, COVER_ID, "CoverManage");
         return true;
     }
 
@@ -299,6 +306,10 @@ public class PlayerUI extends Activity
             case OPTION_ID:
                 //launch the option's activity
                 displayConfig();
+                break;
+            case COVER_ID:
+                Intent i = new Intent(this, AlbumUI.class);
+                startSubActivity(i, 0);
                 break;
         }
     

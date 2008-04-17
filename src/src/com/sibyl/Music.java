@@ -55,7 +55,7 @@ public class Music {
 	SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
 	SONG.ALBUM, SONG.GENRE };
     public static String[] ARTISTS = { ARTIST.ID, ARTIST.NAME };
-    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME };
+    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME};
     public static String[] GENRES = { GENRE.ID, GENRE.NAME };
     public static String[] CURRENT_PLAYLISTS = { CURRENT_PLAYLIST.POS,
 	CURRENT_PLAYLIST.ID };

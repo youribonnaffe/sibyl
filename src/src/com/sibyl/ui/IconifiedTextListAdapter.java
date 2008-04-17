@@ -10,9 +10,9 @@ import android.widget.BaseAdapter;
 
 public class IconifiedTextListAdapter extends BaseAdapter
 {
-    private Context mContext;
+    protected Context mContext;
 
-    private List<IconifiedText> mList = new ArrayList<IconifiedText>();
+    protected List<IconifiedText> mList = new ArrayList<IconifiedText>();
     
     public IconifiedTextListAdapter(Context context)
     {
