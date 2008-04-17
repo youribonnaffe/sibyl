@@ -21,7 +21,6 @@ package com.sibyl.ui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -68,10 +67,15 @@ public class ConfigUI extends Activity
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
-    private TextView repeatMode;    // Affichage du mode de lecture en cours
+    private TextView repeatMode;    // Affichage du mode de répétition en cours
     private Button repeatMusicNo; // bouton permettant de changer de mode de lecture
     private Button repeatMusicOne; // bouton permettant de changer de mode de lecture
     private Button repeatMusicAll; // bouton permettant de changer de mode de lecture
+    
+    private TextView playMode;  // Affichage du mode de lecture en cours
+    private Button shuffleMode; // bouton permettant de changer passer en mode aléatoire
+    private Button normalMode; // bouton permettant de changer passer en mode normal
+    
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
     
@@ -96,6 +100,10 @@ public class ConfigUI extends Activity
         repeatMusicAll = (Button) findViewById(R.id.repMusicAll);
         repeatMode = (TextView) findViewById(R.id.repMode);
         
+        playMode = (TextView) findViewById(R.id.playMode);
+        normalMode = (Button) findViewById(R.id.normal);
+        shuffleMode = (Button) findViewById(R.id.random);
+        
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
@@ -103,6 +111,9 @@ public class ConfigUI extends Activity
         repeatMusicNo.setOnClickListener(mRepeatMusicNo);
         repeatMusicOne.setOnClickListener(mRepeatMusicOne);
         repeatMusicAll.setOnClickListener(mRepeatMusicAll);
+        
+        shuffleMode.setOnClickListener(mShuffleMode);
+        normalMode.setOnClickListener(mNormalMode);
         
         Log.v(TAG,"ICI");
         
@@ -264,7 +275,7 @@ public class ConfigUI extends Activity
     
     
     /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture : sans répétition
      */
     private OnClickListener mRepeatMusicNo = new OnClickListener()
     {
@@ -279,7 +290,7 @@ public class ConfigUI extends Activity
     };
     
     /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture : répétition de la chanson en cours
      */
     private OnClickListener mRepeatMusicOne = new OnClickListener()
     {
@@ -294,7 +305,7 @@ public class ConfigUI extends Activity
     };
     
     /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture : répétition de la playlist
      */
     private OnClickListener mRepeatMusicAll = new OnClickListener()
     {
@@ -307,6 +318,37 @@ public class ConfigUI extends Activity
             } catch (DeadObjectException e) { }
         }
     };
+    
+    /**
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture : non aléatoire
+     */
+    private OnClickListener mShuffleMode = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            try 
+            {
+                playMode.setText(R.string.random);
+                mService.setPlayMode(Music.Mode.RANDOM);
+            } catch (DeadObjectException e) { }
+        }
+    };
+    
+    /**
+     * Écouteur placé sur le bouton permettant le changement de mode de lecture : aléatoire
+     */
+    private OnClickListener mNormalMode = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            try 
+            {
+                playMode.setText(R.string.normal);
+                mService.setPlayMode(Music.Mode.NORMAL);
+            } catch (DeadObjectException e) { }
+        }
+    };
+    
     /**
      * lancement du service
      */
@@ -334,6 +376,8 @@ public class ConfigUI extends Activity
             repeatMusicNo.setFocusable(true);
             repeatMusicOne.setFocusable(true);
             repeatMusicAll.setFocusable(true);
+            normalMode.setFocusable(true);
+            shuffleMode.setFocusable(true);
             try 
             {
                 switch (mService.getLooping()) 
@@ -351,6 +395,9 @@ public class ConfigUI extends Activity
                     repeatMode.setText("");
                     break;
                 }
+                
+                playMode.setText(R.string.normal);
+                
             } catch (DeadObjectException doe) 
             {
                 Log.v(TAG,doe.toString());
