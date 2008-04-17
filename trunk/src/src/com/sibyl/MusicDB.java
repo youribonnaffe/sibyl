@@ -427,12 +427,12 @@ public class MusicDB {
 
     public String[] getSongInfoFromCP(int i)
     {
-        Cursor c = mDb.rawQuery("SELECT title, artist_name FROM song, current_playlist, artist "
-                +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id", null);
+        Cursor c = mDb.rawQuery("SELECT title, artist_name, album.cover_url FROM song, current_playlist, artist,album "
+                +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id and song.album = album.id", null);
         if(!c.first()){
             return null;
         }
-        String str[] = {c.getString(0), c.getString(1)};
+        String str[] = {c.getString(0), c.getString(1), c.getString(2)};
         return str;
     }
 

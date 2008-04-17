@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDiskIOException;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
@@ -80,9 +81,11 @@ public class PlayerUI extends Activity
     private Button next;
     private Button previous;
     private Button avance;
+    private ImageView cover;
     private ProgressBarClickable progress;
 
     private MusicDB mdb;    //the database
+    private static String pathCover;
 
     //handler to call function when datas are received from the service
     private Handler mServHandler = new Handler();
@@ -129,6 +132,7 @@ public class PlayerUI extends Activity
         setTitle(R.string.app_name);
         setContentView(R.layout.main);
         initializeViews();
+        pathCover = "";
         lecture.requestFocus();
         //launch the service.
         launchService();
@@ -201,7 +205,7 @@ public class PlayerUI extends Activity
         tempsTotal.setText(DateUtils.formatElapsedTime(0));
         
         //set cover
-        ImageView cover = (ImageView) findViewById(R.id.cover);
+        cover = (ImageView) findViewById(R.id.cover);
         cover.setImageResource(R.drawable.logo);
         
         //get progress
@@ -505,6 +509,9 @@ public class PlayerUI extends Activity
                     String [] songInfo = mdb.getSongInfoFromCP(pos);
                     titre.setText(songInfo[0]);
                     artiste.setText(songInfo[1]);
+                    if( !songInfo[2].equals("null") && !songInfo[2].equals(pathCover)){
+                        cover.setImageDrawable(Drawable.createFromPath(pathCover=songInfo[2]));
+                    }
 
                     if( mService.getState() == Music.State.PLAYING) {
                         //remove timer
