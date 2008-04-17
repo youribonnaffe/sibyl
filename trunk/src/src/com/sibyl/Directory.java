@@ -56,4 +56,15 @@ public class Directory {
         searchIn(directory, extension, files);
         return files;
     }
+    
+    public static ArrayList<String> scanFiles(String path, String[] extensionList, int nb){
+        ArrayList<String> files = new ArrayList<String>();
+
+        File directory = new File(path);
+        // go in each directories
+        for(int i = 0; i < nb; i++){        
+            searchIn(directory, extensionList[i], files);
+        }
+        return files;
+    }
 }

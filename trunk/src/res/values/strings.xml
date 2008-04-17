@@ -88,6 +88,11 @@
     <!-- AlbumUI -->
     <string name="alb_back">Back</string>
     <string name="alb_manual">Manual</string>
+    <string name="alb_empty">Your librairie is empty.\n Fill it first</string>
+    
+    <!-- CoverUI -->
+    <string name="cov_back">Back</string>
+    <string name="cov_choose">Choose</string>
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>
