@@ -51,6 +51,8 @@
     <string name="playlistsep"> - </string>
     <string name="dial_deldir">Do you want to Delete this directory ?</string>
     
+    
+    
     <!--  AddUI -->
     <string name="add_artist">Artiste</string>
     <string name="add_album">Album</string>
@@ -60,6 +62,8 @@
     <string name="add_empty_artist">No artist</string>
     <string name="add_empty_album">No album</string>
     <string name="add_empty_song">No song</string>
+
+
 
     <!-- CONFIG -->
 	<string name="rep_no">No repeat</string>
@@ -74,9 +78,16 @@
     <string name="playlist_random">Random songs</string>
     <string name="playlist_less_played">Less played songs</string>
     <string name="playlist_most_played">Most played songs</string>
+
+    
     
     <!-- META DATA, TAGS -->
     <string name="tags_unknown">Unknown</string>
+    
+    
+    <!-- AlbumUI -->
+    <string name="alb_back">Back</string>
+    <string name="alb_manual">Manual</string>
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>

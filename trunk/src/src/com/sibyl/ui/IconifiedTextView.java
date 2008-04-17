@@ -8,8 +8,8 @@ import android.widget.TextView;
 
 public class IconifiedTextView extends LinearLayout
 {
-    private TextView mText;
-    private ImageView mIcon;
+    protected TextView mText;
+    protected ImageView mIcon;
     
     public IconifiedTextView(Context context, IconifiedText aIconifiedPath)
     {
@@ -28,6 +28,10 @@ public class IconifiedTextView extends LinearLayout
         mText.setTextSize(20);
         
         addView(mText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+    }
+    
+    public IconifiedTextView(Context context){
+        super(context);
     }
     
     public void setText(String texte)
