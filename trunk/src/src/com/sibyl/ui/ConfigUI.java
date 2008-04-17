@@ -38,9 +38,13 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.sibyl.Directory;
 import com.sibyl.ISibylservice;
@@ -67,10 +71,7 @@ public class ConfigUI extends Activity
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
-    private TextView repeatMode;    // Affichage du mode de répétition en cours
-    private Button repeatMusicNo; // bouton permettant de changer de mode de lecture
-    private Button repeatMusicOne; // bouton permettant de changer de mode de lecture
-    private Button repeatMusicAll; // bouton permettant de changer de mode de lecture
+    private Spinner repeatMusic;
     
     private TextView playMode;  // Affichage du mode de lecture en cours
     private Button shuffleMode; // bouton permettant de changer passer en mode aléatoire
@@ -95,10 +96,13 @@ public class ConfigUI extends Activity
         addDir = (Button) findViewById(R.id.addMusic);
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
-        repeatMusicNo = (Button) findViewById(R.id.repMusicNo);
-        repeatMusicOne = (Button) findViewById(R.id.repMusicOne);
-        repeatMusicAll = (Button) findViewById(R.id.repMusicAll);
-        repeatMode = (TextView) findViewById(R.id.repMode);
+        
+        repeatMusic = (Spinner) findViewById(R.id.repMusic);
+        String repeatString[] = {(String) getText(R.string.rep_no), 
+                         (String) getText(R.string.rep_one), 
+                         (String) getText(R.string.rep_all)};
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
+        repeatMusic.setAdapter(adapter);
         
         playMode = (TextView) findViewById(R.id.playMode);
         normalMode = (Button) findViewById(R.id.normal);
@@ -108,9 +112,7 @@ public class ConfigUI extends Activity
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
-        repeatMusicNo.setOnClickListener(mRepeatMusicNo);
-        repeatMusicOne.setOnClickListener(mRepeatMusicOne);
-        repeatMusicAll.setOnClickListener(mRepeatMusicAll);
+        repeatMusic.setOnItemSelectedListener(mRepeatMusic);
         
         shuffleMode.setOnClickListener(mShuffleMode);
         normalMode.setOnClickListener(mNormalMode);
@@ -277,45 +279,19 @@ public class ConfigUI extends Activity
     /**
      * Écouteur placé sur le bouton permettant le changement de mode de lecture : sans répétition
      */
-    private OnClickListener mRepeatMusicNo = new OnClickListener()
+    private OnItemSelectedListener mRepeatMusic = new OnItemSelectedListener()
     {
-        public void onClick(View v)
+        public void onItemSelected(AdapterView parent, View v, int position, long id) 
         {
             try 
             {
-                repeatMode.setText(R.string.rep_no);
-                mService.setLoopMode(Music.LoopMode.NO_REPEAT);
-            } catch (DeadObjectException e) { }
+                mService.setLoopMode(position);
+            } catch (DeadObjectException e) { }   
         }
-    };
-    
-    /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture : répétition de la chanson en cours
-     */
-    private OnClickListener mRepeatMusicOne = new OnClickListener()
-    {
-        public void onClick(View v)
+
+        public void onNothingSelected(AdapterView arg0) 
         {
-            try 
-            {
-                repeatMode.setText(R.string.rep_one);
-                mService.setLoopMode(Music.LoopMode.REPEAT_SONG);
-            } catch (DeadObjectException e) { }
-        }
-    };
-    
-    /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture : répétition de la playlist
-     */
-    private OnClickListener mRepeatMusicAll = new OnClickListener()
-    {
-        public void onClick(View v)
-        {
-            try 
-            {
-                repeatMode.setText(R.string.rep_all);
-                mService.setLoopMode(Music.LoopMode.REPEAT_PLAYLIST);
-            } catch (DeadObjectException e) { }
+            
         }
     };
     
@@ -373,28 +349,13 @@ public class ConfigUI extends Activity
         public void onServiceConnected(ComponentName className, IBinder service)
         {
             mService = ISibylservice.Stub.asInterface((IBinder)service);
-            repeatMusicNo.setFocusable(true);
-            repeatMusicOne.setFocusable(true);
-            repeatMusicAll.setFocusable(true);
+            repeatMusic.setFocusable(true);
             normalMode.setFocusable(true);
             shuffleMode.setFocusable(true);
             try 
             {
-                switch (mService.getLooping()) 
-                {
-                case 0:
-                    repeatMode.setText(R.string.rep_no);
-                    break;
-                case 1:
-                    repeatMode.setText(R.string.rep_one);
-                    break;
-                case 2:
-                    repeatMode.setText(R.string.rep_all);
-                    break;
-                default :
-                    repeatMode.setText("");
-                    break;
-                }
+                
+                repeatMusic.setSelection(mService.getLooping());
                 
                 playMode.setText(R.string.normal);
                 

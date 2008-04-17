@@ -60,45 +60,17 @@
 			    android:layout_height="wrap_content"/>
 		</TableRow>
 		
-		<TableRow
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content">
-		
-			<TextView android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-		       	android:text="Repeat mode : "
-	            android:textSize="9pt"
-	        	/>
-	        <TextView android:id="@+id/repMode"
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	            android:textSize="9pt"
-	        	/>
-        </TableRow>
-		
-		<TableRow
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center">
+		<TextView android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+	       	android:text="Repeat mode : "
+            android:textSize="9pt"
+        	/>
 		    
-			<Button android:id="@+id/repMusicNo"
-					android:focusable="false"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="No Repeat"/>
-			
-			<Button android:id="@+id/repMusicOne"
-					android:focusable="false"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Repeat Song"/>
-			
-			<Button android:id="@+id/repMusicAll"
-					android:focusable="false"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Repeat All"/>
-		</TableRow>
+		<Spinner android:id="@+id/repMusic"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="No Repeat"/>
 		
 		<TableRow
 		    android:layout_width="fill_parent"
