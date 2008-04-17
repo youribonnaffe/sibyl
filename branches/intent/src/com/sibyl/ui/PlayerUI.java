@@ -58,20 +58,15 @@ import com.sibyl.Sibylservice;
 public class PlayerUI extends Activity
 {
 
-    ISibylservice mService = null;
-    //menu variables
+    // menu variables
     private static final int QUIT_ID = Menu.FIRST;
     private static final int PLAYLIST_ID = Menu.FIRST +1;
     private static final int OPTION_ID = Menu.FIRST +2;
 
-    public static class PLAY {
-        public static int NEXT = 0;
-        public static int PREV = 1;
-    }
-
+    // debug
     private static final String TAG = "COLLECTION";
 
-    //views of the ui
+    // views of the ui
     private TextView artiste;
     private TextView titre;
     private TextView elapsedTime;
@@ -82,8 +77,8 @@ public class PlayerUI extends Activity
     private Button avance;
 
     private MusicDB mdb;    //the database
-    
-    IntentFilter intentF;
+    private ISibylservice mService = null;
+    private IntentFilter intentF;
 
     //handler for calculating elapsed time when playing a song
     private Handler mTimeHandler = new Handler();
@@ -121,15 +116,15 @@ public class PlayerUI extends Activity
             }else if(i.getAction().equals(Music.Action.PAUSE)){
                 pauseRefresh();
             }else if(i.getAction().equals(Music.Action.NEXT)){
-                nextRefresh();
+                songRefresh();
             }else if(i.getAction().equals(Music.Action.PREVIOUS)){
-                previousRefresh();
+                songRefresh();
             }else if(i.getAction().equals(Music.Action.NO_SONG)){
                 noSongRefresh();
             }
         }
     };
-    
+
     private ServiceConnection mConnection = new ServiceConnection()
     {
         public void onServiceConnected(ComponentName className, IBinder service)
@@ -149,7 +144,7 @@ public class PlayerUI extends Activity
             //to start playing music
             enableButtons(true);
             //updateUI();
-            // TODO ???
+            // TODO pauseRefresh not sure
             pauseRefresh();
             songRefresh();
 
@@ -169,18 +164,16 @@ public class PlayerUI extends Activity
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
             enableButtons(false);
-            // updateUI(); ??
         }
     };
-    
+
     /* ----------------------- ACTIVITY STATES -------------------------------*/
 
     /** 
-     * Called when the activity is first created. It initialize the ui: buttons, labels.
+     * Called when the activity is first created. It initializes the ui: buttons, labels.
      * Launches the service.
-     * connect the ui to the database
+     * Connect the ui to the database
      */
-    @Override
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
@@ -190,7 +183,7 @@ public class PlayerUI extends Activity
         lecture.requestFocus();
         //launch the service.
         launchService();
-        
+
         //register intent so we will be aware of service changes
         intentF = new IntentFilter();
         intentF.addAction(Music.Action.PAUSE);
@@ -210,23 +203,26 @@ public class PlayerUI extends Activity
         }
     }
 
-    @Override
     protected void onDestroy() 
     {
         super.onDestroy();
         unbindService(mConnection);
     }
 
-    @Override
-    protected void onStop() 
+    /**
+     * when activity isn't displayed anymore
+     */
+    protected void onPause() 
     {
-        super.onStop();
+        super.onPause();
         mTimeHandler.removeCallbacks(timerTask); // stop the timer update
         // unregister intents
         unregisterReceiver(intentHandler);
     }
 
-    @Override
+    /**
+     * when activity is displayed
+     */
     protected void onResume() 
     {
         super.onResume();
@@ -235,10 +231,29 @@ public class PlayerUI extends Activity
         registerReceiver(intentHandler, intentF);
 
         // refresh ui when displaying the activity if service connection already made
-        // TODO maybe 2 calls
         if( mService != null){
-            songRefresh();
-            timerRefresh();
+            try{
+                // refresh considering player state
+                switch(mService.getState()){
+                    case Music.State.PLAYING :
+                        enableButtons(true);
+                        playRefresh();
+                        songRefresh();
+                        break;
+                    case Music.State.PAUSED :
+                        // we still have to refresh timer once
+                        timerRefresh();
+                        pauseRefresh();
+                        songRefresh();
+                        break;
+                    case Music.State.END_PLAYLIST_REACHED :
+                        // we have nothing to display 
+                        noSongRefresh();
+                        break;
+                }
+            }catch(DeadObjectException doe){
+                Log.v(TAG, doe.toString());
+            }
         }
     }
 
@@ -259,7 +274,7 @@ public class PlayerUI extends Activity
         avance.setEnabled(enable);
     }
 
-    /*
+    /**
      *launch the activity PlayerListUI: show and manage the playlist 
      */
     private void displayPlaylist() 
@@ -268,7 +283,7 @@ public class PlayerUI extends Activity
         startSubActivity(i, 0);
     }
 
-    /*
+    /**
      * launch the activity ConfigUI.
      */
     private void displayConfig() 
@@ -317,7 +332,7 @@ public class PlayerUI extends Activity
         cover.setImageResource(R.drawable.logo);  
     }
 
-    /*
+    /**
      * launch the service
      */
     private void launchService()    
@@ -366,7 +381,6 @@ public class PlayerUI extends Activity
                 displayConfig();
                 break;
         }
-
         return true;
     }
     /* --------------------- END UI menu -------------------------------------*/
@@ -508,9 +522,12 @@ public class PlayerUI extends Activity
             }
         }
     };
-    
+
     /* --------------------- END UI actions listener -------------------------*/
 
+    /**
+     * when lecture button is used
+     */
     private void playPauseAction (){
         try{ 
             if( mService.getState() == Music.State.PLAYING) //call if a music is played (pause the music)
@@ -527,20 +544,25 @@ public class PlayerUI extends Activity
         }
     }
 
+    /**
+     * refresh elapsed time, only once !
+     */
     private void timerRefresh(){
         try{
-            mTimeHandler.removeCallbacks(timerTask);
+            /*mTimeHandler.removeCallbacks(timerTask);
             if(mService.getState() == Music.State.PLAYING){
                 mTimeHandler.post(timerTask);
-            }else{
-                elapsedTime.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
-            }
+            }else{*/
+            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
+            //}
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
     }
-
-
+    
+    /**
+     * refresh lecture button & timer
+     */
     private void playRefresh(){
         lecture.setText(R.string.pause);
         //update of the current time displayed
@@ -548,16 +570,22 @@ public class PlayerUI extends Activity
         mTimeHandler.post(timerTask);
     }
 
+    /**
+     * refresh lecture button & timer
+     */
     private void pauseRefresh(){
         lecture.setText(R.string.play);
         // stop timer update
         mTimeHandler.removeCallbacks(timerTask);
     }
 
+    /**
+     * refresh song information & buttons next, previous
+     */
     private void songRefresh(){
         try{
-            // refresh total time, song infos
-            int pos=mService.getCurrentSongIndex();
+            // refresh total time, song info
+            int pos = mService.getCurrentSongIndex();
             int plSize = mdb.getPlaylistSize();
             // set total time
             tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
@@ -567,37 +595,28 @@ public class PlayerUI extends Activity
                 titre.setText(songInfo[0]);
                 artiste.setText(songInfo[1]);
             }
-            // buttons next & prev update
-            if(pos == 1){
+            // buttons next & previous update
+            if(pos <= 1){
                 // disable previous button
                 previous.setEnabled(false);
             }else{
                 previous.setEnabled(true);
             }
-            
-            if(mdb.getPlaylistSize() <= 0 || pos == mdb.getPlaylistSize()){
+
+            if(mdb.getPlaylistSize() <= 0 || pos <= mdb.getPlaylistSize()){
                 next.setEnabled(false);
             }else{
                 next.setEnabled(true);
             }
-            
+
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
     }
 
-    private void nextRefresh(){
-        songRefresh();
-        // TODO maybe we should disable next button if it is the last song
-        //.?? TODO
-        enableButtons(true);
-    }
-
-    private void previousRefresh(){
-        songRefresh();
-        //same thing for now
-    }
-
+    /**
+     * when there is no song to display
+     */
     private void noSongRefresh(){
         // remove timer
         mTimeHandler.removeCallbacks(timerTask);
@@ -608,7 +627,7 @@ public class PlayerUI extends Activity
         titre.setText(R.string.titre);
         lecture.setText(R.string.play);
 
-        // TODO
+        // TODO relevant ?
         enableButtons(false);
 
     }
