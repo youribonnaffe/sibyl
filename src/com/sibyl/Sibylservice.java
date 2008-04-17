@@ -177,7 +177,7 @@ public class Sibylservice extends Service
                         try 
                         {//the UI is informed that the end of the playlist has been reached
                             //uiHandler.handleEndPlaylist();
-                            broadcastIntent(new Intent(Intent.EDIT_ACTION));
+                            broadcastIntent(new Intent(Music.Action.NO_SONG));
                             if(playlistUiHandler != null ) playlistUiHandler.handleChange();
                         } catch (DeadObjectException e) 
                         {
@@ -196,6 +196,7 @@ public class Sibylservice extends Service
                 {
                     // error
                     playerState = Music.State.ERROR;
+                    broadcastIntent(new Intent(Music.Action.NO_SONG));
                     return false;
                 }
             }
@@ -259,8 +260,9 @@ public class Sibylservice extends Service
         currentSong += add;
         if( !play()){ //cancel the changement if nothing is played
             currentSong -=add;
+        }else{
+            broadcastIntent(new Intent(Music.Action.NEXT));
         }
-        broadcastIntent(new Intent(Music.Action.NEXT));
     }
     
     /**
@@ -278,8 +280,9 @@ public class Sibylservice extends Service
         }
         if( ! play()){  //cancel the changement if nothing is played
             currentSong++;
+        }else{
+            broadcastIntent(new Intent(Music.Action.PREVIOUS));
         }
-        broadcastIntent(new Intent(Music.Action.PREVIOUS));
     }
     
     /**
@@ -349,6 +352,8 @@ public class Sibylservice extends Service
         public void setCurrentPosition(int msec) {
             mp.seekTo(msec);
             // auto start playing
+            //because when we move to an other pos the music starts
+            playerState = Music.State.PLAYING;
         }
         
         public void setLooping(boolean loop) 
