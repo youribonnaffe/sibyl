@@ -509,8 +509,14 @@ public class PlayerUI extends Activity
                     String [] songInfo = mdb.getSongInfoFromCP(pos);
                     titre.setText(songInfo[0]);
                     artiste.setText(songInfo[1]);
-                    if( !songInfo[2].equals("null") && !songInfo[2].equals(pathCover)){
-                        cover.setImageDrawable(Drawable.createFromPath(pathCover=songInfo[2]));
+                    //if the song has a cover and it's not the cover which is displayed
+                    if( songInfo[2] != null && !songInfo[2].equals(pathCover)){
+                        pathCover=songInfo[2];
+                        cover.setImageDrawable(Drawable.createFromPath(pathCover));
+                    }
+                    else if(songInfo[2] == null){ //displayed default logo
+                        cover.setImageResource(R.drawable.logo);
+                        pathCover = null;
                     }
 
                     if( mService.getState() == Music.State.PLAYING) {
