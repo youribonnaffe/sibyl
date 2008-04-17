@@ -83,7 +83,8 @@ public class MusicDB {
             );
             mDb.execSQL("CREATE TABLE album("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                    "album_name VARCHAR UNIQUE "+
+                    "album_name VARCHAR UNIQUE, "+
+                    "cover_url VARCHAR UNIQUE DEFAULT NULL"+
                     ")"
             );
             mDb.execSQL("CREATE TABLE genre("+
@@ -531,6 +532,12 @@ public class MusicDB {
                     "GROUP BY genre_name "+
                     "ORDER BY genre_name ",null);
         default : return null;
+        }
+    }
+    
+    public void addCover(int album, String cover){
+        if(album > 1){
+            mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE id=album");
         }
     }
 }
