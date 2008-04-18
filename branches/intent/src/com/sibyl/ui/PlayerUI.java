@@ -142,11 +142,6 @@ public class PlayerUI extends Activity
 
             //now that we are connected to the service, user can click on buttons
             //to start playing music
-            enableButtons(true);
-            //updateUI();
-            // TODO pauseRefresh not sure
-            pauseRefresh();
-            songRefresh();
 
         }
 
@@ -231,6 +226,7 @@ public class PlayerUI extends Activity
         registerReceiver(intentHandler, intentF);
 
         // refresh ui when displaying the activity if service connection already made
+        // TODO what if service not connected ? faire deux fois ? onconnect & ici ?
         if( mService != null){
             try{
                 // refresh considering player state
@@ -242,6 +238,7 @@ public class PlayerUI extends Activity
                         break;
                     case Music.State.PAUSED :
                         // we still have to refresh timer once
+                        enableButtons(true);
                         timerRefresh();
                         pauseRefresh();
                         songRefresh();
@@ -553,17 +550,12 @@ public class PlayerUI extends Activity
      */
     private void timerRefresh(){
         try{
-            /*mTimeHandler.removeCallbacks(timerTask);
-            if(mService.getState() == Music.State.PLAYING){
-                mTimeHandler.post(timerTask);
-            }else{*/
-            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
-            //}
+            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()/1000));
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
     }
-    
+
     /**
      * refresh lecture button & timer
      */
@@ -612,6 +604,7 @@ public class PlayerUI extends Activity
             }else{
                 next.setEnabled(true);
             }
+            Log.v(TAG, " "+mService.getState());
 
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
@@ -633,6 +626,11 @@ public class PlayerUI extends Activity
 
         // TODO relevant ?
         enableButtons(false);
+        try{
+            Log.v(TAG, " "+mService.getState());
+        }catch( DeadObjectException doe){
+            Log.v(TAG, doe.toString());
+        }
 
     }
 }

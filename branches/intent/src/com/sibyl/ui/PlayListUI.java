@@ -107,11 +107,24 @@ public class PlayListUI extends ListActivity
     protected void onResume() {
         // register intent handler, so we will be aware of service changes
         registerReceiver(intentHandler, intentF);
-
         if( mService != null){
             fillData();
         }
         super.onResume();
+    }
+
+    protected void onActivityResult(int req, int res, String data, Bundle extras){
+        // TODO mieux de le faire à la fin de l'activité
+        // activty addUi, res = 1 -> changes
+        if(req == 1 && res == 1){
+            try{
+                mService.playlistChange();
+            }
+            catch(DeadObjectException ex){
+                Log.v(TAG, ex.toString());
+            }
+        }
+
     }
 
     protected void onDestroy() 
@@ -138,7 +151,7 @@ public class PlayListUI extends ListActivity
         {
             case ADD_ID:
                 i = new Intent(this, AddUI.class);
-                startSubActivity(i, 0);
+                startSubActivity(i, 1);
                 break;
             case NEW_ID:
                 try 
@@ -149,7 +162,7 @@ public class PlayListUI extends ListActivity
                     // warn user
                 }
                 i = new Intent(this, AddUI.class);
-                startSubActivity(i, 0);
+                startSubActivity(i, 1);
                 break;
             case BACK_ID:
                 finish();
