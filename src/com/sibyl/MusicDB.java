@@ -492,7 +492,7 @@ public class MusicDB {
      */
     public int getPlaylistSize()
     {
-        int size = -1;
+        int size = 0;
         Cursor c = mDb.rawQuery("SELECT COUNT(id) FROM current_playlist" ,null);
         if(c.first())
         {

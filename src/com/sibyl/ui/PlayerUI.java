@@ -250,6 +250,10 @@ public class PlayerUI extends Activity
                         // we have nothing to display 
                         noSongRefresh();
                         break;
+                    case Music.State.STOPPED :
+                        enableButtons(true);
+                        songRefresh();
+                        break;
                 }
             }catch(DeadObjectException doe){
                 Log.v(TAG, doe.toString());
@@ -603,7 +607,7 @@ public class PlayerUI extends Activity
                 previous.setEnabled(true);
             }
 
-            if(mdb.getPlaylistSize() <= 0 || pos <= mdb.getPlaylistSize()){
+            if(mdb.getPlaylistSize() <= 0 || pos == mdb.getPlaylistSize()){
                 next.setEnabled(false);
             }else{
                 next.setEnabled(true);
