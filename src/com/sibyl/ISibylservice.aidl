@@ -20,6 +20,8 @@ package com.sibyl;
 
 interface ISibylservice {
 
+    void playlistChange();
+
     void start();
     /* start playing the current item in the selected playlist */
     
