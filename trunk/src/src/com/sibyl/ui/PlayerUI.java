@@ -82,7 +82,7 @@ public class PlayerUI extends Activity
     private Button previous;
     private Button avance;
     private ImageView cover;
-    private ProgressBarClickable progress;
+    private ProgressView progress;
 
     private MusicDB mdb;    //the database
     private static String pathCover;
@@ -116,6 +116,7 @@ public class PlayerUI extends Activity
             elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
             // again in 0.1s
             mTimeHandler.postDelayed(this, 1000);
+            progress.redraw();
         }
     };
     
@@ -151,9 +152,13 @@ public class PlayerUI extends Activity
     /*
      * Initialize the progressbar: set the total time and elapsed time
      */
-    private void initializeProgress(int played, int total){
-        progress.setMax(total);
-        progress.setProgress(played);
+    private void initializeProgressTime(){
+        //progress.initializeProgress();
+        try{
+            progress.setTotal(mService.getDuration());
+            progress.setProgress(mService.getCurrentPosition());
+        }
+        catch( DeadObjectException ex){}
     }
 
     /**
@@ -209,8 +214,9 @@ public class PlayerUI extends Activity
         cover.setImageResource(R.drawable.logo);
         
         //get progress
-        progress = (ProgressBarClickable) findViewById(R.id.progress);
-        progress.setOnProgressChangeListener(changeListener);
+        progress = (ProgressView) findViewById(R.id.progress);
+        progress.initializeProgress();
+        //progress.setOnProgressChangeListener(changeListener);
     }
     
     
@@ -342,6 +348,7 @@ public class PlayerUI extends Activity
                 //now that we are connected to the service, user can click on buttons
                 //to start playing music
                 enableButtons(true);
+                progress.initializeProgress();
                 updateUI();
             }
             catch(DeadObjectException ex){
@@ -556,12 +563,9 @@ public class PlayerUI extends Activity
             public void run()
             {
                 updateUI();
-                try{
-                    initializeProgress(mService.getCurrentPosition(), mService.getDuration());
-                }
-                catch(DeadObjectException ex){}
+                initializeProgressTime();
             }
-            });
+        });
     
         } 
         
