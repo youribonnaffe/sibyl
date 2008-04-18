@@ -116,7 +116,7 @@ public class PlayerUI extends Activity
             elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
             // again in 0.1s
             mTimeHandler.postDelayed(this, 1000);
-            progress.redraw();
+            //progress.redraw();
         }
     };
     
@@ -216,7 +216,7 @@ public class PlayerUI extends Activity
         //get progress
         progress = (ProgressView) findViewById(R.id.progress);
         progress.initializeProgress();
-        //progress.setOnProgressChangeListener(changeListener);
+        progress.setOnProgressChangeListener(changeListener);
     }
     
     
@@ -268,6 +268,13 @@ public class PlayerUI extends Activity
         super.onResume();
         if( mService != null){
             updateUI();
+            try{
+                if(mService.getState() == Music.State.PLAYING ||
+                        mService.getState() == Music.State.PAUSED){
+                    initializeProgressTime();
+                }
+            }
+            catch( DeadObjectException ex){}
         }
     }
     

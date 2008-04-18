@@ -1,6 +1,26 @@
+/* 
+ *
+ * Copyright (C) 2007-2008 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.sibyl.ui;
 
 import java.util.Map;
+
+import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,8 +28,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
+/*
+ * An evoluate progress bar. The progress bar display is update when the progress is incremented.
+ * If the View is clicked, the progress is moved to the new position.
+ */
 public class ProgressView extends View {
     //style
     private Paint ptLine; //the elapsed time
@@ -25,7 +50,9 @@ public class ProgressView extends View {
     private int width;
     private int height;
 
-    private boolean draw;
+    private OnProgressChangeListener listener;
+    private static final int padding = 1; //width of the boder
+
     /*
      * Initialize the view.
      */
@@ -34,14 +61,14 @@ public class ProgressView extends View {
         Log.v("PROGRESS","Create");
         progress = 0;
         total = 1; //not 0 (divide by 0)
-        draw = true;
+
         ptLine = new Paint();
         ptLine.setAntiAlias(true);
-        ptLine.setARGB(255, 255, 100, 0); //time elapsed color
+        ptLine.setARGB(255, 255, 120, 40); //time elapsed color
         
         ptFull = new Paint();
         ptFull.setAntiAlias(true);
-        ptFull.setARGB(255, 255, 210, 50); //background color
+        ptFull.setARGB(255, 255, 210, 80); //background color
         
         ptBorder = new Paint();
         ptBorder.setAntiAlias(true);
@@ -66,14 +93,8 @@ public class ProgressView extends View {
         canvas.drawLine(0,height, width, height, ptBorder);
         canvas.drawLine(width,0, width, height, ptBorder);
         //log for debugging
-        Log.v("PROGRESS", ((Integer)progress).toString()+"/"+((Integer)total).toString());
-        Log.v("PROGRESS_INIT", ((Integer)getWidth()).toString()+"-"+((Integer)height).toString());
-
-        //redraw the view.
-        /*Log.v("PROGRESS","draw");
-        if( draw){
-            invalidate();
-        }*/
+        //Log.v("PROGRESS", ((Integer)progress).toString()+"/"+((Integer)total).toString());
+        //Log.v("PROGRESS_INIT", ((Integer)getWidth()).toString()+"-"+((Integer)height).toString());
     }
     
     /*
@@ -85,7 +106,7 @@ public class ProgressView extends View {
         progress = 0;
         Log.v("PROGRESS_INIT", ((Integer)getWidth()).toString()+"-"+((Integer)height).toString());
         fullView.set(0,0,width,height);
-        redraw();
+        invalidate();
     }
     
     /*
@@ -94,7 +115,7 @@ public class ProgressView extends View {
      */
     public void setProgress(int prog){
         progress = prog;
-        redraw();
+        invalidate();
     }
         
     /*
@@ -105,18 +126,30 @@ public class ProgressView extends View {
     }
     
     /*
-     * force the redrawing of the view
+     * set the adapter
      */
-    public void redraw(){
-        draw = true;
-        invalidate();
+    public void setOnProgressChangeListener(OnProgressChangeListener l) {
+        listener = l;
     }
+
     
-    /*
-     * stop drawing the view
-     */
-    public void stopDrawing(){
-        draw = false;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+                float x_mouse = event.getX() - padding;
+                float width = getWidth() - 2*padding;
+                int progress = Math.round((float) total * (x_mouse / width));
+                if (progress < 0){
+                    progress = 0;
+                }
+                this.setProgress(progress);
+                if (listener != null){
+                    listener.onProgressChanged(this, progress);
+                }
+        }
+        return super.onTouchEvent(event);
     }
 
 }
