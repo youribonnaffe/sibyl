@@ -28,23 +28,19 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.sibyl.ui.IPlayListUI;
-
-
 public class Sibylservice extends Service
 {
-    
+
     private MediaPlayer mp;
     private MusicDB mdb;
     private int playerState;
     private boolean repAll;
     private boolean looping;
     private int currentSong;
-    private IPlayListUI playlistUiHandler;
+    //private IPlayListUI playlistUiHandler;
     private NotificationManager nm;
 
     /** creation of the service */
@@ -52,8 +48,10 @@ public class Sibylservice extends Service
     protected void onCreate()
     {        
         /* initialization of the state of the service */
-        playerState=Music.State.STOPPED;
         
+        // TODO en fonction de la playlist 
+        playerState=Music.State.STOPPED;
+
         // retrieve preferences
         SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
         currentSong= prefs.getInt("currentSong", 1);
@@ -70,44 +68,44 @@ public class Sibylservice extends Service
             updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
             // load current song
             preparePlaying(mdb.getSong(currentSong));
-            
+
         }catch (SQLiteDiskIOException e){
             Log.v("SibylService", e.getMessage());
             // what sould we do ? updateNotification ?
         }
-        
+
     }
-    
+
     /**
-    * to be corrected by the right usage of idIcon
-    * Updates the text of the notification identified by idIcon with the value
-    * of the text argument
-    * 
-    * @param idIcon     identifier of the notification
-    * @param text       new text to be displayed by the notification manager
-    */
+     * to be corrected by the right usage of idIcon
+     * Updates the text of the notification identified by idIcon with the value
+     * of the text argument
+     * 
+     * @param idIcon     identifier of the notification
+     * @param text       new text to be displayed by the notification manager
+     */
     public void updateNotification(int idIcon, String text)
     {
         Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
-        
+
         nm.notify(
                 R.layout.notification,                  // we use a string id because it is a unique
-                                                   // number.  we use it later to cancel the
-                                                   // notification
+                // number.  we use it later to cancel the
+                // notification
                 new Notification(
-                    this,                               // our context
-                    idIcon,                             // the icon for the status bar
-                    text,                               // the text to display in the ticker
-                    System.currentTimeMillis(),         // the timestamp for the notification
-                    Music.APPNAME,                            // the title for the notification
-                    text,                               // the details to display in the notification
-                    appIntent,                               // the contentIntent (see above)
-                    R.drawable.icon,                    // the app icon
-                    getText(R.string.app_name),         // the name of the app
-                    appIntent)); // the appIntent (see above)
+                        this,                               // our context
+                        idIcon,                             // the icon for the status bar
+                        text,                               // the text to display in the ticker
+                        System.currentTimeMillis(),         // the timestamp for the notification
+                        Music.APPNAME,                            // the title for the notification
+                        text,                               // the details to display in the notification
+                        appIntent,                               // the contentIntent (see above)
+                        R.drawable.icon,                    // the app icon
+                        getText(R.string.app_name),         // the name of the app
+                        appIntent)); // the appIntent (see above)
 
     }
-    
+
     @Override
     protected void onDestroy()
     {
@@ -120,17 +118,17 @@ public class Sibylservice extends Service
         prefs.putBoolean("repAll", repAll);
         prefs.putBoolean("looping", looping);
         prefs.commit();
-        
+
     }
-    
+
     /**
-    * Resets the media player, sets its source to the file given by the filename 
-    * parameter
-    * After having called this method, the media player is ready to play.
-    *
-    * @param filename   name of the file which should be played by the media player
-    *   when play is called
-    */
+     * Resets the media player, sets its source to the file given by the filename 
+     * parameter
+     * After having called this method, the media player is ready to play.
+     *
+     * @param filename   name of the file which should be played by the media player
+     *   when play is called
+     */
     protected void preparePlaying(String filename)
     {
         try 
@@ -147,18 +145,18 @@ public class Sibylservice extends Service
             Log.v(TAG, iae.toString());
         }
     }
-    
+
     /**
-    * Starts playing song at the current position in the playlist. If the player 
-    * was in pause, the paused song is resumed.
-    * If the end of the playlist is reached and playlist repetition is false, 
-    * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
-    * informed.
-    * If an error occured, no song will be played and the service will be in the
-    * error state.
-    *
-    * @return   true in case of success, false otherwise
-    */
+     * Starts playing song at the current position in the playlist. If the player 
+     * was in pause, the paused song is resumed.
+     * If the end of the playlist is reached and playlist repetition is false, 
+     * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
+     * informed.
+     * If an error occured, no song will be played and the service will be in the
+     * error state.
+     *
+     * @return   true in case of success, false otherwise
+     */
     protected boolean play() 
     {
         if( playerState != Music.State.PAUSED ) 
@@ -167,6 +165,7 @@ public class Sibylservice extends Service
             if( filename == null ) 
             {
                 int playListSize = mdb.getPlaylistSize();
+                // TODO check with playlist =0
                 if ( currentSong > playListSize && playListSize > 0 )
                 {
                     //end of playlist
@@ -174,15 +173,9 @@ public class Sibylservice extends Service
                     {
                         playerState = Music.State.END_PLAYLIST_REACHED;
                         currentSong = 1;
-                        try 
-                        {//the UI is informed that the end of the playlist has been reached
-                            //uiHandler.handleEndPlaylist();
-                            broadcastIntent(new Intent(Music.Action.NO_SONG));
-                            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
-                        } catch (DeadObjectException e) 
-                        {
-                            e.printStackTrace();
-                        }
+
+                        broadcastIntent(new Intent(Music.Action.NO_SONG));
+                        //if(playlistUiHandler != null ) playlistUiHandler.handleChange();
                         //don't play anything
                         return false;
                     }
@@ -206,24 +199,16 @@ public class Sibylservice extends Service
             // filename OK so preparing playing of this file
             preparePlaying(filename);
         }
-        
+
         // Start playing if it wasn't paused or continue playing the paused song
         // if it was in pause 
         mp.start();
         playerState=Music.State.PLAYING;
 
         broadcastIntent(new Intent(Music.Action.PLAY));
-        
-        try 
-        {// informs UI that we start playing a song
-            //uiHandler.handleStartPlaying();
-            // informs PlayList ui as well
-            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
-        } catch (DeadObjectException e) 
-        {
-            e.printStackTrace();
-        }
-        
+
+        //if(playlistUiHandler != null ) playlistUiHandler.handleChange();
+
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
@@ -231,24 +216,24 @@ public class Sibylservice extends Service
             //what to do??? is the error critical or not important and so can be skipped???
         }
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
-        
+
         return true;
     }
-    
+
     /**
-    * Stops playing and puts the service in the stopped state
-    *
-    */
+     * Stops playing and puts the service in the stopped state
+     *
+     */
     protected void stop()
     {
         mp.stop();
         playerState=Music.State.STOPPED;
     }
-    
+
     /**
-    * Plays the following song in the playlist
-    *
-    */
+     * Plays the following song in the playlist
+     *
+     */
     protected void play_next() 
     {
         int add = 1;
@@ -264,12 +249,12 @@ public class Sibylservice extends Service
             broadcastIntent(new Intent(Music.Action.NEXT));
         }
     }
-    
+
     /**
-    * Plays the previous song in the playlist
-    * If we are at the first song of the playlist, the first song will be played
-    * from the beginning.
-    */
+     * Plays the previous song in the playlist
+     * If we are at the first song of the playlist, the first song will be played
+     * from the beginning.
+     */
     protected void play_prev() 
     {
         stop();
@@ -284,13 +269,13 @@ public class Sibylservice extends Service
             broadcastIntent(new Intent(Music.Action.PREVIOUS));
         }
     }
-    
+
     /**
-    * Sets the current position in the playlist to i, and plays the song at the 
-    * current position.
-    *
-    * @param i  new position in the playlist
-    */
+     * Sets the current position in the playlist to i, and plays the song at the 
+     * current position.
+     *
+     * @param i  new position in the playlist
+     */
     protected void playNumberI(int i)
     {
         stop();
@@ -303,22 +288,28 @@ public class Sibylservice extends Service
     {
         return mBinder;
     }
-    
+
     //interface accessible par les autres classes (cf aidl)
     private final ISibylservice.Stub mBinder = new ISibylservice.Stub() {
-        
-        public void connectToPlayList(IPlayListUI receiver){
+
+        /* public void connectToPlayList(IPlayListUI receiver){
             playlistUiHandler = receiver;
         }
-        
+         */
         public void start() {
             play();
         }
-        
+
+        public void clear() {
+            mp.stop();
+            mdb.clearPlaylist();
+            playerState=Music.State.END_PLAYLIST_REACHED;
+            currentSong = 1; /*initialize currentSong for the next launch of the service*/
+        }
+
         public void stop() {
             mp.stop();
             playerState=Music.State.STOPPED;
-            currentSong = 1; /*initialize currentSong for the next launch of the service*/
         }
         
         public void pause() {
@@ -328,34 +319,35 @@ public class Sibylservice extends Service
             // warn ui that we paused music playing
             broadcastIntent(new Intent(Music.Action.PAUSE));
         }
-        
+
         public int getState() {
             return playerState;
         }
-        
+
         public boolean isPlaying() {
-            return playerState==Music.State.PLAYING;
+            return playerState == Music.State.PLAYING;
         }
-        
+
         public int getCurrentSongIndex() {
             return currentSong;
         }
-        
+
         public int getCurrentPosition() {
             return mp.getCurrentPosition();
         }
-        
+
         public int getDuration() {
+            //return playerState == Music.State.STOPPED ? 0 : mp.getDuration();
             return mp.getDuration();
         }
-        
+
         public void setCurrentPosition(int msec) {
             mp.seekTo(msec);
             // auto start playing
             //because when we move to an other pos the music starts
             playerState = Music.State.PLAYING;
         }
-        
+
         public void setLooping(boolean loop) 
         {
             Log.v(TAG,"set looping :"+loop);
@@ -364,16 +356,16 @@ public class Sibylservice extends Service
             mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
             //and java doesn't do the implicit conversion from bool to int
         }
-        
+
         public int getLooping(){
             if(repAll) return 2;
             return looping ? 1 : 0;
         }
-        
+
         public void next() {
             play_next();
         }
-        
+
         public void prev() {
             play_prev();
         }
@@ -389,9 +381,9 @@ public class Sibylservice extends Service
             repAll = true;
             looping = false;
         }
-         
+
     };
-    
+
     private OnCompletionListener endSongListener = new OnCompletionListener() 
     {
         public void onCompletion(MediaPlayer mp) 
@@ -403,6 +395,6 @@ public class Sibylservice extends Service
             }
         } 
     };
-   
+
 
 }
