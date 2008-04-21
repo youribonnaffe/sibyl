@@ -61,11 +61,13 @@ public class Music {
         SONG, ARTIST, GENRE, ALBUM, CURRENT_PLAYLIST, DIR; 
     }
     public static String MUSIC_DIR = "/data/music";
+    public static String COVER_DIR = "/data/music/covers/";
+    
     public static String[] SONGS = { SONG.ID, SONG.URL, SONG.TITLE,
 	SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
 	SONG.ALBUM, SONG.GENRE };
     public static String[] ARTISTS = { ARTIST.ID, ARTIST.NAME };
-    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME };
+    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME, ALBUM.COVER};
     public static String[] GENRES = { GENRE.ID, GENRE.NAME };
     public static String[] CURRENT_PLAYLISTS = { CURRENT_PLAYLIST.POS,
 	CURRENT_PLAYLIST.ID };
@@ -91,6 +93,7 @@ public class Music {
     public static class ALBUM {
 	public static String ID = "id";
 	public static String NAME = "album_name";
+	public static String COVER = "cover_url";
     }
 
     public static class GENRE {

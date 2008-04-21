@@ -72,7 +72,7 @@ public class Sibylservice extends Service
                 playerState = Music.State.END_PLAYLIST_REACHED;
             }else{
                 // load current song
-                preparePlaying(mdb.getSong(currentSong));
+                preparePlaying();
                 playerState = Music.State.PAUSED;
             }
 
@@ -129,19 +129,17 @@ public class Sibylservice extends Service
     }
 
     /**
-     * Resets the media player, sets its source to the file given by the filename 
-     * parameter
+     * Resets the media player, sets its source to the file given by currentSong
+     * position
      * After having called this method, the media player is ready to play.
-     *
-     * @param filename   name of the file which should be played by the media player
-     *   when play is called
      */
-    protected void preparePlaying(String filename)
+    protected void preparePlaying()
     {
         try 
         {
             mp.reset();
-            mp.setDataSource(filename);
+            // since it is always called with currentSong parameter has been removed
+            mp.setDataSource(mdb.getSong(currentSong));
             mp.prepare();
         }
         catch ( IOException ioe) 
@@ -174,7 +172,7 @@ public class Sibylservice extends Service
                 // changing song
                 mp.stop();
                 // filename OK so preparing playing of this file
-                preparePlaying(mdb.getSong(currentSong));
+                preparePlaying();
                 // next will be to start playing the song
             }else{
                 // end of playlist
@@ -279,8 +277,7 @@ public class Sibylservice extends Service
             if(mdb.getPlaylistSize() > 0){
                 currentSong = 1;
                 playerState = Music.State.PAUSED;
-                // TODO factoriser ?
-                preparePlaying(mdb.getSong(currentSong));
+                preparePlaying();
             }
         }
 
