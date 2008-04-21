@@ -73,6 +73,8 @@ public class AddUI extends ListActivity
             Log.v(TAG, ex.toString());
         }   
        displayMainMenu();
+       // 0 means that we didn't modify the playlist
+       setResult(0);
     }
     
     @Override
@@ -162,6 +164,8 @@ public class AddUI extends ListActivity
                     mdb.insertPlaylist(Music.SONG.GENRE, mCursor.getString(ID));
                 }
             }
+            // 1 means that we did modify the playlist
+            setResult(1);
             positionMenu = STATE.MAIN;
             displayMainMenu();
         }

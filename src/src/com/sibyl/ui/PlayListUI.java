@@ -22,12 +22,13 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentReceiver;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.os.DeadObjectException;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
@@ -36,6 +37,7 @@ import android.view.Menu.Item;
 import android.widget.ListView;
 
 import com.sibyl.ISibylservice;
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
@@ -47,21 +49,64 @@ public class PlayListUI extends ListActivity
     private static final int BACK_ID = Menu.FIRST +2;
 
     private static final String TAG = "PLAYLIST";
+    private static final int ADD_UI = 1;
 
     ISibylservice mService = null;
+
     private int songPlayed;
 
-    //private TextView playList;
+    //the database
+    private MusicDB mdb;    
 
-    private MusicDB mdb;    //the database
-    //handler to call function when datas are received from the service
-    private Handler mServHandler = new Handler();   
+    private IntentFilter intentF;
+    private IntentReceiver intentHandler = new IntentReceiver(){
+        public void onReceiveIntent(Context c, Intent i){
+            //Log.v("INTENT", "RECEIVE PLAYLIST "+i.toString());
+            // we are interessed if a new song is played
+            if(i.getAction().equals(Music.Action.PLAY)){
+                fillData();
+            }else if(i.getAction().equals(Music.Action.NO_SONG)){
+                fillData();
+            }
+        }
+    };
 
-    /** Called when the activity is first created. */
-    @Override
+    private ServiceConnection mConnection = new ServiceConnection()
+    {
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  We are communicating with our
+            // service through an IDL interface, so get a client-side
+            // representation of that from the raw service object.
+            mService = ISibylservice.Stub.asInterface((IBinder)service);
+            /* Positionner le selecteur de la liste sur la chanson en cours
+             * une fois que le service est connecté
+             * */
+            fillData();
+        }
+
+        public void onServiceDisconnected(ComponentName className)
+        {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mService = null;      
+        }
+    };
+
+    /* ----------------------- ACTIVITY STATES -------------------------------*/
+
+    /** 
+     * Called when the activity is first created. 
+     */
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        //register intent so we will be aware of service changes
+        intentF = new IntentFilter();
+        intentF.addAction(Music.Action.PLAY);
+        intentF.addAction(Music.Action.NO_SONG);
         launchService();
         songPlayed = 0;
         setContentView(R.layout.playlist);
@@ -75,7 +120,93 @@ public class PlayListUI extends ListActivity
             Log.v(TAG, ex.toString());
         }   
     }
-    
+
+    protected void onResume() {
+        // register intent handler, so we will be aware of service changes
+        registerReceiver(intentHandler, intentF);
+        if( mService != null){
+            fillData();
+        }
+        super.onResume();
+    }
+
+    /**
+     * when activity isn't displayed anymore
+     */
+    protected void onPause() 
+    {
+        super.onPause();
+        // unregister intents
+        unregisterReceiver(intentHandler);
+    }
+
+    protected void onDestroy() 
+    {
+        super.onDestroy();
+        unbindService(mConnection);        
+    }
+
+    /**
+     * we have to know if songs have been added to playlist
+     */
+    protected void onActivityResult(int req, int res, String data, Bundle extras){
+        // TODO mieux de le faire à la fin de l'activité
+        // activty addUi, res = 1 -> changes
+        if(req == ADD_UI && res == 1){
+            try{
+                mService.playlistChange();
+            }
+            catch(DeadObjectException ex){
+                Log.v(TAG, ex.toString());
+            }
+        }
+
+    }
+
+    /* ----------------------END ACTIVITY STATES -----------------------------*/
+
+    /* -------------------------- utils---------------------------------------*/
+
+    private void fillData()
+    {
+        Cursor c = mdb.getPlayListInfo();
+        int icon;
+        startManagingCursor(c);
+        IconifiedTextListAdapter rows = new IconifiedTextListAdapter(this);
+        songPlayed = 0;
+        try{
+            int index = mService.getCurrentSongIndex()-1;
+            int playerState = mService.getState();
+            while(c.next()){
+                // display icon if is playing and this song is played
+                if( ( playerState == Music.State.PAUSED || playerState == Music.State.PLAYING )
+                        && mService!= null && index == c.position()){
+                    icon = R.drawable.play_white;
+                    songPlayed = c.position();
+                }
+                else{
+                    icon = R.drawable.puce;
+                }
+                rows.add(new IconifiedText( c.getString(0)+ getString(R.string.sep_artiste_song)+  c.getString(1),
+                        getResources().getDrawable(icon)));
+            }
+        }
+        catch(DeadObjectException ex){
+            Log.v(TAG, ex.toString());
+        }
+        c.close();        
+        setListAdapter(rows);
+        setSelection(songPlayed);
+    }
+
+    private void launchService() 
+    {
+        bindService(new Intent(PlayListUI.this,
+                Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
+    /* ---------------------  END utils --------------------------------------*/
+
+    /* ---------------------  UI menu ----------------------------------------*/
 
     public boolean onCreateOptionsMenu(Menu menu) 
     {
@@ -86,160 +217,43 @@ public class PlayListUI extends ListActivity
         return true;
     }
 
-    @Override
-    protected void onDestroy() 
-    {
-        super.onDestroy();
-        unbindService(mConnection);        
-    }
-
     /*when a menu is selected*/
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
         super.onMenuItemSelected(featureId, item);
-        Intent i =null;
+        Intent i = null;
         switch(item.getId()) 
         {
-        case ADD_ID:
-            i = new Intent(this, AddUI.class);
-            startSubActivity(i, 0);
-            break;
-        case NEW_ID:
-            try 
-            {
-                mService.stop();
-                mdb.clearPlaylist();
-                //fillData();
-            } catch (DeadObjectException e) {
-                Log.v(TAG, e.toString());
-                // warn user
-            }
-            i = new Intent(this, AddUI.class);
-            startSubActivity(i, 0);
-            break;
-        case BACK_ID:
-            finish();
-            break;
+            case ADD_ID:
+                i = new Intent(this, AddUI.class);
+                startSubActivity(i, ADD_UI);
+                break;
+            case NEW_ID:
+                try 
+                {
+                    mService.clear();
+                } catch (DeadObjectException e) {
+                    Log.v(TAG, e.toString());
+                    // warn user
+                }
+                i = new Intent(this, AddUI.class);
+                startSubActivity(i, ADD_UI);
+                break;
+            case BACK_ID:
+                finish();
+                break;
         }
         return true;
     }
 
-    private void fillData()
-    {
-        Cursor c = mdb.getPlayListInfo();
-        int icon;
-        startManagingCursor(c);
-        /*ListAdapter adapter = new SimpleCursorAdapter(
-            this, R.layout.playlist_row, c, new String[] {Music.SONG.ID,Music.ARTIST.NAME},  
-            new int[] {R.id.text1, R.id.text2});*/
-        IconifiedTextListAdapter rows = new IconifiedTextListAdapter(this);
-        songPlayed = 0;
-        while(c.next()){
-            try{
-                if( mService!= null && mService.getCurrentSongIndex()-1 == c.position()){
-                    icon = R.drawable.play_white;
-                    songPlayed = c.position();
-                }
-                else{
-                    icon = R.drawable.puce;
-                }
-                rows.add(new IconifiedText( c.getString(0)+ getString(R.string.sep_artiste_song)+  c.getString(1),
-                        getResources().getDrawable(icon)));
-            }
-            catch(DeadObjectException ex){}
-        }
-        c.close();        
-        setListAdapter(rows);
-        setSelection(songPlayed);
-    }
-    
-    private void changeSongPlayed(View row) {
-        /*((IconifiedTextView) row).setIcon(getResources().getDrawable(R.drawable.play_white));
-        //((IconifiedTextView)getListView().getSelectedView()).setIcon(getResources().getDrawable(R.drawable.puce));
-         Log.v(TAG,"old="+((IconifiedTextView)getListAdapter().getView(songPlayed, null, null)).getText().toString());
-
-        songPlayed = getListView().getSelectedItemPosition();
-        Log.v(TAG,((Integer) songPlayed).toString());*/
-        fillData();
-    }
-
-    /* TODO verifier que l'on se connecte bien au meme service que PlayerUI 
-     * et qu'il n'y a pas 2 servi lancés, normalement c'est bon */
-    public void launchService() 
-    {
-        bindService(new Intent(PlayListUI.this,
-            Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private ServiceConnection mConnection = new ServiceConnection()
-    {
-        public void onServiceConnected(ComponentName className, IBinder service)
-        {
-            // This is called when the connection with the service has been
-            // established, giving us the service object we can use to
-            // interact with the service.  We are communicating with our
-            // service through an IDL interface, so get a client-side
-            // representation of that from the raw service object.
-            mService = ISibylservice.Stub.asInterface((IBinder)service);
-            try 
-            {
-                /* Positionner le selecteur de la liste sur la chanson en cours
-                 * une fois que le service est connecté
-                 * */
-                mService.connectToPlayList(mServiceListener);
-                fillData();
-            } 
-            catch (Exception e) 
-            {
-                Log.v(TAG, e.toString());
-                // warn user ? or not it not really important and it shouldn't happen
-            }
-        }
-    
-        public void onServiceDisconnected(ComponentName className)
-        {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            mService = null;      
-        }
-    };
-
-    @Override
     protected void onListItemClick(ListView l, View v, int position, long id) 
     {
-    position ++;
-    try {
-        mService.playSongPlaylist(position);
-        changeSongPlayed(v);
-    } catch (DeadObjectException e) {
-        Log.v(TAG, e.toString());
-    }
-    }
-
-
-    @Override
-    protected void onResume() {
-        if( mService != null){
-        fillData();
+        position ++;
+        try {
+            mService.playSongPlaylist(position);
+        } catch (DeadObjectException e) {
+            Log.v(TAG, e.toString());
         }
-        super.onResume();
     }
-
-    private final IPlayListUI.Stub mServiceListener = new IPlayListUI.Stub() 
-    {
-        
-        public void handleChange() 
-        {
-            Log.v("PLAYLIST", "LE CORE SERVICE M'APPELLE !");
-            mServHandler.post(new Runnable()
-            {
-                public void run()
-                {
-                    changeSongPlayed(null);
-                }
-            });
-        }
-    };
-
 
 }
