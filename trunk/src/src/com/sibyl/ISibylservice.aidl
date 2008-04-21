@@ -18,20 +18,18 @@
 
 package com.sibyl;
 
-import com.sibyl.ui.IPlayerUI;
-import com.sibyl.ui.IPlayListUI;
-
 interface ISibylservice {
 
-    void connectToReceiver(in IPlayerUI receiver);
-    
-    void connectToPlayList(in IPlayListUI receiver);
-    
+    void playlistChange();
+
     void start();
     /* start playing the current item in the selected playlist */
     
     void stop();
     /* stop playing */
+    
+    void clear();
+    /* clear playlist & stop playing */
     
     void pause();
     /* pause the song. To start playing the paused song at its current position

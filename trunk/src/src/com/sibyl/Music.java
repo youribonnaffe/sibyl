@@ -20,6 +20,16 @@ package com.sibyl;
 
 public class Music {
     
+    public static class Action {
+        // lets try to put strings with different sizes to optimize equals test
+        // or thats just totally stupid
+        public static final String PLAY  =    "play";
+        public static final String PAUSE =    "pause";
+        public static final String NEXT  =    "next--";
+        public static final String PREVIOUS = "previous";
+        public static final String NO_SONG  = "no_song---";
+    }
+
     /* printed name of the application */
     public static String APPNAME = "Sibyl";
     
@@ -27,11 +37,11 @@ public class Music {
     
     /* states of the service */
     public static class State {
-        public static int ERROR = -1;
-        public static int PLAYING = 0;
-        public static int PAUSED = 1;
-        public static int STOPPED = 2;
-        public static int END_PLAYLIST_REACHED = 0x10;
+        public static final int ERROR = -1;
+        public static final int PLAYING = 0;
+        public static final int PAUSED = 1;
+        public static final int STOPPED = 2;
+        public static final int END_PLAYLIST_REACHED = 0x10;
     }
     
     /* Modes of the service */
@@ -51,11 +61,13 @@ public class Music {
         SONG, ARTIST, GENRE, ALBUM, CURRENT_PLAYLIST, DIR; 
     }
     public static String MUSIC_DIR = "/data/music";
+    public static String COVER_DIR = "/data/music/covers/";
+    
     public static String[] SONGS = { SONG.ID, SONG.URL, SONG.TITLE,
 	SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,
 	SONG.ALBUM, SONG.GENRE };
     public static String[] ARTISTS = { ARTIST.ID, ARTIST.NAME };
-    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME};
+    public static String[] ALBUMS = { ALBUM.ID, ALBUM.NAME, ALBUM.COVER};
     public static String[] GENRES = { GENRE.ID, GENRE.NAME };
     public static String[] CURRENT_PLAYLISTS = { CURRENT_PLAYLIST.POS,
 	CURRENT_PLAYLIST.ID };
@@ -81,6 +93,7 @@ public class Music {
     public static class ALBUM {
 	public static String ID = "id";
 	public static String NAME = "album_name";
+	public static String COVER = "cover_url";
     }
 
     public static class GENRE {

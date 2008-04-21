@@ -18,8 +18,9 @@
 
 package com.sibyl;
 
-import java.util.Random;
 import java.io.IOException;
+import java.util.EmptyStackException;
+import java.util.Random;
 import java.util.Stack;
 
 import android.app.Notification;
@@ -30,18 +31,12 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
-import java.util.EmptyStackException;
-
-import com.sibyl.ui.IPlayListUI;
-import com.sibyl.ui.IPlayerUI;
-
 
 public class Sibylservice extends Service
 {
-    
+
     private MediaPlayer mp;
     private MusicDB mdb;
     private int playerState;
@@ -50,8 +45,7 @@ public class Sibylservice extends Service
     private Stack<Integer> songHistory;
     private Random randomVal;
     private int currentSong;
-    private IPlayerUI uiHandler;
-    private IPlayListUI playlistUiHandler;
+    //private IPlayListUI playlistUiHandler;
     private NotificationManager nm;
 
     /** creation of the service */
@@ -61,16 +55,17 @@ public class Sibylservice extends Service
         /* initialization of the state and mode of the service */
         playerState=Music.State.STOPPED;
         playMode=Music.Mode.NORMAL;//RANDOM;
-        
+
         //stack to store the list of played songs
         songHistory=new Stack<Integer>();
-        
+
         // initialization of the random generator with the current time of day in
         // milliseconds as the initial state (by default in the constructor)
         randomVal=new Random();
-        
+
         // retrieve preferences
         SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
+        Log.v("SibylService", prefs.getAll().toString());
         currentSong= prefs.getInt("currentSong", 1);
         loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
 
@@ -79,7 +74,7 @@ public class Sibylservice extends Service
         {
             songHistory.push(currentSong);
         }
-        
+
         /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
@@ -88,45 +83,54 @@ public class Sibylservice extends Service
         try{
             mdb = new MusicDB(this);
             updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
-            // load current song
-            preparePlaying(mdb.getSong(currentSong));
-            
+
+            // set player state
+            if(mdb.getPlaylistSize() == 0){
+                currentSong = 0;
+                playerState = Music.State.END_PLAYLIST_REACHED;
+            }else{
+                // load current song
+                preparePlaying();
+                playerState = Music.State.PAUSED;
+            }
+
         }catch (SQLiteDiskIOException e){
             Log.v("SibylService", e.getMessage());
             // what sould we do ? updateNotification ?
         }
+
     }
-    
+
     /**
-    * to be corrected by the right usage of idIcon
-    * Updates the text of the notification identified by idIcon with the value
-    * of the text argument
-    * 
-    * @param idIcon     identifier of the notification
-    * @param text       new text to be displayed by the notification manager
-    */
+     * to be corrected by the right usage of idIcon
+     * Updates the text of the notification identified by idIcon with the value
+     * of the text argument
+     * 
+     * @param idIcon     identifier of the notification
+     * @param text       new text to be displayed by the notification manager
+     */
     public void updateNotification(int idIcon, String text)
     {
         Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
-        
+
         nm.notify(
                 R.layout.notification,                  // we use a string id because it is a unique
-                                                   // number.  we use it later to cancel the
-                                                   // notification
+                // number.  we use it later to cancel the
+                // notification
                 new Notification(
-                    this,                               // our context
-                    idIcon,                             // the icon for the status bar
-                    text,                               // the text to display in the ticker
-                    System.currentTimeMillis(),         // the timestamp for the notification
-                    Music.APPNAME,                            // the title for the notification
-                    text,                               // the details to display in the notification
-                    appIntent,                               // the contentIntent (see above)
-                    R.drawable.icon,                    // the app icon
-                    getText(R.string.app_name),         // the name of the app
-                    appIntent)); // the appIntent (see above)
+                        this,                               // our context
+                        idIcon,                             // the icon for the status bar
+                        text,                               // the text to display in the ticker
+                        System.currentTimeMillis(),         // the timestamp for the notification
+                        Music.APPNAME,                            // the title for the notification
+                        text,                               // the details to display in the notification
+                        appIntent,                               // the contentIntent (see above)
+                        R.drawable.icon,                    // the app icon
+                        getText(R.string.app_name),         // the name of the app
+                        appIntent)); // the appIntent (see above)
 
     }
-    
+
     @Override
     protected void onDestroy()
     {
@@ -138,23 +142,21 @@ public class Sibylservice extends Service
         prefs.putInt("currentSong", currentSong);
         prefs.putInt("loopMode", loopMode);
         prefs.commit();
-        
+
     }
-    
+
     /**
-    * Resets the media player, sets its source to the file given by the filename 
-    * parameter
-    * After having called this method, the media player is ready to play.
-    *
-    * @param filename   name of the file which should be played by the media player
-    *   when play is called
-    */
-    protected void preparePlaying(String filename)
+     * Resets the media player, sets its source to the file given by currentSong
+     * position
+     * After having called this method, the media player is ready to play.
+     */
+    protected void preparePlaying()
     {
         try 
         {
             mp.reset();
-            mp.setDataSource(filename);
+            // since it is always called with currentSong parameter has been removed
+            mp.setDataSource(mdb.getSong(currentSong));
             mp.prepare();
         }
         catch ( IOException ioe) 
@@ -165,79 +167,51 @@ public class Sibylservice extends Service
             Log.v(TAG, iae.toString());
         }
     }
-    
+
     /**
-    * Starts playing song at the current position in the playlist. If the player 
-    * was in pause, the paused song is resumed.
-    * If the end of the playlist is reached and playlist repetition is false, 
-    * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
-    * informed.
-    * If an error occured, no song will be played and the service will be in the
-    * error state.
-    *
-    * @return   true in case of success, false otherwise
-    */
+     * Starts playing song at the current position in the playlist. If the player 
+     * was in pause, the paused song is resumed.
+     * If the end of the playlist is reached and playlist repetition is false, 
+     * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
+     * informed.
+     * If an error occured, no song will be played and the service will be in the
+     * error state.
+     *
+     * @return   true in case of success, false otherwise
+     */
     protected boolean play() 
     {
         if( playerState != Music.State.PAUSED ) 
         {// if we are not in pause we prepare the mediaplayer to play the next song
-            String filename = mdb.getSong(currentSong);
-            if( filename == null ) 
-            {
-                int playListSize = mdb.getPlaylistSize();
-                if ( currentSong > playListSize && playListSize > 0 )
-                {
-                    //end of playlist
-                    if( loopMode != Music.LoopMode.REPEAT_PLAYLIST ) 
-                    {
-                        playerState = Music.State.END_PLAYLIST_REACHED;
-                        currentSong = 1;
-                        try 
-                        {//the UI is informed that the end of the playlist has been reached
-                            uiHandler.handleEndPlaylist();
-                            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
-                        } catch (DeadObjectException e) 
-                        {
-                            e.printStackTrace();
-                        }
-                        //don't play anything
-                        return false;
-                    }
-                    else 
-                    {// we restart playing from the beginning of the playlist
-                        currentSong = 1;
-                        return play();
-                    }
-                }
-                else 
-                {
-                    // error
-                    playerState = Music.State.ERROR;
+
+            int plSize = mdb.getPlaylistSize();
+            if(currentSong <= plSize){
+                // changing song
+                mp.stop();
+                // filename OK so preparing playing of this file
+                preparePlaying();
+                // next will be to start playing the song
+            }else{
+                // end of playlist
+                if( loopMode == Music.LoopMode.REPEAT_PLAYLIST){
+                    currentSong = 1;
+                    return play();
+                }else{
+                    // end of playlist, stop playing
+                    playerState = Music.State.END_PLAYLIST_REACHED;
+                    currentSong = 0;
+                    broadcastIntent(new Intent(Music.Action.NO_SONG));
                     return false;
                 }
             }
-            // Stop mediaplayer so that if it was playing, it doesn't play anymore
-            // in the other states, it does nothing
-            mp.stop();
-            // filename OK so preparing playing of this file
-            preparePlaying(filename);
         }
-        
         // Start playing if it wasn't paused or continue playing the paused song
         // if it was in pause 
         mp.start();
         playerState=Music.State.PLAYING;
-        
-        try 
-        {// informs UI that we start playing a song
-            uiHandler.handleStartPlaying();
-            // informs PlayList ui as well
-            if(playlistUiHandler != null ) playlistUiHandler.handleChange();
-        } catch (DeadObjectException e) 
-        {
-            e.printStackTrace();
-        }
-        
+
+        broadcastIntent(new Intent(Music.Action.PLAY));
+
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
@@ -245,24 +219,25 @@ public class Sibylservice extends Service
             //what to do??? is the error critical or not important and so can be skipped???
         }
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
-        
+
+        // true because we are actually playing a song
         return true;
     }
-    
+
     /**
-    * Stops playing and puts the service in the stopped state
-    *
-    */
+     * Stops playing and puts the service in the stopped state
+     *
+     */
     protected void stop()
     {
         mp.stop();
         playerState=Music.State.STOPPED;
     }
-    
+
     /**
-    * Plays a song randomly and save its id in the playlist in the list orderList
-    *
-    */
+     * Plays a song randomly and save its id in the playlist in the list orderList
+     *
+     */
     private boolean play_random()
     {
         stop();
@@ -271,11 +246,11 @@ public class Sibylservice extends Service
         songHistory.push(currentSong);
         return play();
     }
-    
+
     /**
-    * Plays the following song in the playlist
-    *
-    */
+     * Plays the following song in the playlist
+     *
+     */
     protected void play_next() 
     {
         if( playMode == Music.Mode.RANDOM )
@@ -284,25 +259,21 @@ public class Sibylservice extends Service
         }
         else 
         {
-            int add = 1;
-            if( playerState == Music.State.STOPPED) { //we can launch the player with the button next. it must play
-                add = 0;                               // the first song of the playlist the first time.
-            }
             stop();
-            Log.v(TAG,">>> Play_next() called: currentSong="+currentSong);
-            currentSong += add;
-            if( !play() ) { //cancel the changement if nothing is played
-                currentSong -=add;
+            currentSong++;
+            if( !play()){ //cancel the changement if nothing is played
+                currentSong--;
+            }else{
+                broadcastIntent(new Intent(Music.Action.NEXT));
             }
         }
-            
     }
-    
+
     /**
-    * Plays the previous song in the playlist
-    * If we are at the first song of the playlist, the first song will be played
-    * from the beginning.
-    */
+     * Plays the previous song in the playlist
+     * If we are at the first song of the playlist, the first song will be played
+     * from the beginning.
+     */
     protected void play_prev() 
     {
         stop();
@@ -321,23 +292,21 @@ public class Sibylservice extends Service
         }
         else 
         {
-            Log.v(TAG,">>> Play_prec() called: currentSong="+currentSong);
-            if ( currentSong > 1 )
-            {
-                currentSong--; 
-            }
+            currentSong--; 
             if( ! play()){  //cancel the changement if nothing is played
                 currentSong++;
+            }else{
+                broadcastIntent(new Intent(Music.Action.PREVIOUS));
             }
         }
     }
-    
+
     /**
-    * Sets the current position in the playlist to i, and plays the song at the 
-    * current position.
-    *
-    * @param i  new position in the playlist
-    */
+     * Sets the current position in the playlist to i, and plays the song at the 
+     * current position.
+     *
+     * @param i  new position in the playlist
+     */
     protected void playNumberI(int i)
     {
         stop();
@@ -350,58 +319,80 @@ public class Sibylservice extends Service
     {
         return mBinder;
     }
-    
+
     //interface accessible par les autres classes (cf aidl)
     private final ISibylservice.Stub mBinder = new ISibylservice.Stub() {
-        
-        public void connectToReceiver(IPlayerUI receiver) {
-            uiHandler=receiver;
+
+        public void playlistChange(){
+            // if playlist was empty
+            if(mdb.getPlaylistSize() > 0){
+                currentSong = 1;
+                playerState = Music.State.PAUSED;
+                preparePlaying();
+            }
         }
 
-        public void connectToPlayList(IPlayListUI receiver){
-            playlistUiHandler = receiver;
-        }
-        
         public void start() {
             play();
         }
-        
+
+        public void clear() {
+            mp.stop();
+            mdb.clearPlaylist();
+            playerState=Music.State.END_PLAYLIST_REACHED;
+            currentSong = 0; /*initialize currentSong for the next launch of the service*/
+        }
+
         public void stop() {
             mp.stop();
             playerState=Music.State.STOPPED;
-            currentSong = 1; /*initialize currentSong for the next launch of the service*/
         }
-        
+
         public void pause() {
             mp.pause();
             playerState=Music.State.PAUSED;
             updateNotification(R.drawable.pause,"pause");
+            // warn ui that we paused music playing
+            broadcastIntent(new Intent(Music.Action.PAUSE));
         }
-        
+
         public int getState() {
             return playerState;
         }
-        
+
         public boolean isPlaying() {
-            return playerState==Music.State.PLAYING;
+            return playerState == Music.State.PLAYING;
         }
-        
+
         public int getCurrentSongIndex() {
             return currentSong;
         }
-        
+
         public int getCurrentPosition() {
-            return mp.getCurrentPosition();
+            if( playerState == Music.State.END_PLAYLIST_REACHED
+                    || playerState == Music.State.STOPPED){
+                return 0;
+            }else{
+                return mp.getCurrentPosition();
+            }
         }
-        
+
         public int getDuration() {
-            return mp.getDuration();
+            if( playerState == Music.State.END_PLAYLIST_REACHED
+                    || playerState == Music.State.STOPPED){
+                return 0;
+            }else{
+                return mp.getDuration();
+            }
         }
-        
+
         public void setCurrentPosition(int msec) {
             mp.seekTo(msec);
+            // auto start playing
+            //because when we move to an other pos the music starts
+            playerState = Music.State.PLAYING;
         }
-        
+
         public void setLooping(boolean loop) 
         {
             Log.v(TAG,"set looping :"+loop);
@@ -409,15 +400,15 @@ public class Sibylservice extends Service
             mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
             //and java doesn't do the implicit conversion from bool to int
         }
-        
+
         public int getLooping(){
             return loopMode;
         }
-        
+
         public void next() {
             play_next();
         }
-        
+
         public void prev() {
             play_prev();
         }
@@ -432,22 +423,22 @@ public class Sibylservice extends Service
             Log.v(TAG,"set repeatALL");
             loopMode = Music.LoopMode.REPEAT_PLAYLIST;
         }
-        
+
         public void setLoopMode(int mode)
         {
             //we loop on the song only if mode == REPEAT_SONG
             mp.setLooping(mode == Music.LoopMode.REPEAT_SONG ? 1 : 0);
-            
+
             loopMode = mode;
         }
-        
+
         public void setPlayMode(int mode)
         {
             playMode=mode;
         }
-         
+
     };
-    
+
     private OnCompletionListener endSongListener = new OnCompletionListener() 
     {
         public void onCompletion(MediaPlayer mp) 
@@ -459,6 +450,6 @@ public class Sibylservice extends Service
             }
         } 
     };
-   
+
 
 }
