@@ -83,7 +83,8 @@ public class MusicDB {
             );
             mDb.execSQL("CREATE TABLE album("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                    "album_name VARCHAR UNIQUE "+
+                    "album_name VARCHAR UNIQUE, "+
+                    "cover_url VARCHAR DEFAULT NULL"+
                     ")"
             );
             mDb.execSQL("CREATE TABLE genre("+
@@ -533,4 +534,30 @@ public class MusicDB {
         default : return null;
         }
     }
+    
+    /**
+     * 
+     * @param albumId
+     * @return 0 : album name, 1 : artist id, 2 : artist name
+     */
+    public Cursor getAlbumInfo(int albumId){
+        // because 1 is for unknown songs
+        if(albumId == 1) return null;
+        
+        return mDb.rawQuery("SELECT album_name, artist.id as id, artist_name " +
+        		"FROM song, album, artist " +
+        		"WHERE album.id=album " +
+        		"AND artist.id=artist " +
+        		"AND album.id="+albumId+
+        		" GROUP BY artist_name", null);
+    }
+    
+    public void setCover(int albumId, String cover){
+        if(albumId >= 1){
+            mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE "+albumId+" =album.id");
+        }
+    }
+
+
 }
+

@@ -43,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sibyl.CoverDownloader;
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
 import com.sibyl.MusicDB;
@@ -78,6 +79,7 @@ public class PlayerUI extends Activity
 
     private MusicDB mdb;    //the database
     private ISibylservice mService = null;
+    // true if resumeRefresh already called
     private IntentFilter intentF;
 
     //handler for calculating elapsed time when playing a song
@@ -142,7 +144,8 @@ public class PlayerUI extends Activity
 
             //now that we are connected to the service, user can click on buttons
             //to start playing music
-
+            resumeRefresh();
+            // TODO put boolean to avoid too calls
         }
 
         public void onServiceDisconnected(ComponentName className)
@@ -190,6 +193,7 @@ public class PlayerUI extends Activity
         try
         {
             mdb = new MusicDB(this);
+            CoverDownloader.retrieveCover(mdb, 5);
         }
         catch(SQLiteDiskIOException e)
         {
@@ -224,38 +228,11 @@ public class PlayerUI extends Activity
 
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
-
-        // refresh ui when displaying the activity if service connection already made
-        // TODO what if service not connected ? faire deux fois ? onconnect & ici ?
-        if( mService != null){
-            try{
-                // refresh considering player state
-                switch(mService.getState()){
-                    case Music.State.PLAYING :
-                        enableButtons(true);
-                        playRefresh();
-                        songRefresh();
-                        break;
-                    case Music.State.PAUSED :
-                        // we still have to refresh timer once
-                        enableButtons(true);
-                        timerRefresh();
-                        pauseRefresh();
-                        songRefresh();
-                        break;
-                    case Music.State.END_PLAYLIST_REACHED :
-                        // we have nothing to display 
-                        noSongRefresh();
-                        break;
-                    case Music.State.STOPPED :
-                        enableButtons(true);
-                        songRefresh();
-                        break;
-                }
-            }catch(DeadObjectException doe){
-                Log.v(TAG, doe.toString());
-            }
+        if(mService != null){
+            resumeRefresh();
         }
+
+
     }
 
     /* ----------------------END ACTIVITY STATES -----------------------------*/
@@ -624,13 +601,39 @@ public class PlayerUI extends Activity
         titre.setText(R.string.titre);
         lecture.setText(R.string.play);
 
-        // TODO relevant ?
         enableButtons(false);
+
+    }
+
+    private void resumeRefresh(){
+        // refresh ui when displaying the activity if service connection already made
+        // TODO what if service not connected ? faire deux fois ? onconnect & ici ?
         try{
-            Log.v(TAG, " "+mService.getState());
-        }catch( DeadObjectException doe){
+            // refresh considering player state
+            switch(mService.getState()){
+                case Music.State.PLAYING :
+                    enableButtons(true);
+                    playRefresh();
+                    songRefresh();
+                    break;
+                case Music.State.PAUSED :
+                    // we still have to refresh timer once
+                    enableButtons(true);
+                    timerRefresh();
+                    pauseRefresh();
+                    songRefresh();
+                    break;
+                case Music.State.END_PLAYLIST_REACHED :
+                    // we have nothing to display 
+                    noSongRefresh();
+                    break;
+                case Music.State.STOPPED :
+                    enableButtons(true);
+                    songRefresh();
+                    break;
+            }
+        }catch(DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
-
     }
 }
