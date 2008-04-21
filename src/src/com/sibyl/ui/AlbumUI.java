@@ -14,6 +14,8 @@ import android.view.Menu.Item;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.sibyl.CoverDownloader;
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
@@ -34,11 +36,13 @@ public class AlbumUI extends ListActivity {
     //constant menu
     private static final int BACK_ID = Menu.FIRST;
     private static final int MANUAL_ID = Menu.FIRST+1;
-    
+    private static final int DOWNLOAD_ID = Menu.FIRST+2;
+
+
     private static Cursor listAlbum;
     private AlbumCoverView selectedAlbumView; //the view selected
     private static int selectedAlbum; // the position of the view selected
-    
+
     @Override
     protected void onCreate(Bundle icicle) {
         // TODO Auto-generated method stub
@@ -58,7 +62,7 @@ public class AlbumUI extends ListActivity {
         }
         getListView().setOnItemClickListener(ListClick);
     }
-    
+
     /*
      * manage the click on one row. If no row is selected, we do nothing.
      * @param arg1: the view selected, position: the position of the View in the ListView
@@ -72,21 +76,21 @@ public class AlbumUI extends ListActivity {
             }
         }
     }; 
-    
-    
+
+
     /*
      * Fill the ListView with the association of thealbum and its cover
      */
     private void fillData(){
-        
+
         listAlbum = mdb.getAlbumCover();
         AlbumCoverListAdapter rows = new AlbumCoverListAdapter(this);
-        
+
         startManagingCursor(listAlbum);
         //for each album we associate its cover.
         while(listAlbum.next()){
             //Log.v(TAG,listAlbum.getString(ARTIST)+"-"+listAlbum.getString(ALBUM));
-            
+
             if( listAlbum.isNull(COVER_URL)){
                 rows.add(new IconifiedText( listAlbum.getString(ARTIST)+'\n'+listAlbum.getString(ALBUM),
                         getResources().getDrawable(R.drawable.logo))); //default cover
@@ -100,18 +104,19 @@ public class AlbumUI extends ListActivity {
         setListAdapter(rows);
         getListView().setSelection(selectedAlbum);
     }
-    
-    
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
         menu.add(0, BACK_ID, R.string.alb_back);
         menu.add(0, MANUAL_ID, R.string.alb_manual);
+        menu.add(0, DOWNLOAD_ID, R.string.cov_download);
         return true;
     }
-    
-    
+
+
     public boolean onMenuItemSelected(int featureId, Item item) 
     {
         super.onMenuItemSelected(featureId, item);
@@ -123,10 +128,17 @@ public class AlbumUI extends ListActivity {
             case MANUAL_ID:
                 displayCoverUI(getListView().getSelectedItemPosition());
                 break;
+            case DOWNLOAD_ID :
+                listAlbum.moveTo(0);
+                while(listAlbum.next()){
+                    CoverDownloader.retrieveCover(mdb, listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID)));
+                }
+                fillData();
+                break;
         }
         return true;
     }
-    
+
     /*
      * Launch the CoverUI. It keeps the number of the selected rows.
      * If selectedRow is negative, we do nothing (no album selected)
@@ -137,6 +149,8 @@ public class AlbumUI extends ListActivity {
         if( selectedRow >= 0){
             selectedAlbum = selectedRow;
             Intent i = new Intent(this, CoverUI.class);
+            listAlbum.moveTo(selectedAlbum);
+            i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
             startSubActivity(i, 0);
         }
     }
@@ -151,7 +165,7 @@ public class AlbumUI extends ListActivity {
             listAlbum.requery(); //recover the cursor
             listAlbum.moveTo(selectedAlbum);
             mdb.setCover(listAlbum.getInt(ALBUM_ID), data);
-            
+
             //we get the View if the user click on the ListView. If he uses the Menu, we don't get the view, so we use fillData instead
             if( selectedAlbumView != null){
                 selectedAlbumView.setIcon(Drawable.createFromPath(data));
@@ -162,5 +176,5 @@ public class AlbumUI extends ListActivity {
             }
         }
     }
-    
+
 }

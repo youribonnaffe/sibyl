@@ -92,7 +92,9 @@
     
     <!-- CoverUI -->
     <string name="cov_back">Back</string>
-    <string name="cov_choose">Choose</string>
+    <string name="cov_choose">Choose</string>  
+    <string name="cov_download">Download</string>
+    
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>

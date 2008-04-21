@@ -560,10 +560,11 @@ public class MusicDB {
     }
     
     public Cursor getAlbumCover(){
-        return mDb.rawQuery("SELECT artist_name _id, album_name, cover_url, album.id "+
+        return mDb.rawQuery("SELECT DISTINCT artist_name _id, album_name, cover_url, album.id "+
                 "FROM album, artist,song "+
                 "WHERE song.artist = artist.id "+
                 "AND song.album = album.id "+
+                "AND album.id > 1 "+
                 "ORDER BY artist_name, album_name", null);
     }
 }

@@ -9,9 +9,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.AdapterView.OnItemClickListener;
 
+import com.sibyl.CoverDownloader;
 import com.sibyl.Directory;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
@@ -26,18 +27,20 @@ public class CoverUI extends Activity {
     //menu constant
     private static final int BACK_ID = Menu.FIRST;
     private static final int CHOOSE_ID = Menu.FIRST+1;
-    
+    public static final String ALBUM_ID = "album_id";
+
     //File format supported.
-    private static final int NB_EXT = 3; //number of file formats
-    private static final String[] extTab= { ".jpg", ".bmp", ".png"}; //file format search in directories
-    
+    public static final String[] EXT_TAB = { ".jpg", ".bmp", ".png"}; //file format search in directories
+    private int selectedAlbum;
     private GridView gallery = null; //the main view of the ui
     private ImageAdapter imgAdapter;
-    
+
     @Override
     protected void onCreate(Bundle icicle) {
         // TODO Auto-generated method stub
         Log.v(TAG,"CoverUI is launched");
+        
+        selectedAlbum = getIntent().getIntExtra(CoverUI.ALBUM_ID, 0);
         
         setContentView(R.layout.cover);
         gallery = (GridView) findViewById(R.id.gallery);
@@ -51,10 +54,10 @@ public class CoverUI extends Activity {
         {
             Log.v(TAG, ex.toString());
         }       
- 
+
         super.onCreate(icicle);
     }
-    
+
     /*
      * manage click on cover. If no cover clicked (clicked in the emptyness, send a RESULT_CANCELED)
      */
@@ -74,7 +77,7 @@ public class CoverUI extends Activity {
         }
     }; 
 
-    
+
 
     @Override
     public boolean onMenuItemSelected(int featureId, Item item) {
@@ -107,7 +110,7 @@ public class CoverUI extends Activity {
         menu.add(0, CHOOSE_ID, R.string.cov_choose);
         return true;
     }
-    
+
     /*
      * Fill the gridView with the pictures (.jpg, .bmp, .png) found in the directories of the collection
      */
@@ -116,8 +119,10 @@ public class CoverUI extends Activity {
         imgAdapter = new ImageAdapter(this);
         startManagingCursor(c);
         while( c.next()){
-            for(String file : Directory.scanFiles(c.getString(0), extTab, NB_EXT)){
-                imgAdapter.add(file);
+            for(String extension : EXT_TAB){
+                for(String file : Directory.scanFiles(c.getString(0), extension)){
+                    imgAdapter.add(file);
+                }
             }
         }
         c.close();        
