@@ -56,7 +56,7 @@ import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
  * The player activity. It launches the service and you can control the music: play, stop, play next/previous.
  * You have access to the other activities: options and playlist
  * @author Sibyl-dev
- */
+ */ 
 public class PlayerUI extends Activity
 {
 
@@ -154,8 +154,6 @@ public class PlayerUI extends Activity
             //to start playing music
             resumeRefresh();
             // TODO put boolean to avoid too calls
-            progress.initializeProgress();
-
         }
 
         public void onServiceDisconnected(ComponentName className)
@@ -240,14 +238,6 @@ public class PlayerUI extends Activity
         registerReceiver(intentHandler, intentF);
         if(mService != null){
             resumeRefresh();
-            try{
-                if(mService.getState() == Music.State.PLAYING ||
-                        mService.getState() == Music.State.PAUSED){
-                    initializeProgressTime();
-                }
-            }catch(DeadObjectException doe){
-                Log.v(TAG, doe.toString());
-            }
         }
 
 
@@ -329,20 +319,7 @@ public class PlayerUI extends Activity
 
         //get progress
         progress = (ProgressView) findViewById(R.id.progress);
-        progress.initializeProgress();
         progress.setOnProgressChangeListener(changeListener);
-    }
-
-    /*
-     * Initialize the progressbar: set the total time and elapsed time
-     */
-    private void initializeProgressTime(){
-        //progress.initializeProgress();
-        try{
-            progress.setTotal(mService.getDuration());
-            progress.setProgress(mService.getCurrentPosition());
-        }
-        catch( DeadObjectException ex){}
     }
 
     /*
@@ -592,7 +569,9 @@ public class PlayerUI extends Activity
      */
     private void timerRefresh(){
         try{
-            elapsedTime.setText(DateUtils.formatElapsedTime(mService.getCurrentPosition()/1000));
+            int time = mService.getCurrentPosition();
+            elapsedTime.setText(DateUtils.formatElapsedTime(time/1000));
+            progress.setProgress(time);
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
@@ -626,7 +605,11 @@ public class PlayerUI extends Activity
             int pos = mService.getCurrentSongIndex();
             int plSize = mdb.getPlaylistSize();
             // set total time
-            tempsTotal.setText(DateUtils.formatElapsedTime(mService.getDuration()/1000));
+            int time = mService.getDuration();
+            tempsTotal.setText(DateUtils.formatElapsedTime(time/1000));
+            progress.setTotal(time);
+            progress.initializeProgress();
+
             // ensure that playlist isn't empty
             if (pos >= 1 && pos <= plSize){
                 String [] songInfo = mdb.getSongInfoFromCP(pos);
@@ -669,6 +652,8 @@ public class PlayerUI extends Activity
         mTimeHandler.removeCallbacks(timerTask);
         // reset all 
         elapsedTime.setText(DateUtils.formatElapsedTime(0));
+        progress.setProgress(0);
+        progress.initializeProgress();
         artiste.setText(R.string.artiste);
         tempsTotal.setText(R.string.time_zero);
         titre.setText(R.string.titre);
@@ -692,9 +677,9 @@ public class PlayerUI extends Activity
                 case Music.State.PAUSED :
                     // we still have to refresh timer once
                     enableButtons(true);
-                    timerRefresh();
                     pauseRefresh();
                     songRefresh();
+                    timerRefresh();
                     break;
                 case Music.State.END_PLAYLIST_REACHED :
                     // we have nothing to display 
