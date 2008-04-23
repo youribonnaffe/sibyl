@@ -3,6 +3,7 @@ package com.sibyl.ui;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.sibyl.CoverDownloader;
 import com.sibyl.Directory;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
@@ -28,20 +28,17 @@ public class CoverUI extends Activity {
     private static final int BACK_ID = Menu.FIRST;
     private static final int CHOOSE_ID = Menu.FIRST+1;
     public static final String ALBUM_ID = "album_id";
-
     //File format supported.
     public static final String[] EXT_TAB = { ".jpg", ".bmp", ".png"}; //file format search in directories
-    private int selectedAlbum;
-    private GridView gallery = null; //the main view of the ui
+
+    private GridView gallery; //the main view of the ui
     private ImageAdapter imgAdapter;
 
     @Override
     protected void onCreate(Bundle icicle) {
-        // TODO Auto-generated method stub
+        super.onCreate(icicle);
         Log.v(TAG,"CoverUI is launched");
-        
-        selectedAlbum = getIntent().getIntExtra(CoverUI.ALBUM_ID, 0);
-        
+
         setContentView(R.layout.cover);
         gallery = (GridView) findViewById(R.id.gallery);
         gallery.setOnItemClickListener(galleryClickListenner);
@@ -54,26 +51,23 @@ public class CoverUI extends Activity {
         {
             Log.v(TAG, ex.toString());
         }       
-
-        super.onCreate(icicle);
     }
 
-    /*
+    /**
      * manage click on cover. If no cover clicked (clicked in the emptyness, send a RESULT_CANCELED)
      */
     private OnItemClickListener galleryClickListenner = new OnItemClickListener()
     {
         public void onItemClick(AdapterView arg0, View arg1, int position, long id) {
             if( position >=0){
-                Log.v(TAG, (String) imgAdapter.getItem(position));
+                //Log.v(TAG, (String) imgAdapter.getItem(position));
                 setResult(RESULT_OK,  (String) imgAdapter.getItem(position));
-                finish();
             }
             else
             {
                 setResult(RESULT_CANCELED);
-                finish();
             }
+            finish();
         }
     }; 
 
@@ -89,7 +83,7 @@ public class CoverUI extends Activity {
             case CHOOSE_ID:
                 int position = gallery.getSelectedItemPosition();
                 if( position >=0){
-                    Log.v(TAG, (String) imgAdapter.getItem(position));
+                    //Log.v(TAG, (String) imgAdapter.getItem(position));
                     setResult(RESULT_OK,  (String) imgAdapter.getItem(position));
                     finish();
                 }
@@ -111,7 +105,7 @@ public class CoverUI extends Activity {
         return true;
     }
 
-    /*
+    /**
      * Fill the gridView with the pictures (.jpg, .bmp, .png) found in the directories of the collection
      */
     private void fillData(){
@@ -128,5 +122,5 @@ public class CoverUI extends Activity {
         c.close();        
         gallery.setAdapter(imgAdapter);        
     }
-    
+
 }

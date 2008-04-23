@@ -33,7 +33,14 @@ public class CoverDownloader {
     "&SearchIndex=Music" +
     "&ResponseGroup=Images,ItemAttributes,Small";
 
-    public static void retrieveCover(MusicDB mdb, int albumId){
+    /**
+     * download the cover for the albumId given and save it into the database
+     * 
+     * @param mdb database connection
+     * @param albumId   album id
+     * @return true if cover found, false otherwise
+     */
+    public static boolean retrieveCover(MusicDB mdb, int albumId){
 
         // retrieve album information
         Cursor c = mdb.getAlbumInfo(albumId);
@@ -42,23 +49,23 @@ public class CoverDownloader {
         while(c.next()){
             try{
                 // build request, search for album
-                // lets hope that UTF-8 will be supported everywhere, so we keep it hard coded
                 String q = QUERY_AMAZON + "&Title="+ URLEncoder.encode(c.getString(c.getColumnIndex(Music.ALBUM.NAME)), "UTF-8");
-
+                
                 if(c.getInt(c.getColumnIndex(Music.ARTIST.ID)) > 1){
-                    // there is an artist associated
+                    // there is an artist associated so we add his name to the request
                     q+= "&Artist=" + URLEncoder.encode(c.getString(c.getColumnIndex(Music.ARTIST.NAME)), "UTF-8");
                 }
-
-                // request to amazon
+                
+                // amazon answer xml parser
                 AmazonParser ap = new AmazonParser();
+                // request to amazon website
                 SAXParserFactory.newInstance().newSAXParser().parse(new URL(q).openStream(), ap);
 
                 // retrieve images from answer
                 String answer = ap.getResult();
                 if(answer != null){
                     // save cover and add it to database
-                    
+
                     // test covers directory
                     File f = new File(Music.COVER_DIR);
                     if(!f.isDirectory()){
@@ -67,23 +74,28 @@ public class CoverDownloader {
                             throw new IOException("can't create cover folder");
                         }
                     }
-                    
+
+                    //Log.v(TAG, "anws "+answer);
                     // get image
                     InputStream  in = new URL(answer).openStream();
-                    // filename is image filename
+                    // filename is image name + cover dir
                     String filename = Music.COVER_DIR + answer.substring(answer.lastIndexOf('/'));
+                    // copy image into local file
                     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename), 8192);
                     byte[] buffer = new byte[1024];
                     int numRead;
-                    // write image to file
                     while ((numRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, numRead);
                     }
                     out.close();
+                    
                     Log.v(TAG, "SET cover "+albumId+" "+filename);
+                    
+                    // save cover path to database
                     mdb.setCover(albumId, filename);
+                    // we have found a cover, no need to search again
+                    return true;
                 }
-
             }catch(UnsupportedEncodingException uee){
                 Log.v(TAG, "characters problem "+ uee.toString());
             }catch(SAXException saxe){
@@ -91,9 +103,11 @@ public class CoverDownloader {
             }catch(ParserConfigurationException pce){
                 // shouldn't happen
             }catch(IOException ioe){
-                Log.v(TAG, "internet connection ? cover folder not created ?"+ ioe.toString());
+                Log.v(TAG, ioe.toString());
             }
         }
+        // we haven't found any cover
+        return false;
     }
 }
 

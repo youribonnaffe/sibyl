@@ -25,11 +25,10 @@ public class AmazonParser extends DefaultHandler{
     private boolean first;
 
     public void startDocument() throws SAXException {
-        // init values
+        // initial values
         first = true;
         read = false;
         found = false;
-        buffer = new StringBuffer();
     }
     
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
@@ -51,8 +50,8 @@ public class AmazonParser extends DefaultHandler{
 
     public void characters(char[] ch,int start, int length) throws SAXException{
         if(read){
-            String lecture = new String(ch,start,length);
-            buffer.append(lecture);  
+            buffer = new StringBuffer();
+            buffer.append(ch, start, length); 
             read = false;
         }
     }
@@ -63,7 +62,7 @@ public class AmazonParser extends DefaultHandler{
      * @return null if nothing found
      */
     public String getResult(){
-        return buffer.toString();
+        return buffer == null ? null : buffer.toString();
     }
 
 }
