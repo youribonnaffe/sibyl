@@ -65,21 +65,21 @@ public class ConfigUI extends Activity
 {
     private static final int BACK_ID = Menu.FIRST; // Elément du ménu permettant l'arret de l'activité
     private static final String TAG = "CONFIG"; // Tag servant au débugage
-    
+
     private ISibylservice mService = null;  //core service s'occupant de la lecture
     private EditText mListDir;  // liste des répertoires de musique
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
     private Spinner repeatMusic;
-    
+
     private TextView playMode;  // Affichage du mode de lecture en cours
     private Button shuffleMode; // bouton permettant de changer passer en mode aléatoire
     private Button normalMode; // bouton permettant de changer passer en mode normal
-    
+
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
-    
+
     /**
      * Called when the activity is first created. 
      */
@@ -88,37 +88,37 @@ public class ConfigUI extends Activity
     {
         super.onCreate(icicle);
         setContentView(R.layout.config);
-        
+
         launchService(); // lancement du service
-        
+
         /* Association des élément aux fichiers XML */
         mListDir = (EditText) findViewById(R.id.musicData);
         addDir = (Button) findViewById(R.id.addMusic);
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
-        
+
         repeatMusic = (Spinner) findViewById(R.id.repMusic);
         String repeatString[] = {(String) getText(R.string.rep_no), 
-                         (String) getText(R.string.rep_one), 
-                         (String) getText(R.string.rep_all)};
+                (String) getText(R.string.rep_one), 
+                (String) getText(R.string.rep_all)};
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
         repeatMusic.setAdapter(adapter);
-        
+
         playMode = (TextView) findViewById(R.id.playMode);
         normalMode = (Button) findViewById(R.id.normal);
         shuffleMode = (Button) findViewById(R.id.random);
-        
+
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
         repeatMusic.setOnItemSelectedListener(mRepeatMusic);
-        
+
         shuffleMode.setOnClickListener(mShuffleMode);
         normalMode.setOnClickListener(mNormalMode);
-        
+
         Log.v(TAG,"ICI");
-        
+
         /* connexion à la base de données */
         try
         {
@@ -130,7 +130,7 @@ public class ConfigUI extends Activity
             Log.v(TAG, ex.toString());
         }
     }
-    
+
     /**
      * Appellé quand l'UI devient visible à l'utilisateur
      */
@@ -138,7 +138,7 @@ public class ConfigUI extends Activity
     protected void onStart()
     {
         super.onStart();
-        
+
         /* MAJ de la liste des répertoires */
         listFile = new ArrayList<String>();
         Cursor c = mdb.getDir();
@@ -151,7 +151,7 @@ public class ConfigUI extends Activity
         }
         mListDir.setText(str);
     }
-    
+
     /**
      * Lance l'UI permettant d'ajouter un répertoire de musiques
      */
@@ -160,7 +160,7 @@ public class ConfigUI extends Activity
         Intent i = new Intent(this, AddDirUI.class);
         startSubActivity(i, 0);
     }
-    
+
     /**
      * Lance l'UI permettant la suppréssion d'un répertoire de musiques
      */
@@ -169,7 +169,7 @@ public class ConfigUI extends Activity
         Intent i = new Intent(this, DelDirUI.class);
         startSubActivity(i, 0);
     }
-    
+
     /**
      * Écouteur placé sur le bouton permettant l'ajout de répertoires de musiques
      */
@@ -180,7 +180,7 @@ public class ConfigUI extends Activity
             displayAddDir();
         }
     };
-    
+
     /**
      * Écouteur placé sur le bouton permettant la suppression de répertoires de musiques
      */
@@ -191,7 +191,7 @@ public class ConfigUI extends Activity
             displayDelDir();
         }
     };
-    
+
     /**
      * Écouteur placé sur le bouton permettant la mise à jour de la bibliothèque de musiques
      */
@@ -205,7 +205,7 @@ public class ConfigUI extends Activity
             t.start();
         }
     };
-    
+
     /**
      * Classe gérant la mise a jour de la collection de musiques
      * Gestion faite dans un thread d'ou l'utilisation de Runnable
@@ -217,7 +217,7 @@ public class ConfigUI extends Activity
     {
         private static final String TAG = "UPDATETASK"; /** TAG servant au débugage */
         private MusicDB mDB; /** Base de donnée */
-        
+
         /**
          * Constructeur
          * 
@@ -227,7 +227,7 @@ public class ConfigUI extends Activity
         {
             this.mDB=mDB;
         }
-        
+
         /**
          * Méthode mettant effectivement à jour la collection
          * 
@@ -239,16 +239,18 @@ public class ConfigUI extends Activity
             try
             {
                 // long t = System.currentTimeMillis();
-                
+
                 // get all mp3 files in path & insert them in the database
-                for(String file : Directory.scanFiles(path, ".mp3"))
-                { 
-                    //ugly string .mp3
-                    mdb.insert(file);                
+                for(String ext : Music.SUPPORTED_FILE_FORMAT){
+                    for(String file : Directory.scanFiles(path, ext))
+                    { 
+                        //ugly string .mp3
+                        mdb.insert(file);                
+                    }
                 }
-                
+
                 //Log.v(TAG, "temps "+(System.currentTimeMillis()-t)); // Permet de calculer le temps d'ajout
-                
+
             }catch(SQLiteException sqle){
                 Log.v(TAG, sqle.toString());
                 // warn user
@@ -260,7 +262,7 @@ public class ConfigUI extends Activity
                 // warn user
             }
         }
-        
+
         /**
          * Moteur de la tâche permettant la mise à jour de la collection
          */
@@ -274,8 +276,8 @@ public class ConfigUI extends Activity
             }
         }
     };
-    
-    
+
+
     /**
      * Écouteur placé sur le bouton permettant le changement de mode de lecture : sans répétition
      */
@@ -291,10 +293,10 @@ public class ConfigUI extends Activity
 
         public void onNothingSelected(AdapterView arg0) 
         {
-            
+
         }
     };
-    
+
     /**
      * Écouteur placé sur le bouton permettant le changement de mode de lecture : non aléatoire
      */
@@ -309,7 +311,7 @@ public class ConfigUI extends Activity
             } catch (DeadObjectException e) { }
         }
     };
-    
+
     /**
      * Écouteur placé sur le bouton permettant le changement de mode de lecture : aléatoire
      */
@@ -324,7 +326,7 @@ public class ConfigUI extends Activity
             } catch (DeadObjectException e) { }
         }
     };
-    
+
     /**
      * lancement du service
      */
@@ -333,7 +335,7 @@ public class ConfigUI extends Activity
         Intent i = new Intent(ConfigUI.this, Sibylservice.class);
         bindService(i, mConnection, Context.BIND_AUTO_CREATE);
     }
-    
+
     /**
      * gestion de la connection et de la deconnexion du service
      */
@@ -354,11 +356,11 @@ public class ConfigUI extends Activity
             shuffleMode.setFocusable(true);
             try 
             {
-                
+
                 repeatMusic.setSelection(mService.getLooping());
-                
+
                 playMode.setText(R.string.normal);
-                
+
             } catch (DeadObjectException doe) 
             {
                 Log.v(TAG,doe.toString());
@@ -372,10 +374,10 @@ public class ConfigUI extends Activity
         public void onServiceDisconnected(ComponentName className)
         {
             mService = null;
-                        
+
         }
     };
-    
+
     /**
      * Création du menu et ajout des différentes options
      */
@@ -386,7 +388,7 @@ public class ConfigUI extends Activity
         menu.add(0, BACK_ID, R.string.menu_back);
         return true;
     }
-    
+
     /**
      * Appellé à la destruction de l'activité
      */
@@ -396,7 +398,7 @@ public class ConfigUI extends Activity
         super.onDestroy();
         unbindService(mConnection);
     }
-    
+
     /**
      * Appellé lorsqu'un élément du ménu est sélectionné.
      * Gère les actions mises sur les éléments du menu
@@ -407,9 +409,9 @@ public class ConfigUI extends Activity
         super.onMenuItemSelected(featureId, item);
         switch(item.getId()) 
         {
-        case BACK_ID:
-            finish();
-            break;
+            case BACK_ID:
+                finish();
+                break;
         }
         return true;
     }

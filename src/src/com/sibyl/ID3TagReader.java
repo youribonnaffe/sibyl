@@ -22,31 +22,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 
-import android.content.ContentValues;
 import android.util.Log;
 
 //string replace optimiser
-public class ID3TagReader {
+public class ID3TagReader extends TagReader{
 
-    private ContentValues cv;
-
-    private static void skipSure(FileInputStream f, long n) throws IOException{
-        while(n > 0){
-            n -= f.skip(n);
-        }
-    }
-
-    private static void skipSure(FileInputStream f, int n) throws IOException{
-        while(n > 0){
-            n -= f.skip(n);
-        }
-    }
+    private static final String[] tags = { "TALB", "TCON", "TIT2", "TRCK", "TPE1"};
 
     // could be static
     public ID3TagReader(String filename) throws FileNotFoundException, IOException {
 
-        cv = new ContentValues();
+        cv = new HashMap<String,String>();
 
         File fi = new File(filename);
         FileInputStream f = new FileInputStream(fi);
@@ -70,11 +58,9 @@ public class ID3TagReader {
     }
 
     private void readID3v2Tags(FileInputStream f, int taille) throws IOException{
-        String[] tags = { "TALB", "TCON", "TIT2", "TRCK", "TPE1"};
-        String[] cols = { Music.ALBUM.NAME, Music.GENRE.NAME, Music.SONG.TITLE, Music.SONG.TRACK, Music.ARTIST.NAME};
         byte[] buff = new byte[4];
         int pos = 0;
-        skipSure(f, 3); // skip tags header
+        TagReader.skipSure(f, 3); // skip tags header
         f.read(buff, 0, 4); // read frame header
         while(pos<taille && buff[0] >= 'A' && buff[0] <='Z'){
             int size;
@@ -88,7 +74,7 @@ public class ID3TagReader {
             for(i=0; i<tags.length; i++)
             {
                 if(tags[i].charAt(0) == buff[0] && tags[i].charAt(1) == buff[1] 
-                     && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3])
+                        && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3])
                 {
                     // read frame size
                     byte[] buff2 = new byte[size-1];
@@ -107,7 +93,7 @@ public class ID3TagReader {
                             val = new String(buff2, "UTF-16");
                         }
                     }
-                    cv.put(cols[i], val.trim().replace("'", "''"));
+                    cv.put(cols[i], val);
                     break;
                 }
             }
@@ -118,7 +104,6 @@ public class ID3TagReader {
             f.read(buff, 0, 4); // read next frame header
             pos += 10;
         }
-        Log.v("mp3", cv.toString());
     }
 
     private void readID3v1Tags(FileInputStream f) throws IOException{
@@ -134,15 +119,15 @@ public class ID3TagReader {
 
         skipSure(f, 32);
         if(f.read() == 0){
-            cv.put(Music.SONG.TRACK, f.read());
+            cv.put(Music.SONG.TRACK, Integer.toString(f.read()));
         }else{
             f.read();
         }
         int t = f.read();
-        cv.put(Music.GENRE.ID, t>0 && t<147 ? t : 1);
+        cv.put(Music.GENRE.ID, Integer.toString(t>0 && t<147 ? t : 1));
     }
 
-    public ContentValues getValues(){
+    public HashMap<String, String> getValues(){
         return cv;
     }
 
