@@ -60,6 +60,7 @@ public class AlbumUI extends ListActivity {
             // set new image
             ((AlbumCoverView)getListAdapter().getView(pos, null, null)).setIcon(Drawable.createFromPath(mdb.getAlbumCover(album)));
             // refresh list
+            // TODO not working everytime
             ((AlbumCoverListAdapter)getListAdapter()).notifyDataSetChanged();
         }
     }
@@ -190,7 +191,7 @@ public class AlbumUI extends ListActivity {
     /**
      * Fill the ListView with the association of thealbum and its cover
      */
-    private void fillData(){
+     private void fillData(){
 
         listAlbum = mdb.getAlbumCovers();
         AlbumCoverListAdapter rows = new AlbumCoverListAdapter(this);
@@ -210,22 +211,22 @@ public class AlbumUI extends ListActivity {
         }
         setListAdapter(rows);
         getListView().setSelection(selectedAlbum);
-    }
+     }
 
-    /**
-     * Launch the CoverUI. It keeps the number of the selected rows.
-     * If selectedRow is negative, we do nothing (no album selected)
-     * @param selectedRow: the position of the View selected in the ListView
-     */
-    private void displayCoverUI(int selectedRow) 
-    {
-        if( selectedRow >= 0){
-            selectedAlbum = selectedRow;
-            Intent i = new Intent(this, CoverUI.class);
-            listAlbum.moveTo(selectedAlbum);
-            i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
-            startSubActivity(i, 0);
-        }
-    }
+     /**
+      * Launch the CoverUI. It keeps the number of the selected rows.
+      * If selectedRow is negative, we do nothing (no album selected)
+      * @param selectedRow: the position of the View selected in the ListView
+      */
+     private void displayCoverUI(int selectedRow) 
+     {
+         if( selectedRow >= 0){
+             selectedAlbum = selectedRow;
+             Intent i = new Intent(this, CoverUI.class);
+             listAlbum.moveTo(selectedAlbum);
+             i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
+             startSubActivity(i, 0);
+         }
+     }
 
 }

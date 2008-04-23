@@ -23,8 +23,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -221,43 +222,57 @@ public class MusicDB {
      */
     public void insert(String url) throws FileNotFoundException, IOException, SQLiteException{
         // read tags
-        ContentValues cv = new ID3TagReader(url).getValues();
+        String ext = url.substring(url.lastIndexOf('.'));
+        HashMap<String, String> cv;
+        if( ext.equals(".mp3")){
+            cv = new ID3TagReader(url).getValues();
+        }else if( ext.equals(".ogg")){
+            cv = new OggTagReader(url).getValues();
+        }else{
+            //format unsupported
+            return;
+        }
+
+        // prepare data to database -> ' = ''
+        for(Map.Entry<String,String> s : cv.entrySet()){
+            s.setValue(s.getValue().replace("'", "''"));
+        }
 
         int artist = 0 ,album = 0, genre = 0; // = 0 -> last value, !=0 -> null or select
         //, album = false, genre = false;
         mDb.execSQL("BEGIN TRANSACTION");
         try{
-            if(cv.containsKey(Music.ARTIST.NAME) && cv.getAsString(Music.ARTIST.NAME).length() > 0){
-                Log.v("INSERTION ARTISTE", "-"+cv.getAsString(Music.ARTIST.NAME).length()+"-");
-                Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.getAsString(Music.ARTIST.NAME)+"'" ,null);
+            if(cv.containsKey(Music.ARTIST.NAME) && cv.get(Music.ARTIST.NAME).length() > 0){
+                Log.v("INSERTION ARTISTE", "-"+cv.get(Music.ARTIST.NAME).length()+"-");
+                Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.get(Music.ARTIST.NAME)+"'" ,null);
                 if(c.next()){
                     artist = c.getInt(0);
                 }else{
-                    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+cv.getAsString(Music.ARTIST.NAME)+"')");
+                    mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+cv.get(Music.ARTIST.NAME)+"')");
                 }
                 c.close();
             }else{
                 artist = 1;
             }
 
-            if(cv.containsKey(Music.ALBUM.NAME) && cv.getAsString(Music.ALBUM.NAME).length() > 0){
-                Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.getAsString(Music.ALBUM.NAME)+"'" ,null);
+            if(cv.containsKey(Music.ALBUM.NAME) && cv.get(Music.ALBUM.NAME).length() > 0){
+                Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.get(Music.ALBUM.NAME)+"'" ,null);
                 if(c.next()){
                     album = c.getInt(0);
                 }else{
-                    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+cv.getAsString(Music.ALBUM.NAME)+"')");
+                    mDb.execSQL("INSERT INTO album(album_name) VALUES('"+cv.get(Music.ALBUM.NAME)+"')");
                 }
                 c.close();
             }else{
                 album = 1;
             }
 
-            if(cv.containsKey(Music.GENRE.NAME) && cv.getAsString(Music.GENRE.NAME).length() > 0){
-                Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.getAsString(Music.GENRE.NAME)+"'" ,null);
+            if(cv.containsKey(Music.GENRE.NAME) && cv.get(Music.GENRE.NAME).length() > 0){
+                Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.get(Music.GENRE.NAME)+"'" ,null);
                 if(c.next()){
                     genre = c.getInt(0);
                 }else{
-                    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+cv.getAsString(Music.GENRE.NAME)+"')");
+                    mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+cv.get(Music.GENRE.NAME)+"')");
                 }
                 c.close();
             }else{
@@ -266,16 +281,16 @@ public class MusicDB {
             Log.v("debug",cv.toString());
             // insert order in table song
             String title;
-            if(cv.containsKey(Music.SONG.TITLE) && cv.getAsString(Music.SONG.TITLE).length() > 0){
-                title = cv.getAsString(Music.SONG.TITLE);
+            if(cv.containsKey(Music.SONG.TITLE) && cv.get(Music.SONG.TITLE).length() > 0){
+                title = cv.get(Music.SONG.TITLE);
             }else{
-                title = new File(url).getName();
+                title = new File(url).getName().replace("'", "''");
             }
             // char ' is protected in url, for the tags this is done during reading them
             mDb.execSQL("INSERT INTO song(url,title,track, artist,album,genre) VALUES('"+
                     url.replace("'", "''")+"','"+
                     title +"','"+
-                    (cv.containsKey(Music.SONG.TRACK) ? cv.getAsString(Music.SONG.TRACK) : "")+"',"+
+                    (cv.containsKey(Music.SONG.TRACK) ? cv.get(Music.SONG.TRACK) : "")+"',"+
                     (artist != 0 ? artist : "(SELECT max(id) FROM artist)")+","+
                     (album != 0 ? album : "(SELECT max(id) FROM album)")+","+
                     (genre != 0 ? genre : "(SELECT max(id) FROM genre)")+")");
@@ -485,7 +500,7 @@ public class MusicDB {
             //Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
         }
     }
-    
+
     /**
      * Returns the size of the current playlist
      *
@@ -509,32 +524,32 @@ public class MusicDB {
      */
     public Cursor getTableList(Music.Table table){
         switch(table){
-        case SONG :
-            return mDb.rawQuery("SELECT title _id, ' ' num , song._id id "+
-                    "FROM song "+
-                    "ORDER BY title",null);
-        case ALBUM :
-            return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album.id id " +
-                    "FROM album, song "+
-                    "WHERE id = album "+
-                    "GROUP BY album_name "+
-                    "ORDER BY album_name",null);
-        case ARTIST :
-            return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist.id id " +
-                    "FROM artist, song " +
-                    "WHERE id = artist "+
-                    "GROUP BY artist_name " +
-                    "ORDER BY artist_name",null);
-        case GENRE :
-            return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre.id id " +
-                    "FROM genre,song "+
-                    "WHERE id = genre "+
-                    "GROUP BY genre_name "+
-                    "ORDER BY genre_name ",null);
-        default : return null;
+            case SONG :
+                return mDb.rawQuery("SELECT title _id, ' ' num , song._id id "+
+                        "FROM song "+
+                        "ORDER BY title",null);
+            case ALBUM :
+                return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album.id id " +
+                        "FROM album, song "+
+                        "WHERE id = album "+
+                        "GROUP BY album_name "+
+                        "ORDER BY album_name",null);
+            case ARTIST :
+                return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist.id id " +
+                        "FROM artist, song " +
+                        "WHERE id = artist "+
+                        "GROUP BY artist_name " +
+                        "ORDER BY artist_name",null);
+            case GENRE :
+                return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre.id id " +
+                        "FROM genre,song "+
+                        "WHERE id = genre "+
+                        "GROUP BY genre_name "+
+                        "ORDER BY genre_name ",null);
+            default : return null;
         }
     }
-    
+
     /**
      * 
      * @param albumId
@@ -543,22 +558,22 @@ public class MusicDB {
     public Cursor getAlbumInfo(int albumId){
         // because 1 is for unknown songs
         if(albumId == 1) return null;
-        
+
         return mDb.rawQuery("SELECT album_name, artist.id as id, artist_name " +
-        		"FROM song, album, artist " +
-        		"WHERE album.id=album " +
-        		"AND artist.id=artist " +
-        		"AND album.id="+albumId+
-        		" GROUP BY artist_name", null);
+                "FROM song, album, artist " +
+                "WHERE album.id=album " +
+                "AND artist.id=artist " +
+                "AND album.id="+albumId+
+                " GROUP BY artist_name", null);
     }
-    
-    
+
+
     public void setCover(int albumId, String cover){
         if(albumId > 1){
             mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE "+albumId+" =album.id");
         }
     }
-    
+
     public Cursor getAlbumCovers(){
         return mDb.rawQuery("SELECT DISTINCT artist_name _id, album_name, cover_url, album.id "+
                 "FROM album, artist,song "+
@@ -567,7 +582,7 @@ public class MusicDB {
                 "AND album.id > 1 "+
                 "ORDER BY artist_name, album_name", null);
     }
-    
+
     public String getAlbumCover(int albumId){
         Cursor c = mDb.rawQuery("SELECT cover_url FROM album where id="+albumId, null);
         if(c.first())
