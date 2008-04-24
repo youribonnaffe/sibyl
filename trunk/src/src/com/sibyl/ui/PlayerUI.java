@@ -50,7 +50,7 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
-
+import com.sibyl.ui.AnimatedCover;
 
 /**
  * The player activity. It launches the service and you can control the music: play, stop, play next/previous.
@@ -78,7 +78,7 @@ public class PlayerUI extends Activity
     private Button next;
     private Button previous;
     //private Button avance;
-    private ImageView cover;
+    private AnimatedCover cover;
     private ProgressView progress;
 
     private MusicDB mdb;    //the database
@@ -314,7 +314,7 @@ public class PlayerUI extends Activity
         tempsTotal.setText(DateUtils.formatElapsedTime(0));
 
         //set cover
-        cover = (ImageView) findViewById(R.id.cover);
+        cover = (AnimatedCover) findViewById(R.id.cover);
         cover.setImageResource(R.drawable.logo);
 
         //get progress
@@ -621,7 +621,7 @@ public class PlayerUI extends Activity
                     cover.setImageDrawable(Drawable.createFromPath(pathCover));
                 }
                 else if(songInfo[2] == null){ //displayed default logo
-                    cover.setImageResource(R.drawable.logo);
+                    cover.setImageDrawable(getResources().getDrawable(R.drawable.logo));
                     pathCover = null;
                 }
             }// buttons next & previous update
@@ -694,4 +694,5 @@ public class PlayerUI extends Activity
             Log.v(TAG, doe.toString());
         }
     }
+    
 }
