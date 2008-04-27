@@ -50,92 +50,30 @@
 		-->
 		
             <com.sibyl.ui.AnimatedCover   android:id="@+id/cover" 
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
                 android:maxHeight="200sp"
-                android:maxWidth="200sp"/>
+                android:maxWidth="200sp" />
 		
 
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			    android:orientation="horizontal"
-				android:layout_gravity="center|bottom"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content">
-			    
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				    android:orientation="vertical"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-					android:layout_gravity="left">
-				    
-					<TextView  android:id="@+id/titrePrec"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-		                android:textSize="15sp"
-						android:text="Title of the previous song" />
-					
-				<!--	<TextView  android:id="@+id/AlbumPrec"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-		                android:textSize="12sp"
-						android:text="Album or artist" />-->
-				</LinearLayout>
-				
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				    android:orientation="vertical"
-				    android:layout_width="20dip"
-				    android:layout_height="fill_parent"
-					android:layout_gravity="center">
-				    <!-- Separator/space between previous and next songs -->
-				</LinearLayout>
-				
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				    android:orientation="vertical"
-				    android:layout_width="fill_parent"
-				    android:layout_height="fill_parent"
-					android:layout_gravity="right">
-				    
-					<TextView  android:id="@+id/titreNext"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-		                android:textSize="15sp"
-						android:text="Next title" 
-						android:layout_gravity="right"/>
-				<!--	<TextView  android:id="@+id/AlbumNext"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-		                android:textSize="12sp"
-						android:text="Album or artist"
-						android:layout_gravity="right" />-->
-				</LinearLayout>			
-			</LinearLayout>
 			
 			 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="vertical"
                 android:layout_gravity="bottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">                
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">                
     
 		    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		        android:layout_width="wrap_content"
 		        android:stretchColumns="0"
 		        android:layout_height="wrap_content"
-		        android:gravity="center">
-		        <!--              android:layout_weight="1" -->
+		        android:gravity="center|bottom"
+		        android:layout_weight="1">
 		        
 		        <TableRow>
-		        
-		            <!-- <Button android:id="@+id/avance"
-		                android:text="Debug >>"
-		                android:focusable="true"
-		                android:layout_height="wrap_content"
-		                android:layout_gravity="left"
-		                android:layout_weight="1.0"
-                        android:background="#F00FF0"
-		                android:layout_width="wrap_content"/> -->
 
 		            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:orientation="vertical"
@@ -143,7 +81,6 @@
                         android:layout_width="fill_parent"
                         android:layout_weight="0.0"
                         android:layout_height="wrap_content">
-                        <!-- android:layout_weight="1.0"-->
                         
 					    <com.sibyl.ui.ProgressView android:id="@+id/progress"
 					        android:layout_width="wrap_content"
@@ -178,9 +115,9 @@
 			
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			    android:orientation="horizontal"
-				android:layout_gravity="center"
+				android:layout_gravity="center|bottom"
 			    android:layout_width="wrap_content"
-			    android:layout_height="fill_parent">
+			    android:layout_height="wrap_content">
 				<Button android:id="@+id/prec"
 					android:text="&lt;&lt;"
 					android:focusable="true"
