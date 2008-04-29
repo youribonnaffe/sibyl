@@ -1,24 +1,24 @@
 TODO:
-. mettre l'acces au covermanager dans optionUI: via un bouton
-. mettre un spinner pour les mode de lecture
-. pouvoir desactiver l'animation pour les couvertures (I)
-. refaire apparaitre Sibyl dans la liste des applications (Y)
-. nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net (Y)
-. sauvegarde de PL et pouvoir en recharger. A faire dans playlistui (B)
-. dans coverUI redonner le nom de l'album (S)
-. refaire l'interface de playerUI: alleger le xml, améliorer le lancement de Sibyl (Y-S)
-. de nombreuses issues sont en cours (tout le monde !)
-. playerui: gérer les noms tres longs (I/S)
-- faire le multilingue (B)
-- redessiner ConfigUI (B)
+  * mettre l'acces au covermanager dans optionUI: via un bouton
+  * mettre un spinner pour les mode de lecture
+  * pouvoir desactiver l'animation pour les couvertures (I)
+  * refaire apparaitre Sibyl dans la liste des applications (Y)
+  * nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net (Y)
+  * sauvegarde de PL et pouvoir en recharger. A faire dans playlistui (B)
+  * dans coverUI redonner le nom de l'album (S)
+  * refaire l'interface de playerUI: alleger le xml, améliorer le lancement de Sibyl (Y-S)
+  * de nombreuses issues sont en cours (tout le monde !)
+  * playerui: gérer les noms tres longs (I/S)
+  * faire le multilingue (B)
+  * redessiner ConfigUI (B)
 
 TEST: 
-. différents mode de lecture (Y)
-. tester les différents formats: ogg, aac(S)
+  * différents mode de lecture (Y)
+  * tester les différents formats: ogg, aac(S)
 
 IMPROVEMENTS:
--super barre de progression (étirable) + effet arrondi + effet brillant, relief (I)
--lecture tag aac, m4a (Y)
--nouvelle animation (I)
+  *super barre de progression (étirable) + effet arrondi + effet brillant, relief (I)
+  *lecture tag aac, m4a (Y)
+  *nouvelle animation (I)
 
-préparer la présentation
+/!\préparer la présentation
