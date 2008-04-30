@@ -573,7 +573,27 @@ public class MusicDB {
             mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE "+albumId+" =album.id");
         }
     }
+    
+    public void deleteCover(int albumId){
+        if(albumId > 1){
+            // if cover was in cover folder, delete the image file
+            Cursor c = mDb.rawQuery("SELECT cover_url FROM album WHERE "+albumId+"=album.id AND cover_url NOT NULL AND cover_url<>''", null);
+            if(c.count() == 1 && c.first()){
+                // delete only if the cover isn't used anymore
+                String url = c.getString(0);
+                if(url.contains(Music.COVER_DIR)){
+                    new File(url).delete();
+                }
+            }
+            // then delete the entry from db
+            mDb.execSQL("UPDATE album SET cover_url='' WHERE "+albumId+" =album.id");
+        }
+    }
 
+    /**
+     * 
+     * @return all (album,artist)
+     */
     public Cursor getAlbumCovers(){
         return mDb.rawQuery("SELECT DISTINCT artist_name _id, album_name, cover_url, album.id "+
                 "FROM album, artist,song "+
@@ -583,8 +603,13 @@ public class MusicDB {
                 "ORDER BY artist_name, album_name", null);
     }
 
+    /**
+     * 
+     * @param albumId
+     * @return null if cover_url is null or empty
+     */
     public String getAlbumCover(int albumId){
-        Cursor c = mDb.rawQuery("SELECT cover_url FROM album where id="+albumId, null);
+        Cursor c = mDb.rawQuery("SELECT cover_url FROM album where cover_url<>'' AND cover_url NOT NULL AND id > 1 AND id="+albumId, null);
         if(c.first())
         {
             return c.getString(0);

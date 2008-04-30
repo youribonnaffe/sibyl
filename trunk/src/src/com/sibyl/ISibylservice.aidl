@@ -91,5 +91,6 @@ interface ISibylservice {
     /* sets the play mode of the service. The mode is one of the modes defined in Music.java
         NORMAL or RANDOM
     */
+    int getPlayMode();
     
 }

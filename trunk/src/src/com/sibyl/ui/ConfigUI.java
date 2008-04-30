@@ -359,7 +359,7 @@ public class ConfigUI extends Activity
 
                 repeatMusic.setSelection(mService.getLooping());
 
-                playMode.setText(R.string.normal);
+                playMode.setText(Music.Mode.getText(mService.getPlayMode()));
 
             } catch (DeadObjectException doe) 
             {

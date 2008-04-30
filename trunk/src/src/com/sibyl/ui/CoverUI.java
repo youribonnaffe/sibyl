@@ -3,7 +3,6 @@ package com.sibyl.ui;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +25,7 @@ public class CoverUI extends Activity {
     private static final String TAG = "CoverUI"; //tag for the ui
     //menu constant
     private static final int BACK_ID = Menu.FIRST;
-    private static final int CHOOSE_ID = Menu.FIRST+1;
+    private static final int RESET_ID = Menu.FIRST+1;
     public static final String ALBUM_ID = "album_id";
     //File format supported.
     public static final String[] EXT_TAB = { ".jpg", ".bmp", ".png"}; //file format search in directories
@@ -80,16 +79,11 @@ public class CoverUI extends Activity {
                 setResult(RESULT_CANCELED);
                 finish();
                 break;
-            case CHOOSE_ID:
+            case RESET_ID:
                 int position = gallery.getSelectedItemPosition();
                 if( position >=0){
-                    //Log.v(TAG, (String) imgAdapter.getItem(position));
-                    setResult(RESULT_OK,  (String) imgAdapter.getItem(position));
-                    finish();
-                }
-                else
-                {
-                    setResult(RESULT_CANCELED);
+                    // we want to reset 
+                    setResult(RESULT_FIRST_USER);
                     finish();
                 }
                 break;
@@ -101,7 +95,7 @@ public class CoverUI extends Activity {
     {
         super.onCreateOptionsMenu(menu);
         menu.add(0, BACK_ID, R.string.cov_back);
-        menu.add(0, CHOOSE_ID, R.string.cov_choose);
+        menu.add(0, RESET_ID, R.string.cov_reset);
         return true;
     }
 

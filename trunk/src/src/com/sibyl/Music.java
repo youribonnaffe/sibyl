@@ -49,8 +49,14 @@ public class Music {
     
     /* Modes of the service */
     public static class Mode {
-        public static int NORMAL = 1; // songs are played in the order of the playlist
-        public static int RANDOM = 2; // songs are played randomly
+        public static final int NORMAL = 1; // songs are played in the order of the playlist
+        public static final int RANDOM = 2; // songs are played randomly
+        public static int getText(int mode){
+            switch(mode){
+                case RANDOM : return R.string.random;
+                default : return R.string.normal;
+            }
+        }
     }
     
     public static class LoopMode {

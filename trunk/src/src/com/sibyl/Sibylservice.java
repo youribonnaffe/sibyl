@@ -68,7 +68,9 @@ public class Sibylservice extends Service
         Log.v("SibylService", prefs.getAll().toString());
         currentSong= prefs.getInt("currentSong", 1);
         loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
+        playMode = prefs.getInt("playMode", Music.Mode.NORMAL);
 
+        
         //adds the song restored from preferences to the list of played song
         if (playMode == Music.Mode.RANDOM)
         {
@@ -141,6 +143,7 @@ public class Sibylservice extends Service
         SharedPreferences.Editor prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE).edit();
         prefs.putInt("currentSong", currentSong);
         prefs.putInt("loopMode", loopMode);
+        prefs.putInt("playMode", playMode);
         prefs.commit();
 
     }
@@ -256,6 +259,7 @@ public class Sibylservice extends Service
         if( playMode == Music.Mode.RANDOM )
         {
             play_random();
+            broadcastIntent(new Intent(Music.Action.NEXT));
         }
         else 
         {
@@ -289,6 +293,7 @@ public class Sibylservice extends Service
                 currentSong = 1;
             }
             play();
+            broadcastIntent(new Intent(Music.Action.PREVIOUS));
         }
         else 
         {
@@ -310,6 +315,10 @@ public class Sibylservice extends Service
     protected void playNumberI(int i)
     {
         stop();
+        if(playMode == Music.Mode.RANDOM){
+            // if we are in random mode, we have to remember the last track played
+            songHistory.push(currentSong);
+        }
         currentSong = i;
         play();
     }
@@ -434,7 +443,15 @@ public class Sibylservice extends Service
 
         public void setPlayMode(int mode)
         {
+            if(playMode == Music.Mode.RANDOM && mode != Music.Mode.RANDOM){
+                // if we are changing from random to another mode, empty history
+                songHistory.clear();
+            }
             playMode=mode;
+        }
+        
+        public int getPlayMode(){
+            return playMode;
         }
 
     };

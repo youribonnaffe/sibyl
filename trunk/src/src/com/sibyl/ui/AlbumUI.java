@@ -1,7 +1,9 @@
 package com.sibyl.ui;
 
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
@@ -35,8 +37,7 @@ public class AlbumUI extends ListActivity {
     private final static int ALBUM_ID = 3;
     //constant menu
     private static final int BACK_ID = Menu.FIRST;
-    private static final int MANUAL_ID = Menu.FIRST+1;
-    private static final int DOWNLOAD_ID = Menu.FIRST+2;
+    private static final int DOWNLOAD_ID = Menu.FIRST+1;
 
     private MusicDB mdb;    //the database
     private Cursor listAlbum;
@@ -74,8 +75,9 @@ public class AlbumUI extends ListActivity {
             listAlbum.moveTo(0);
             albums = new int[listAlbum.count()];
             int i = 0;
-            while(listAlbum.next()){
+            while(i<albums.length){
                 albums[i++] = listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID));
+                listAlbum.next();
             }
         }
 
@@ -84,10 +86,10 @@ public class AlbumUI extends ListActivity {
             int pos = 0;
             for(int album : albums){
                 if(Thread.interrupted()){
-                    //Log.v(TAG, "cover task interrupted");
+                    // stop thread
                     return;
                 }
-                if(mdb.getAlbumCover(album) == null ){
+                if(mdb.getAlbumCover(album) == null){
                     // download undefined cover
                     if(CoverDownloader.retrieveCover(mdb, album)){
                         // refresh cover in list
@@ -131,15 +133,27 @@ public class AlbumUI extends ListActivity {
      * @see android.app.Activity#onActivityResult(int, int, java.lang.String, android.os.Bundle)
      */
     protected void onActivityResult(int requestCode, int resultCode, String data, Bundle extras){
-        if(resultCode == RESULT_OK){
-            //Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
-            listAlbum.requery(); //recover the cursor
-            listAlbum.moveTo(selectedAlbum);
-            mdb.setCover(listAlbum.getInt(ALBUM_ID), data);
-            if( selectedAlbumView != null){
-                selectedAlbumView.setIcon(Drawable.createFromPath(data));
-                selectedAlbumView = null; //we reset the selectedView in the end
-            }
+        switch(resultCode){
+            case RESULT_OK :
+                //Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
+                listAlbum.requery(); //recover the cursor
+                listAlbum.moveTo(selectedAlbum);
+                mdb.setCover(listAlbum.getInt(ALBUM_ID), data);
+                if( selectedAlbumView != null){
+                    selectedAlbumView.setIcon(Drawable.createFromPath(data));
+                    selectedAlbumView = null; //we reset the selectedView in the end
+                }
+                break;
+            case RESULT_FIRST_USER :
+                // reset image
+                listAlbum.requery(); //recover the cursor
+                listAlbum.moveTo(selectedAlbum);
+                mdb.deleteCover(listAlbum.getInt(ALBUM_ID));
+                if( selectedAlbumView != null){
+                    selectedAlbumView.setIcon(getResources().getDrawable(R.drawable.logo));
+                    selectedAlbumView = null; //we reset the selectedView in the end
+                }
+                break;
         }
     }
 
@@ -161,7 +175,6 @@ public class AlbumUI extends ListActivity {
     {
         super.onCreateOptionsMenu(menu);
         menu.add(0, BACK_ID, R.string.alb_back);
-        menu.add(0, MANUAL_ID, R.string.alb_manual);
         menu.add(0, DOWNLOAD_ID, R.string.cov_download);
         return true;
     }
@@ -174,13 +187,23 @@ public class AlbumUI extends ListActivity {
             case BACK_ID:
                 finish();
                 break;
-            case MANUAL_ID:
-                displayCoverUI(getListView().getSelectedItemPosition());
-                selectedAlbumView = (AlbumCoverView) getListView().getSelectedView();
-                break;
             case DOWNLOAD_ID :
-                coverThread = new Thread(new CoverTask(listAlbum));
-                coverThread.start();
+                new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.star_big_off)
+                .setTitle(R.string.download_cover_dialog_title)
+                .setMessage(R.string.download_cover_dialog_message)
+                .setPositiveButton(R.string.download_cover_dialog_yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // yes ? will download the covers
+                        coverThread = new Thread(new CoverTask(listAlbum));
+                        coverThread.start();
+                    }
+                })
+                .setNegativeButton(R.string.download_cover_dialog_no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // no ? do nothing
+                    }
+                }).show();
                 break;
         }
         return true;
@@ -191,7 +214,7 @@ public class AlbumUI extends ListActivity {
     /**
      * Fill the ListView with the association of thealbum and its cover
      */
-     private void fillData(){
+    private void fillData(){
 
         listAlbum = mdb.getAlbumCovers();
         AlbumCoverListAdapter rows = new AlbumCoverListAdapter(this);
@@ -200,7 +223,7 @@ public class AlbumUI extends ListActivity {
         //for each album we associate its cover.
         while(listAlbum.next()){
             //Log.v(TAG,listAlbum.getString(ARTIST)+"-"+listAlbum.getString(ALBUM));
-            if( listAlbum.isNull(COVER_URL)){
+            if( listAlbum.isNull(COVER_URL) || listAlbum.getString(COVER_URL).equals("")){
                 rows.add(new IconifiedText( listAlbum.getString(ARTIST)+'\n'+listAlbum.getString(ALBUM),
                         getResources().getDrawable(R.drawable.logo))); //default cover
             }
@@ -211,22 +234,22 @@ public class AlbumUI extends ListActivity {
         }
         setListAdapter(rows);
         getListView().setSelection(selectedAlbum);
-     }
+    }
 
-     /**
-      * Launch the CoverUI. It keeps the number of the selected rows.
-      * If selectedRow is negative, we do nothing (no album selected)
-      * @param selectedRow: the position of the View selected in the ListView
-      */
-     private void displayCoverUI(int selectedRow) 
-     {
-         if( selectedRow >= 0){
-             selectedAlbum = selectedRow;
-             Intent i = new Intent(this, CoverUI.class);
-             listAlbum.moveTo(selectedAlbum);
-             i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
-             startSubActivity(i, 0);
-         }
-     }
+    /**
+     * Launch the CoverUI. It keeps the number of the selected rows.
+     * If selectedRow is negative, we do nothing (no album selected)
+     * @param selectedRow: the position of the View selected in the ListView
+     */
+    private void displayCoverUI(int selectedRow) 
+    {
+        if( selectedRow >= 0){
+            selectedAlbum = selectedRow;
+            Intent i = new Intent(this, CoverUI.class);
+            listAlbum.moveTo(selectedAlbum);
+            i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
+            startSubActivity(i, 0);
+        }
+    }
 
 }
