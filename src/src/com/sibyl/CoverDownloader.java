@@ -79,7 +79,7 @@ public class CoverDownloader {
                     // get image
                     InputStream  in = new URL(answer).openStream();
                     // filename is image name + cover dir
-                    String filename = Music.COVER_DIR + answer.substring(answer.lastIndexOf('/'));
+                    String filename = Music.COVER_DIR + answer.substring(answer.lastIndexOf('/')+1);
                     // copy image into local file
                     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename), 8192);
                     byte[] buffer = new byte[1024];

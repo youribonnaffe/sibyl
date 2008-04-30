@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +49,6 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
-import com.sibyl.ui.AnimatedCover;
 
 /**
  * The player activity. It launches the service and you can control the music: play, stop, play next/previous.
@@ -77,7 +75,6 @@ public class PlayerUI extends Activity
     private Button lecture;
     private Button next;
     private Button previous;
-    //private Button avance;
     private AnimatedCover cover;
     private ProgressView progress;
 
@@ -341,7 +338,7 @@ public class PlayerUI extends Activity
         menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
-        menu.add(0, COVER_ID, "CoverManage");
+        menu.add(0, COVER_ID, R.string.menu_cover_manager);
         return true;
     }
 
@@ -625,17 +622,21 @@ public class PlayerUI extends Activity
                     pathCover = null;
                 }
             }// buttons next & previous update
-            if(pos <= 1){
-                // disable previous button
-                previous.setEnabled(false);
-            }else{
-                previous.setEnabled(true);
-            }
-
-            if(mdb.getPlaylistSize() <= 0 || pos == mdb.getPlaylistSize()){
-                next.setEnabled(false);
-            }else{
-                next.setEnabled(true);
+            
+            if(mService.getPlayMode() != Music.Mode.RANDOM){
+                // when in random mode, next and previous can be used
+                if(pos <= 1){
+                    // disable previous button
+                    previous.setEnabled(false);
+                }else{
+                    previous.setEnabled(true);
+                }
+    
+                if(mdb.getPlaylistSize() <= 0 || pos == mdb.getPlaylistSize()){
+                    next.setEnabled(false);
+                }else{
+                    next.setEnabled(true);
+                }
             }
             Log.v(TAG, " "+mService.getState());
 

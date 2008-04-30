@@ -36,13 +36,14 @@
     <string name="time_total">05:00</string>
     <string name="next">&gt;&gt;</string>
     <string name="previous">&lt;&lt;</string>
-
+    <string name="menu_cover_manager">Cover manager</string>
     <!--  PlayListUI -->
     <string name="playList">Playlist</string>
     <string name="menu_quit">Quit</string>
     <string name="menu_playList">Playlist</string>
     <string name="menu_option">Option</string>
     <string name="sep_artiste_song">  -  </string>
+    
     
     <string name="menu_add">Add...</string>
     <string name="menu_new">New...</string>
@@ -92,9 +93,13 @@
     
     <!-- CoverUI -->
     <string name="cov_back">Back</string>
-    <string name="cov_choose">Choose</string>  
+    <string name="cov_reset">Reset</string>  
     <string name="cov_download">Download</string>
-    
+        <!-- CoverUI - Dialog -->
+        <string name="download_cover_dialog_title">Download all covers</string>
+        <string name="download_cover_dialog_message">Sibyl player will now download the undefined covers from the internet. This may lead to unexpected expenses due to internet access cost.</string>  
+        <string name="download_cover_dialog_yes">Continue</string>
+        <string name="download_cover_dialog_no">Cancel</string>
     
     <!-- ERRORS : Some errors messages and titles -->
     <string name="error_core_service_title">Audio player error</string>
