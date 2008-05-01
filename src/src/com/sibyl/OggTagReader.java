@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
+import android.util.Log;
+
 
 public class OggTagReader extends TagReader{
 
@@ -33,18 +35,19 @@ public class OggTagReader extends TagReader{
             // skip vendor string
             skipSure(f,size);
             // read number of tags
-            size = f.read();
-            size += f.read()<<7;
-            size += f.read()<<14;
-            size += f.read()<<21;
+            int nbTags = f.read();
+            nbTags += f.read()<<7;
+            nbTags += f.read()<<14;
+            nbTags += f.read()<<21;
             // read tags
-            for(int i = 0; i<size; i++){
+            for(int i = 0; i<nbTags; i++){
                 // read tag size
                 size = f.read();
                 size += f.read()<<7;
                 size += f.read()<<14;
                 size += f.read()<<21;
-                if(size < 255){
+                // assume that tag is shorter than 255c
+                if(size > 0 && size < 255){
                     // read tag
                     byte[] buff = new byte[size];
                     f.read(buff, 0, size);
