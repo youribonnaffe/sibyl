@@ -69,7 +69,7 @@ public class Sibylservice extends Service
         loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
         playMode = prefs.getInt("playMode", Music.Mode.NORMAL);
 
-        
+
         //adds the song restored from preferences to the list of played song
         if (playMode == Music.Mode.RANDOM)
         {
@@ -201,7 +201,7 @@ public class Sibylservice extends Service
                 } else {
                     // end of playlist, stop playing
                     playerState = Music.State.END_PLAYLIST_REACHED;
-                    currentSong = 0;
+                    //currentSong = 0;
                     broadcastIntent(new Intent(Music.Action.NO_SONG));
                     return false;
                 }
@@ -266,6 +266,7 @@ public class Sibylservice extends Service
             stop();
             currentSong++;
             if( !play()){ //cancel the changement if nothing is played
+                // already set if end of playlist
                 currentSong--;
             } else {
                 broadcastIntent(new Intent(Music.Action.NEXT));
@@ -292,7 +293,7 @@ public class Sibylservice extends Service
             {
                 currentSong = 1;
             }
-            
+
             if( play() ) {
                 broadcastIntent(new Intent(Music.Action.PREVIOUS));
             }
@@ -404,7 +405,7 @@ public class Sibylservice extends Service
                     && playerState != Music.State.PAUSED ) {
                 return false;
             }
-            
+
             mp.seekTo(msec);
             //because when we move to an other pos the music starts
             if( playerState == Music.State.PAUSED ) {
@@ -460,7 +461,7 @@ public class Sibylservice extends Service
             }
             playMode=mode;
         }
-        
+
         public int getPlayMode(){
             return playMode;
         }
