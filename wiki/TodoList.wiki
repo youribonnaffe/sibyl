@@ -1,3 +1,5 @@
+#summary Liste des choses à faire avant la présentation
+
 TODO:
   * mettre l'acces au covermanager dans optionUI: via un bouton
   * mettre un spinner pour les mode de lecture
