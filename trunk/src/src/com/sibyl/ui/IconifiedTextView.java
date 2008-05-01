@@ -26,6 +26,7 @@ public class IconifiedTextView extends LinearLayout
         mText = new TextView(context);
         mText.setText(aIconifiedPath.getText());
         mText.setTextSize(20);
+        mText.setSingleLine(true);
         
         addView(mText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }
