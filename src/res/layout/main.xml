@@ -30,7 +30,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
 		android:minHeight="40sp"
-		android:textSize="25sp" 
+		android:textSize="25sp"
+        android:singleLine="true"
 		android:text="@string/titre"
 		android:layout_gravity="center" />
 
@@ -38,7 +39,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
 		android:textSize="16sp"
-		android:textStyle="italic" 
+		android:textStyle="italic"
+		android:singleLine="true"
 		android:text="@string/artiste"
 		android:padding="10dip" 
 		android:layout_gravity="center" />

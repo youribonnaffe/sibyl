@@ -21,18 +21,23 @@
      android:layout_height="wrap_content"
      android:orientation="horizontal">
      <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="0"
+            android:stretchColumns="1">
                         
             <TableRow>
                 <TextView android:id="@+id/textfield"
                      android:textSize="9pt"
                      android:textStyle="bold"
-                     android:layout_width="fill_parent"
+                     android:layout_width="wrap_content"
+                     android:lines="1"
                      android:layout_height="wrap_content"/>
                 <TextView android:id="@+id/textnum"
                      android:textSize="8pt"
                      android:paddingLeft="10sp"
+                     android:gravity="left"
+                     android:lines="1"
                      android:layout_width="fill_parent"
                      android:layout_height="wrap_content"/>
              </TableRow>

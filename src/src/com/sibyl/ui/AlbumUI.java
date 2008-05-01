@@ -248,6 +248,7 @@ public class AlbumUI extends ListActivity {
             Intent i = new Intent(this, CoverUI.class);
             listAlbum.moveTo(selectedAlbum);
             i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
+            i.putExtra(CoverUI.ALBUM_NAME, listAlbum.getString(ALBUM));
             startSubActivity(i, 0);
         }
     }

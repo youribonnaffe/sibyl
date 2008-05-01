@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.sibyl.Directory;
@@ -27,6 +28,7 @@ public class CoverUI extends Activity {
     private static final int BACK_ID = Menu.FIRST;
     private static final int RESET_ID = Menu.FIRST+1;
     public static final String ALBUM_ID = "album_id";
+    public static final String ALBUM_NAME = "album_name";
     //File format supported.
     public static final String[] EXT_TAB = { ".jpg", ".bmp", ".png"}; //file format search in directories
 
@@ -41,6 +43,12 @@ public class CoverUI extends Activity {
         setContentView(R.layout.cover);
         gallery = (GridView) findViewById(R.id.gallery);
         gallery.setOnItemClickListener(galleryClickListenner);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String title = extras.getString(CoverUI.ALBUM_NAME);
+            TextView album = (TextView) findViewById(R.id.titre);
+            album.setText(title);
+        }
         try
         {
             mdb = new MusicDB(this);
