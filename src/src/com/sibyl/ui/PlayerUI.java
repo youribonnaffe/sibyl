@@ -203,7 +203,7 @@ public class PlayerUI extends Activity
         catch(SQLiteDiskIOException e)
         {
             Log.v(TAG, e.getMessage());
-            // user sould be warned
+            // user should be warned
         }
     }
 
@@ -385,21 +385,22 @@ public class PlayerUI extends Activity
      * If the service was stopped, but the playlist filled, we launch the play
      */
     private OnProgressChangeListener changeListener = new OnProgressChangeListener() {
-        public void onProgressChanged(View v, int progress) {
+        public void onProgressChanged(View v, int newPos) {
             try{
-                if(mService.getState() == Music.State.PLAYING ||
-                        mService.getState() == Music.State.PAUSED ||
-                        (mService.getState() == Music.State.STOPPED && mdb.getPlaylistSize() > 0)){
-                    mService.start();
-                    mService.setCurrentPosition(progress);
+                if( ! mService.setCurrentPosition(newPos) ) {
+                    progress.setProgress(0);
+                }
+                //update UI
+                elapsedTime.setText(DateUtils.formatElapsedTime(newPos/1000));
+                //relaunch timer if we are playing
+                if( mService.getState() == Music.State.PLAYING )
+                {
                     //remove timer
                     mTimeHandler.removeCallbacks(timerTask);
                     // add timer task to ui thread
                     mTimeHandler.post(timerTask);
                 }
-                else{
-                    PlayerUI.this.progress.setProgress(0);
-                }
+                
             }
             catch(DeadObjectException ex){}
         }
@@ -483,7 +484,7 @@ public class PlayerUI extends Activity
     };
 
     /*
-     * Listenner for the Button Next. Play the next song in the playlist
+     * Listener for the Button Next. Play the next song in the playlist
      */
     private OnClickListener mNextListener = new OnClickListener()
     {
@@ -498,7 +499,7 @@ public class PlayerUI extends Activity
     };
 
     /*
-     * Listenner for the button previous. Play the previous sont in the playlist
+     * Listener for the button previous. Play the previous song in the playlist
      */
     private OnClickListener mPreviousListener = new OnClickListener()
     {
