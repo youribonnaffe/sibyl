@@ -45,7 +45,6 @@ public class Sibylservice extends Service
     private Stack<Integer> songHistory;
     private Random randomVal;
     private int currentSong;
-    //private IPlayListUI playlistUiHandler;
     private NotificationManager nm;
 
     /** creation of the service */
@@ -98,7 +97,7 @@ public class Sibylservice extends Service
 
         }catch (SQLiteDiskIOException e){
             Log.v("SibylService", e.getMessage());
-            // what sould we do ? updateNotification ?
+            // what should we do ? updateNotification ?
         }
 
     }
@@ -177,7 +176,7 @@ public class Sibylservice extends Service
      * If the end of the playlist is reached and playlist repetition is false, 
      * the service will be in the state END_PLAYLIST_REACHED, and the UI will be
      * informed.
-     * If an error occured, no song will be played and the service will be in the
+     * If an error occurred, no song will be played and the service will be in the
      * error state.
      *
      * @return   true in case of success, false otherwise
@@ -185,7 +184,7 @@ public class Sibylservice extends Service
     protected boolean play() 
     {
         if( playerState != Music.State.PAUSED ) 
-        {// if we are not in pause we prepare the mediaplayer to play the next song
+        {// if we are not in pause we prepare the media player to play the next song
 
             int plSize = mdb.getPlaylistSize();
             if(currentSong <= plSize){
@@ -194,12 +193,12 @@ public class Sibylservice extends Service
                 // filename OK so preparing playing of this file
                 preparePlaying();
                 // next will be to start playing the song
-            }else{
+            } else {
                 // end of playlist
                 if( loopMode == Music.LoopMode.REPEAT_PLAYLIST){
                     currentSong = 1;
                     return play();
-                }else{
+                } else {
                     // end of playlist, stop playing
                     playerState = Music.State.END_PLAYLIST_REACHED;
                     currentSong = 0;
@@ -219,7 +218,8 @@ public class Sibylservice extends Service
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
         {
-            //what to do??? is the error critical or not important and so can be skipped???
+            songInfo[0] = "Unknown";
+            songInfo[1] = "Unknown";
         }
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
 
@@ -251,7 +251,7 @@ public class Sibylservice extends Service
     }
 
     /**
-     * Plays the following song in the playlist
+     * Plays the next song in the playlist
      *
      */
     protected void play_next() 
@@ -267,7 +267,7 @@ public class Sibylservice extends Service
             currentSong++;
             if( !play()){ //cancel the changement if nothing is played
                 currentSong--;
-            }else{
+            } else {
                 broadcastIntent(new Intent(Music.Action.NEXT));
             }
         }
@@ -292,13 +292,15 @@ public class Sibylservice extends Service
             {
                 currentSong = 1;
             }
-            play();
-            broadcastIntent(new Intent(Music.Action.PREVIOUS));
+            
+            if( play() ) {
+                broadcastIntent(new Intent(Music.Action.PREVIOUS));
+            }
         }
         else 
         {
             currentSong--; 
-            if( ! play()){  //cancel the changement if nothing is played
+            if( ! play() ){  //cancel the changement if nothing is played
                 currentSong++;
             }else{
                 broadcastIntent(new Intent(Music.Action.PREVIOUS));
@@ -379,7 +381,8 @@ public class Sibylservice extends Service
 
         public int getCurrentPosition() {
             if( playerState == Music.State.END_PLAYLIST_REACHED
-                    || playerState == Music.State.STOPPED){
+                    || playerState == Music.State.STOPPED
+                    || playerState == Music.State.ERROR ) {
                 return 0;
             }else{
                 return mp.getCurrentPosition();
@@ -388,25 +391,33 @@ public class Sibylservice extends Service
 
         public int getDuration() {
             if( playerState == Music.State.END_PLAYLIST_REACHED
-                    || playerState == Music.State.STOPPED){
+                    || playerState == Music.State.STOPPED
+                    || playerState == Music.State.ERROR ) {
                 return 0;
             }else{
                 return mp.getDuration();
             }
         }
 
-        public void setCurrentPosition(int msec) {
+        public boolean setCurrentPosition(int msec) {
+            if( playerState != Music.State.PLAYING
+                    && playerState != Music.State.PAUSED ) {
+                return false;
+            }
+            
             mp.seekTo(msec);
-            // auto start playing
             //because when we move to an other pos the music starts
-            playerState = Music.State.PLAYING;
+            if( playerState == Music.State.PAUSED ) {
+                mp.pause();
+            }
+            return true;
         }
 
         public void setLooping(boolean loop) 
         {
             Log.v(TAG,"set looping :"+loop);
             loopMode = (loop) ? Music.LoopMode.REPEAT_SONG : Music.LoopMode.NO_REPEAT;
-            mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
+            //mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
             //and java doesn't do the implicit conversion from bool to int
         }
 
@@ -436,7 +447,7 @@ public class Sibylservice extends Service
         public void setLoopMode(int mode)
         {
             //we loop on the song only if mode == REPEAT_SONG
-            mp.setLooping(mode == Music.LoopMode.REPEAT_SONG ? 1 : 0);
+            //mp.setLooping(mode == Music.LoopMode.REPEAT_SONG ? 1 : 0);
 
             loopMode = mode;
         }
@@ -461,8 +472,11 @@ public class Sibylservice extends Service
         public void onCompletion(MediaPlayer mp) 
         {
             mdb.countUp(currentSong);
-            if(loopMode != Music.LoopMode.REPEAT_SONG)
+            if(loopMode == Music.LoopMode.REPEAT_SONG)
             {
+                play();
+            }
+            else {
                 play_next();
             }
         } 

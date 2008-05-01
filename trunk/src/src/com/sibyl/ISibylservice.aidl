@@ -49,8 +49,12 @@ interface ISibylservice {
     int getCurrentPosition();
     /* returns the current position in the played song in milliseconds */
     
-    void setCurrentPosition(in int msec);
-    /* sets the current position in the played song in milliseconds */
+    boolean setCurrentPosition(in int msec);
+    /* sets the current position in the played song in milliseconds
+        Returns true if the pos has been successfully changed, and false otherwise.
+        (i.e: returns false if the service is in a different state than playing 
+        or paused and does nothing in this case)
+    */
     
     int getDuration();
     /* returns the duration of the played song in milliseconds */
