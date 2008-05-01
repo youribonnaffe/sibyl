@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
-import android.util.Log;
-
 
 public class OggTagReader extends TagReader{
 

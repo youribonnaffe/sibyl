@@ -65,7 +65,7 @@ public class PlayerUI extends Activity
     private static final int COVER_ID = Menu.FIRST +3;
 
     // debug
-    private static final String TAG = "COLLECTION";
+    private static final String TAG = "PLAYERUI";
 
     // views of the ui
     private TextView artiste;
@@ -114,8 +114,7 @@ public class PlayerUI extends Activity
 
     private IntentReceiver intentHandler = new IntentReceiver(){
         public void onReceiveIntent(Context c, Intent i){
-            Log.v("INTENT", "PLAYERUI RECEIVE "+i.toString());
-
+            Log.v("INTENT", "PLAYERUI RECEIVED "+i.toString());
             // call appropriate refresh methods
             if(i.getAction().equals(Music.Action.PLAY)){
                 playRefresh();
@@ -167,6 +166,8 @@ public class PlayerUI extends Activity
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
             enableButtons(false);
+            // remove calls to timer
+            mTimeHandler.removeCallbacks(timerTask);
         }
     };
 
@@ -233,6 +234,7 @@ public class PlayerUI extends Activity
 
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
+        Log.v(TAG, "resume");
         if(mService != null){
             resumeRefresh();
         }
@@ -400,7 +402,7 @@ public class PlayerUI extends Activity
                     // add timer task to ui thread
                     mTimeHandler.post(timerTask);
                 }
-                
+
             }
             catch(DeadObjectException ex){}
         }
@@ -512,7 +514,7 @@ public class PlayerUI extends Activity
             }
         }
     };
-    
+
     /*
     //  Listener for the Button Avance. Avance the lecture of the song of 30sec
     //  useful for tests of handling the end of the song
@@ -623,7 +625,7 @@ public class PlayerUI extends Activity
                     pathCover = null;
                 }
             }// buttons next & previous update
-            
+
             if(mService.getPlayMode() != Music.Mode.RANDOM){
                 // when in random mode, next and previous can be used
                 if(pos <= 1){
@@ -632,15 +634,13 @@ public class PlayerUI extends Activity
                 }else{
                     previous.setEnabled(true);
                 }
-    
-                if(mdb.getPlaylistSize() <= 0 || pos == mdb.getPlaylistSize()){
+
+                if(plSize <= 0 || pos == plSize){
                     next.setEnabled(false);
                 }else{
                     next.setEnabled(true);
                 }
             }
-            Log.v(TAG, " "+mService.getState());
-
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
@@ -691,10 +691,13 @@ public class PlayerUI extends Activity
                     enableButtons(true);
                     songRefresh();
                     break;
+                default :
+                    noSongRefresh();
+                    break;
             }
         }catch(DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
     }
-    
+
 }
