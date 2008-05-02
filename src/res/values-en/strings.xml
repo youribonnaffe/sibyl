@@ -25,8 +25,7 @@
     <string name="long_text">aaadddeeevvvcccwww</string>
     
     <string name="titre">Sibyl</string>
-    <string name="titre_long">Titre de la chanson qui est tres tres tres tres
-        longue</string>
+    <string name="titre_long">Song title very very very very very long</string>
     <string name="artiste">mobile your music</string>
     <string name="artiste_long">Long Artiste is lllooonnnngggg</string>
     <string name="play">Play</string>
@@ -55,9 +54,9 @@
     
     
     <!--  AddUI -->
-    <string name="add_artist">Artiste</string>
+    <string name="add_artist">Artist</string>
     <string name="add_album">Album</string>
-    <string name="add_song">Musique</string>
+    <string name="add_song">Song</string>
     <string name="add_style">Genre</string>
     <string name="add_smart_playlist">Smart Playlist</string>
     <string name="add_empty_artist">No artist</string>
