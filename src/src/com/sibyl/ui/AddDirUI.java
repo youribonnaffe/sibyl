@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ListView;
 
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
@@ -130,7 +131,6 @@ public class AddDirUI extends ListActivity
             this.parent = parent;
             itlab.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
         }
-        Log.v(TAG,"tooooooooyt"+itlab);
         File[] listeFile = dir.listFiles();
         if (listeFile != null)
         {
@@ -142,9 +142,13 @@ public class AddDirUI extends ListActivity
                 }
                 else
                 {
-                    if(f.getName().endsWith(".mp3"))
+                    for(String s : Music.SUPPORTED_FILE_FORMAT)
                     {
-                        itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                        if(f.getName().endsWith(s))
+                        {
+                            itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                            break;
+                        }   
                     }
                 }
             }
