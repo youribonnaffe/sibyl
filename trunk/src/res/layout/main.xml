@@ -20,6 +20,13 @@
 	android:orientation="vertical" 
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
+	
+	   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" 
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_weight="1.0"
+        android:layout_height="fill_parent">
 
 	<View 
         android:layout_width="fill_parent"
@@ -58,41 +65,19 @@
 		android:adjustViewBounds="true" 
 		android:maxHeight="200sp"
 		android:maxWidth="200sp" />
-
+</LinearLayout>
 
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical" 
 		android:layout_gravity="bottom"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-
-		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="wrap_content" 
-			android:stretchColumns="0"
-			android:layout_height="wrap_content" 
-			android:gravity="center|bottom"
-			android:layout_weight="1">
-
-			<TableRow>
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="vertical" 
-					android:layout_gravity="fill"
-					android:layout_width="fill_parent" 
-					android:layout_weight="0.0"
-					android:layout_height="wrap_content">
-
-					<com.sibyl.ui.ProgressView
-						android:id="@+id/progress" 
-						android:layout_width="wrap_content"
-						android:layout_height="15dip" 
-						android:layout_weight="0.0" />
-						
-				</LinearLayout>
+		android:layout_weight="0.0"
+		android:layout_height="wrap_content">
+				
 
 				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 					android:orientation="horizontal" 
-					android:layout_gravity="right"
+					android:layout_gravity="bottom|center"
 					android:layout_width="wrap_content" 
 					android:layout_weight="1.0"
 					android:layout_height="wrap_content">
@@ -113,11 +98,13 @@
 						android:text="@string/time_zero" />
 						
 				</LinearLayout>
-				
-			</TableRow>
-			
-		</TableLayout>
 
+                    <com.sibyl.ui.ProgressView
+                        android:id="@+id/progress" 
+                        android:layout_width="wrap_content"
+                        android:layout_height="15dip"
+                        android:layout_gravity="bottom|center" 
+                        android:layout_weight="0.0" />
 
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:orientation="horizontal"
