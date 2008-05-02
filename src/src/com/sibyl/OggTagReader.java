@@ -1,3 +1,21 @@
+/* 
+ *
+ * Copyright (C) 2007-2008 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.sibyl;
 
 import java.io.BufferedInputStream;
@@ -6,7 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
-
+/**
+ * http://www.wotsit.org/list.asp?search=ogg&button=GO!
+ * 
+ * @author sibyl-dev
+ *
+ */
 public class OggTagReader extends TagReader{
 
     private static final String[] labels = { "ALBUM", "GENRE", "TITLE", "TRACKNUMBER", "ARTIST"};
@@ -16,9 +39,15 @@ public class OggTagReader extends TagReader{
         cv = new HashMap<String, String>();
         
         BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
-
-        // skip all beginning
-        skipSure(f,102);
+        
+        // first Ogg page
+        skipSure(f,58);
+        // jump to page segments page
+        skipSure(f,26);
+        // read size
+        short t = (short)f.read();
+        // jump
+        skipSure(f, t);
         // read header type
         int packtype = f.read();
         // skip "vorbis"
@@ -68,9 +97,7 @@ public class OggTagReader extends TagReader{
                 }
             }
         }
-
         f.close();
-
     }
     
     public HashMap<String, String> getValues(){
