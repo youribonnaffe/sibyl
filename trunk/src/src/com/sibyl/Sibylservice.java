@@ -26,11 +26,15 @@ import java.util.Stack;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentReceiver;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -47,6 +51,34 @@ public class Sibylservice extends Service
     private int currentSong;
     private NotificationManager nm;
 
+    private IntentReceiver callFilter = new IntentReceiver() {
+        private boolean wasPlaying = false;
+        private static final String CALL_IN_1 = "RINGING";
+        private static final String CALL_IN_2 = "OFFHOOK";
+        private static final String CALL_OUT = "IDLE";
+        private static final String PHONE_STATE = "state";
+        public void onReceiveIntent(Context arg0, Intent arg1) {
+            Log.v("CALL", arg1.toString());
+            try{
+                String state = arg1.getExtras().getString(PHONE_STATE);
+                if(state==null) state = "";
+                if( (state.equals(CALL_IN_1) || state.equals(CALL_IN_2) ) && playerState == Music.State.PLAYING){
+                    // we are receiving a call when playing music
+                    mBinder.pause();
+                    wasPlaying = true;
+                }else if (state.equals(CALL_OUT)){
+                    if(wasPlaying && playerState == Music.State.PAUSED){
+                        // we were playing music when call occurred
+                        mBinder.start();
+                    }
+                    wasPlaying = false;
+                }
+            }catch(DeadObjectException doe){
+                Log.v("callFilter", doe.toString());
+            }
+        }
+    };
+    
     /** creation of the service */
     @Override
     protected void onCreate()
@@ -95,6 +127,7 @@ public class Sibylservice extends Service
                 playerState = Music.State.PAUSED;
             }
 
+            registerReceiver(callFilter, new IntentFilter(Intent.PHONE_STATE_CHANGED_ACTION));
         }catch (SQLiteDiskIOException e){
             Log.v("SibylService", e.getMessage());
             // what should we do ? updateNotification ?
@@ -144,7 +177,7 @@ public class Sibylservice extends Service
         prefs.putInt("loopMode", loopMode);
         prefs.putInt("playMode", playMode);
         prefs.commit();
-
+        unregisterReceiver(callFilter);
     }
 
     /**

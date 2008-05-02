@@ -20,7 +20,7 @@ package com.sibyl;
 
 public class Music {
     
-    public static final String[] SUPPORTED_FILE_FORMAT = { ".mp3", ".ogg", ".aac",".amr", ".mid", 
+    public static final String[] SUPPORTED_FILE_FORMAT = { ".mp3", ".ogg", ".m4a",".amr", ".mid", 
         ".smf", ".xmf", ".mxmf", ".imy", ".rtttl", ".rtx", "ota"};
     
     public static class Action {
