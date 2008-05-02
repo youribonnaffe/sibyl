@@ -1,7 +1,7 @@
 #summary Liste des choses à faire avant la présentation
 
 TODO:
-  * mettre l'acces au covermanager dans optionUI: via un bouton
+  * mettre l'acces au covermanager dans optionUI: via un bouton (B)
   * mettre un spinner pour les mode de lecture
   * pouvoir desactiver l'animation pour les couvertures (I)
   * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)
