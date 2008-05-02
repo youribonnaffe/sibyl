@@ -38,10 +38,12 @@ import android.view.View;
 public class ProgressView extends View {
     //style
     private Paint ptLine; //the elapsed time
+    private Paint ptLine2; //the effect
     private Paint ptFull;   //the background of the progressbarre
     private Paint ptBorder; //the border of the progressbarre
     //shape
     private Rect elapse; //the elapsed time
+    private Rect elapse2; // the effect
     private Rect fullView; //the full background
     //time
     private int progress;
@@ -66,6 +68,10 @@ public class ProgressView extends View {
         ptLine.setAntiAlias(true);
         ptLine.setARGB(255, 255, 120, 40); //time elapsed color
         
+        ptLine2 = new Paint();
+        ptLine2.setAntiAlias(true);
+        ptLine2.setARGB(40, 255, 255, 255); //effect: white with alpha
+        
         ptFull = new Paint();
         ptFull.setAntiAlias(true);
         ptFull.setARGB(255, 255, 210, 80); //background color
@@ -75,6 +81,7 @@ public class ProgressView extends View {
         ptBorder.setARGB(255, 255, 255, 255); //border color
         
         elapse = new Rect(0,0,getWidth(),getHeight());
+        elapse2 = new Rect(0,0,getWidth(),getHeight()*2/5);
         fullView = new Rect(0,0,0,0);//init at zero because we don't now the dimension of the view for the moment
     }
 
@@ -85,8 +92,10 @@ public class ProgressView extends View {
         //background and border
         canvas.drawRect(fullView,ptFull );
         //elapsed time.
-        elapse.set(1, 1, Math.round(((float)progress)/total*width), height-1);
+        elapse.set(1, 1, Math.round(((float)progress)/total*width), height-1); //normal elapsed time
+        elapse2.set(1, 1, Math.round(((float)progress)/total*width), height/2); //effect: just the upper part
         canvas.drawRect(elapse, ptLine);
+        canvas.drawRect(elapse2, ptLine2);
         //border
         canvas.drawLine(0,0, width, 0, ptBorder);
         canvas.drawLine(0,0, 0, height, ptBorder);
@@ -149,7 +158,7 @@ public class ProgressView extends View {
                     listener.onProgressChanged(this, progress);
                 }
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
 }
