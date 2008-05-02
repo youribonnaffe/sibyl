@@ -73,9 +73,7 @@ public class ConfigUI extends Activity
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
     private Spinner repeatMusic;
 
-    private TextView playMode;  // Affichage du mode de lecture en cours
-    private Button shuffleMode; // bouton permettant de changer passer en mode aléatoire
-    private Button normalMode; // bouton permettant de changer passer en mode normal
+    private Spinner playMode;  // Spinner du mode de lecture en cours
 
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
@@ -101,12 +99,14 @@ public class ConfigUI extends Activity
         String repeatString[] = {(String) getText(R.string.rep_no), 
                 (String) getText(R.string.rep_one), 
                 (String) getText(R.string.rep_all)};
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
-        repeatMusic.setAdapter(adapter);
+        ArrayAdapter<CharSequence> repeatAdapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
+        repeatMusic.setAdapter(repeatAdapter);
 
-        playMode = (TextView) findViewById(R.id.playMode);
-        normalMode = (Button) findViewById(R.id.normal);
-        shuffleMode = (Button) findViewById(R.id.random);
+        playMode = (Spinner) findViewById(R.id.shuMusic);
+        String shuffleString[] = { (String) getText(R.string.normal),
+                (String) getText(R.string.random)};
+        ArrayAdapter<CharSequence> shuffleAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, shuffleString);
+        playMode.setAdapter(shuffleAdapter);
 
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
@@ -114,8 +114,7 @@ public class ConfigUI extends Activity
         updateMusic.setOnClickListener(mUpdateMusic);
         repeatMusic.setOnItemSelectedListener(mRepeatMusic);
 
-        shuffleMode.setOnClickListener(mShuffleMode);
-        normalMode.setOnClickListener(mNormalMode);
+        playMode.setOnItemSelectedListener(mShuffleMode);
 
         Log.v(TAG,"ICI");
 
@@ -306,30 +305,22 @@ public class ConfigUI extends Activity
     /**
      * Écouteur placé sur le bouton permettant le changement de mode de lecture : non aléatoire
      */
-    private OnClickListener mShuffleMode = new OnClickListener()
+    private OnItemSelectedListener mShuffleMode = new OnItemSelectedListener()
     {
-        public void onClick(View v)
+        public void onItemSelected(AdapterView parent, View v, int position, long id) 
         {
             try 
             {
-                playMode.setText(R.string.random);
-                mService.setPlayMode(Music.Mode.RANDOM);
-            } catch (DeadObjectException e) { }
+                mService.setPlayMode(position);
+            } catch (DeadObjectException doe) 
+            { 
+                Log.v(TAG,doe.toString());
+            }
         }
-    };
 
-    /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture : aléatoire
-     */
-    private OnClickListener mNormalMode = new OnClickListener()
-    {
-        public void onClick(View v)
+        public void onNothingSelected(AdapterView arg0) 
         {
-            try 
-            {
-                playMode.setText(R.string.normal);
-                mService.setPlayMode(Music.Mode.NORMAL);
-            } catch (DeadObjectException e) { }
+            
         }
     };
 
@@ -358,14 +349,13 @@ public class ConfigUI extends Activity
         {
             mService = ISibylservice.Stub.asInterface((IBinder)service);
             repeatMusic.setFocusable(true);
-            normalMode.setFocusable(true);
-            shuffleMode.setFocusable(true);
+            playMode.setFocusable(true);
             try 
             {
 
                 repeatMusic.setSelection(mService.getLooping());
 
-                playMode.setText(Music.Mode.getText(mService.getPlayMode()));
+                playMode.setSelection(mService.getPlayMode());
 
             } catch (DeadObjectException doe) 
             {
