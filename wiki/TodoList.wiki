@@ -2,7 +2,7 @@
 
 TODO:
   * mettre l'acces au covermanager dans optionUI: via un bouton (B)
-  * mettre un spinner pour les mode de lecture
+  * ~~mettre un spinner pour les mode de lecture~~ (b)
   * pouvoir desactiver l'animation pour les couvertures (I)
   * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)
   * ~~nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net~~ (Y)
