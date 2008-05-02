@@ -19,8 +19,8 @@ TEST:
   * tester les différents formats: ogg, aac(S)
 
 IMPROVEMENTS:
-  *super barre de progression (étirable) + effet arrondi + effet brillant, relief (I)
-  *lecture tag aac, m4a (Y)
-  *nouvelle animation (I)
+  * super barre de progression (étirable) + effet arrondi + effet brillant, relief (I)
+  * lecture tag aac, m4a (Y)
+  * nouvelle animation (I)
 
 /!\préparer la présentation
