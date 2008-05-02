@@ -484,7 +484,12 @@ public class MusicDB {
 
     public void clearDB()
     {
-        mDb.execSQL("DELETE FROM song");
+        Cursor c = mDb.rawQuery("SELECT cover_url FROM album WHERE cover_url<>'' AND cover_url NOT NULL", null);
+        if(c.first()){
+            do{
+                new File(c.getString(0)).delete();
+            }while(c.next());
+        }
         mDb.execSQL("DELETE FROM song");
     }
 

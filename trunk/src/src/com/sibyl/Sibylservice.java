@@ -251,8 +251,7 @@ public class Sibylservice extends Service
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
         {
-            songInfo[0] = "Unknown";
-            songInfo[1] = "Unknown";
+            songInfo[0] = songInfo[1] = getString(R.string.tags_unknown);
         }
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
 

@@ -199,10 +199,16 @@ public class ConfigUI extends Activity
     {
         public void onClick(View v)
         {
-            // lancement de la mise à jour dans un thread
-            UpdateTask updateTask = new UpdateTask(mdb);
-            Thread t = new Thread (updateTask);
-            t.start();
+            try{
+                // vide la playlist
+                mService.clear();
+                // lancement de la mise à jour dans un thread
+                UpdateTask updateTask = new UpdateTask(mdb);
+                Thread t = new Thread (updateTask);
+                t.start();
+            }catch(DeadObjectException doe){
+               Log.v(TAG, doe.toString());
+            }
         }
     };
 
