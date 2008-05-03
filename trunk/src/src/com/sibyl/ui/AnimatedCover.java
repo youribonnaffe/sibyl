@@ -30,7 +30,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 
-import com.sibyl.ui.CoverAnim;
+import com.sibyl.ui.animation.CoverAnim;
 /**
  * SubClass of ImageView supporting animations when changing the image
  * Animations can be deactivated, but are active by default
