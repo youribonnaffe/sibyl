@@ -211,10 +211,13 @@ public class Sibylservice extends Service
      * informed.
      * If an error occurred, no song will be played and the service will be in the
      * error state.
+     * 
+     * @param intentType    string defining the intent to send, when the lecture starts, if
+     * it is null, Music.Action.PLAY is sent
      *
      * @return   true in case of success, false otherwise
      */
-    protected boolean play() 
+    protected boolean play(String intentType) 
     {
         if( playerState != Music.State.PAUSED ) 
         {// if we are not in pause we prepare the media player to play the next song
@@ -230,7 +233,7 @@ public class Sibylservice extends Service
                 // end of playlist
                 if( loopMode == Music.LoopMode.REPEAT_PLAYLIST){
                     currentSong = 1;
-                    return play();
+                    return play(intentType);
                 } else {
                     // end of playlist, stop playing
                     playerState = Music.State.END_PLAYLIST_REACHED;
@@ -245,7 +248,11 @@ public class Sibylservice extends Service
         mp.start();
         playerState=Music.State.PLAYING;
 
-        broadcastIntent(new Intent(Music.Action.PLAY));
+        if( intentType == null )
+        {
+            intentType = Music.Action.PLAY;
+        }
+        broadcastIntent(new Intent(intentType));
 
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
@@ -272,14 +279,15 @@ public class Sibylservice extends Service
     /**
      * Plays a song randomly and save its id in the playlist in the list orderList
      *
+     * @param intentType    string defining the intent to send, when the lecture starts
      */
-    private boolean play_random()
+    private boolean play_random(String intentType)
     {
         stop();
         currentSong = randomVal.nextInt(mdb.getPlaylistSize())+1;
         // nextInt(int n) returns a random value between 0 (inclusively) and n (exclusively)
         songHistory.push(currentSong);
-        return play();
+        return play(intentType);
     }
 
     /**
@@ -290,19 +298,16 @@ public class Sibylservice extends Service
     {
         if( playMode == Music.Mode.RANDOM )
         {
-            play_random();
-            broadcastIntent(new Intent(Music.Action.NEXT));
+            play_random(Music.Action.NEXT);
         }
         else 
         {
             stop();
             currentSong++;
-            if( !play()){ //cancel the changement if nothing is played
+            if( !play(Music.Action.NEXT) ) { //cancel the changement if nothing is played
                 // already set if end of playlist
                 currentSong--;
-            } else {
-                broadcastIntent(new Intent(Music.Action.NEXT));
-            }
+            } 
         }
     }
 
@@ -326,17 +331,13 @@ public class Sibylservice extends Service
                 currentSong = 1;
             }
 
-            if( play() ) {
-                broadcastIntent(new Intent(Music.Action.PREVIOUS));
-            }
+            play(Music.Action.PREVIOUS);
         }
         else 
         {
             currentSong--; 
-            if( ! play() ){  //cancel the changement if nothing is played
+            if( ! play(Music.Action.PREVIOUS) ){  //cancel the changement if nothing is played
                 currentSong++;
-            }else{
-                broadcastIntent(new Intent(Music.Action.PREVIOUS));
             }
         }
     }
@@ -355,7 +356,7 @@ public class Sibylservice extends Service
             songHistory.push(currentSong);
         }
         currentSong = i;
-        play();
+        play(Music.Action.PLAY);
     }
 
     @Override
@@ -377,7 +378,7 @@ public class Sibylservice extends Service
         }
 
         public void start() {
-            play();
+            play(Music.Action.PLAY);
         }
 
         public void clear() {
@@ -507,7 +508,7 @@ public class Sibylservice extends Service
             mdb.countUp(currentSong);
             if(loopMode == Music.LoopMode.REPEAT_SONG)
             {
-                play();
+                play(Music.Action.PLAY);
             }
             else {
                 play_next();

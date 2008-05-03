@@ -30,54 +30,57 @@ import android.graphics.Matrix;
  */
 public class CoverAnim extends Animation {
 
-    private float mPosX; //center of the rotation (x coordinate)
-    private float mPosY; //center of the rotation (y coordinate)
-    private boolean mReversed;//is the rotation done in the reversed sense
+    private float posX; //center of the rotation (x coordinate)
+    private float posY; //center of the rotation (y coordinate)
+    private boolean reversed;//is the rotation done in the reversed sense
                     //if true: second part of the animation will be done (rot from -90¡ to 0¡)
                     //else: first part is done (rot from 0¡ to 90¡)
-    private Camera mCamera;
+    private Camera camera;
+    private int sense;
 
     /**
      * Constructor of CoverAnim: constructs a new animation
      *  if reversed is true: second part of the animation will be done (rot from -90¡ to 0¡)
      *  else: first part is done (rot from 0¡ to 90¡)
      * 
-     * @param posX      X position of the center of the rotation
-     * @param posY      Y position of the center of the rotation
-     * @param reversed  sense of rotation of the animation
+     * @param aPosX      X position of the center of the rotation
+     * @param aPosY      Y position of the center of the rotation
+     * @param aReversed  part of the animation (1st half or second half)
+     * @param aSense     sense of rotation (for previous or next image): value: 1 or -1
      */
-    public CoverAnim(float posX, float posY, boolean reversed) {
-        mPosX = posX;
-        mPosY = posY;
-        mReversed = reversed;
+    public CoverAnim(float aPosX, float aPosY, boolean aReversed, int aSense) {
+        posX = aPosX;
+        posY = aPosY;
+        reversed = aReversed;
+        sense = aSense;
     }
 
     @Override
     public void initialize(int width, int height, int parentWidth, int parentHeight) {
         super.initialize(width, height, parentWidth, parentHeight);
-        mCamera = new Camera();
+        camera = new Camera();
     }
     
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) 
     {
         float startDegrees = 0.0f;
-        float endDegrees = 90.0f;
-        if(mReversed) {
-            startDegrees=-90.0f;
+        float endDegrees = sense*90.0f;
+        if(reversed) {
+            startDegrees=sense*(-90.0f);
             endDegrees=0.0f;
         }
         
         Matrix matrix = t.getMatrix();
         
         //do the rotation
-        mCamera.save();
-        mCamera.rotateY(startDegrees+((endDegrees-startDegrees)*interpolatedTime));
-        mCamera.getMatrix(matrix);
-        mCamera.restore();
+        camera.save();
+        camera.rotateY(startDegrees+((endDegrees-startDegrees)*interpolatedTime));
+        camera.getMatrix(matrix);
+        camera.restore();
         
         //to keep the image centered
-        matrix.preTranslate(-mPosX, -mPosY);
-        matrix.postTranslate(mPosX, mPosY);
+        matrix.preTranslate(-posX, -posY);
+        matrix.postTranslate(posX, posY);
     }
 }
