@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.sibyl.ui;
+package com.sibyl.ui.animation;
 
 import android.view.animation.Animation;
 import android.graphics.Camera;
