@@ -82,6 +82,14 @@ public class PlayerUI extends Activity
     private ISibylservice mService = null;
     private IntentFilter intentF;
     private static String pathCover;
+    
+    private static float firstClickPosX;
+    private static float firstClickPosY;
+    private static float firstClickTime;
+    
+    private static final float gapTime = 1000;
+    private static final float gapY = 60;
+    private static final float gapX = 100;
 
     //handler for calculating elapsed time when playing a song
     private Handler mTimeHandler = new Handler();
@@ -409,10 +417,41 @@ public class PlayerUI extends Activity
     };
 
     public boolean onTouchEvent(MotionEvent ev){
-        //Log.v("touche event", ev.toString()+ " focus : "+ this.getCurrentFocus());
+        int action = ev.getAction();
         lecture.requestFocus();
-        //Log.v("focus", "o"+this.getCurrentFocus());
-        return super.onTouchEvent(ev);
+
+        if(action == MotionEvent.ACTION_DOWN){
+            firstClickPosX = ev.getRawX();
+            firstClickPosY = ev.getRawY();
+            firstClickTime = ev.getEventTime();
+            
+            Log.v(TAG, "Down! "+ ((Float)firstClickPosX).toString() +"-"+((Float)firstClickPosY).toString() );
+        }
+        
+        if(action == MotionEvent.ACTION_UP){
+            Log.v(TAG, "Up! "+ ((Float)ev.getRawX()).toString() +"-"+((Float)ev.getRawY()).toString() );
+            
+            if( Math.abs(ev.getRawY()-firstClickPosY) < gapY && (ev.getEventTime()-firstClickTime) < gapTime){ 
+                /* if the Y gap is small and in 1 second*/
+                
+                float gap =  ev.getRawX() - firstClickPosX;
+                if( gap > gapX && next.isEnabled()){
+                    Log.v(TAG,"DROIT -->");
+                    try{
+                        mService.next();    
+                    }
+                    catch(DeadObjectException ex){}
+                }
+                if( gap < -1*gapX && previous.isEnabled()){
+                    Log.v(TAG, "<--GAUCHE");
+                    try{
+                        mService.prev();
+                    }
+                    catch(DeadObjectException ex){}
+                }
+            }
+        }
+        return true;
     }
 
     public boolean onKeyUp(int keycode, KeyEvent event){
