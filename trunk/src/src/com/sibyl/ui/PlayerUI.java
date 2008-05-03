@@ -121,9 +121,9 @@ public class PlayerUI extends Activity
             }else if(i.getAction().equals(Music.Action.PAUSE)){
                 pauseRefresh();
             }else if(i.getAction().equals(Music.Action.NEXT)){
-                songRefresh();
+                songRefresh(AnimatedCover.NEXT);
             }else if(i.getAction().equals(Music.Action.PREVIOUS)){
-                songRefresh();
+                songRefresh(AnimatedCover.PREV);
             }else if(i.getAction().equals(Music.Action.NO_SONG)){
                 noSongRefresh();
             }
@@ -599,7 +599,7 @@ public class PlayerUI extends Activity
     /**
      * refresh song information & buttons next, previous
      */
-    private void songRefresh(){
+    private void songRefresh(int sense){
         try{
             // refresh total time, song info
             int pos = mService.getCurrentSongIndex();
@@ -618,10 +618,10 @@ public class PlayerUI extends Activity
                 //if the song has a cover and it's not the cover which is displayed
                 if( songInfo[2] != null && !songInfo[2].equals(pathCover)){
                     pathCover=songInfo[2];
-                    cover.setImageDrawable(Drawable.createFromPath(pathCover));
+                    cover.setImageDrawable(Drawable.createFromPath(pathCover), sense);
                 }
                 else if(songInfo[2] == null){ //displayed default logo
-                    cover.setImageDrawable(getResources().getDrawable(R.drawable.logo));
+                    cover.setImageDrawable(getResources().getDrawable(R.drawable.logo), sense);
                     pathCover = null;
                 }
             }// buttons next & previous update
@@ -674,13 +674,13 @@ public class PlayerUI extends Activity
                 case Music.State.PLAYING :
                     enableButtons(true);
                     playRefresh();
-                    songRefresh();
+                    songRefresh(AnimatedCover.NO_ANIM);
                     break;
                 case Music.State.PAUSED :
                     // we still have to refresh timer once
                     enableButtons(true);
                     pauseRefresh();
-                    songRefresh();
+                    songRefresh(AnimatedCover.NO_ANIM);
                     timerRefresh();
                     break;
                 case Music.State.END_PLAYLIST_REACHED :
@@ -689,7 +689,7 @@ public class PlayerUI extends Activity
                     break;
                 case Music.State.STOPPED :
                     enableButtons(true);
-                    songRefresh();
+                    songRefresh(AnimatedCover.NO_ANIM);
                     break;
                 default :
                     noSongRefresh();
