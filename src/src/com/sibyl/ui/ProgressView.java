@@ -32,7 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /*
- * An evoluate progress bar. The progress bar display is update when the progress is incremented.
+ * An evoluated progress bar. The progress bar display is update when the progress is incremented.
  * If the View is clicked, the progress is moved to the new position.
  */
 public class ProgressView extends View {
@@ -40,8 +40,8 @@ public class ProgressView extends View {
     private Paint ptLine; //the elapsed time
     private Paint ptLine2; //the effect
     private Paint ptLine3; //the effect
-    private Paint ptFull;   //the background of the progressbarre
-    private Paint ptBorder; //the border of the progressbarre
+    private Paint ptFull;   //the background of the progress bar
+    private Paint ptBorder; //the border of the progress bar
     //shape
     private Rect elapse; //the elapsed time
     private Rect fullView2; // the effect
@@ -55,7 +55,7 @@ public class ProgressView extends View {
     private int height;
 
     private OnProgressChangeListener listener;
-    private static final int padding = 1; //width of the boder
+    private static final int padding = 1; //width of the border
 
     /*
      * Initialize the view.
@@ -116,7 +116,7 @@ public class ProgressView extends View {
     }
     
     /*
-     * initialize the progressbar: draw background and border 
+     * initialize the progress bar: draw background and border 
      */
     public void initializeProgress(){
         width = getWidth();
