@@ -14,8 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import com.sibyl.CoverDownloader;
 import com.sibyl.Music;
@@ -30,19 +31,16 @@ import com.sibyl.R;
 public class AlbumUI extends ListActivity {
 
     private static final String TAG = "ALBUMUI";
-    //constants for the cursor: position of the data in the cursor
-    private final static int ARTIST = 0;
-    private final static int ALBUM = 1;
-    private final static int COVER_URL = 2;
-    private final static int ALBUM_ID = 3;
+    //constants for the cursor
+    static private final String[] res = {"album_name","cover_url","artist_name"}; 
+    static private final int[] to = {R.id.album, R.id.img, R.id.artist};
     //constant menu
     private static final int BACK_ID = Menu.FIRST;
     private static final int DOWNLOAD_ID = Menu.FIRST+1;
 
     private MusicDB mdb;    //the database
-    private Cursor listAlbum;
-    private AlbumCoverView selectedAlbumView; //the view selected
-    private int selectedAlbum; // the position of the view selected
+    private Cursor listAlbum; // the cursor where the data displayed are
+    private int selectedAlbum; // the id of the album selected when going to coverui
 
     // thread to run covertask
     Thread coverThread;
@@ -51,18 +49,8 @@ public class AlbumUI extends ListActivity {
 
     // to refresh a specific album cover in the listview
     private class CoverUpdate implements Runnable{
-        private int pos;
-        private int album;
-        public CoverUpdate(int posList, int albumId){
-            pos = posList;
-            album = albumId;
-        }
         public void run(){
-            // set new image
-            ((AlbumCoverView)getListAdapter().getView(pos, null, null)).setIcon(Drawable.createFromPath(mdb.getAlbumCover(album)));
-            // refresh list
-            // TODO not working everytime
-            ((AlbumCoverListAdapter)getListAdapter()).notifyDataSetChanged();
+            listAlbum.requery();
         }
     }
 
@@ -93,7 +81,7 @@ public class AlbumUI extends ListActivity {
                     // download undefined cover
                     if(CoverDownloader.retrieveCover(mdb, album)){
                         // refresh cover in list
-                        coverTaskHandler.post(new CoverUpdate(pos, album));
+                        coverTaskHandler.post(new CoverUpdate());
                     }
                     // next item in the list
                     pos ++;
@@ -103,12 +91,11 @@ public class AlbumUI extends ListActivity {
     };
 
     protected void onCreate(Bundle icicle) {
-        // TODO Auto-generated method stub
         super.onCreate(icicle);
         setContentView(R.layout.album);
+        setTitle(R.string.cov_title);
         Log.v(TAG,"CoverUI is launched");
         selectedAlbum = 0;
-        selectedAlbumView = null;
         try
         {
             mdb = new MusicDB(this);
@@ -118,7 +105,6 @@ public class AlbumUI extends ListActivity {
         {
             Log.v(TAG, ex.toString());
         }
-        getListView().setOnItemClickListener(ListClick);
     }
 
     protected void onDestroy(){
@@ -126,6 +112,7 @@ public class AlbumUI extends ListActivity {
         if( coverThread != null ){
             coverThread.interrupt();
         }
+        listAlbum.close();
     }
 
     /**
@@ -136,40 +123,20 @@ public class AlbumUI extends ListActivity {
         switch(resultCode){
             case RESULT_OK :
                 //Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
+                mdb.setCover(selectedAlbum, data);
                 listAlbum.requery(); //recover the cursor
-                listAlbum.moveTo(selectedAlbum);
-                mdb.setCover(listAlbum.getInt(ALBUM_ID), data);
-                if( selectedAlbumView != null){
-                    selectedAlbumView.setIcon(Drawable.createFromPath(data));
-                    selectedAlbumView = null; //we reset the selectedView in the end
-                }
                 break;
             case RESULT_FIRST_USER :
                 // reset image
+                mdb.deleteCover(selectedAlbum);
                 listAlbum.requery(); //recover the cursor
-                listAlbum.moveTo(selectedAlbum);
-                mdb.deleteCover(listAlbum.getInt(ALBUM_ID));
-                if( selectedAlbumView != null){
-                    selectedAlbumView.setIcon(getResources().getDrawable(R.drawable.logo));
-                    selectedAlbumView = null; //we reset the selectedView in the end
-                }
                 break;
         }
     }
 
-    /**
-     * manage the click on one row. If no row is selected, we do nothing.
-     * @param arg1: the view selected, position: the position of the View in the ListView
-     */
-    private OnItemClickListener ListClick = new OnItemClickListener()
-    {
-        public void onItemClick(AdapterView arg0, View arg1, int position, long id) {
-            displayCoverUI(position);
-            if( position >= 0){
-                selectedAlbumView = (AlbumCoverView) arg1;
-            }
-        }
-    }; 
+    protected void onListItemClick(ListView l, View v, int position, long id){
+        displayCoverUI(position);
+    }
 
     public boolean onCreateOptionsMenu(Menu menu) 
     {
@@ -212,28 +179,25 @@ public class AlbumUI extends ListActivity {
 
 
     /**
-     * Fill the ListView with the association of thealbum and its cover
+     * Fill the ListView with the association of the album and its cover
      */
     private void fillData(){
 
         listAlbum = mdb.getAlbumCovers();
-        AlbumCoverListAdapter rows = new AlbumCoverListAdapter(this);
-
         startManagingCursor(listAlbum);
-        //for each album we associate its cover.
-        while(listAlbum.next()){
-            //Log.v(TAG,listAlbum.getString(ARTIST)+"-"+listAlbum.getString(ALBUM));
-            if( listAlbum.isNull(COVER_URL) || listAlbum.getString(COVER_URL).equals("")){
-                rows.add(new IconifiedText( listAlbum.getString(ARTIST)+'\n'+listAlbum.getString(ALBUM),
-                        getResources().getDrawable(R.drawable.logo))); //default cover
+        SimpleCursorAdapter rows = new SimpleCursorAdapter(this, R.layout.album_cover_row, listAlbum, res, to){
+            // need to override this method to set default image if undefined
+            public void setViewImage(ImageView v, String url){
+                if(url == null || url.equals("")){
+                    v.setImageResource(R.drawable.logo);
+                }else{
+                    v.setImageDrawable(Drawable.createFromPath(url));
+                }
+                v.setMaxHeight(80);
+                v.setMaxWidth(80);
             }
-            else{
-                rows.add(new IconifiedText( listAlbum.getString(ARTIST)+'\n'+listAlbum.getString(ALBUM),
-                        Drawable.createFromPath(listAlbum.getString(COVER_URL)))); //real cover
-            }
-        }
+        };
         setListAdapter(rows);
-        getListView().setSelection(selectedAlbum);
     }
 
     /**
@@ -244,11 +208,11 @@ public class AlbumUI extends ListActivity {
     private void displayCoverUI(int selectedRow) 
     {
         if( selectedRow >= 0){
-            selectedAlbum = selectedRow;
+            listAlbum.moveTo(selectedRow);
+            selectedAlbum = listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID));
             Intent i = new Intent(this, CoverUI.class);
-            listAlbum.moveTo(selectedAlbum);
-            i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(ALBUM_ID));
-            i.putExtra(CoverUI.ALBUM_NAME, listAlbum.getString(ALBUM));
+            i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID)));
+            i.putExtra(CoverUI.ALBUM_NAME, listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
             startSubActivity(i, 0);
         }
     }

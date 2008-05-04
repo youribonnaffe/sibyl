@@ -78,18 +78,18 @@ public class MusicDB {
                     ")"
             );
             mDb.execSQL("CREATE TABLE artist("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                     "artist_name VARCHAR UNIQUE "+
                     ")"
             );
             mDb.execSQL("CREATE TABLE album("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                     "album_name VARCHAR UNIQUE, "+
                     "cover_url VARCHAR DEFAULT NULL"+
                     ")"
             );
             mDb.execSQL("CREATE TABLE genre("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                     "genre_name VARCHAR UNIQUE"+
                     ")"
             );
@@ -111,21 +111,21 @@ public class MusicDB {
                     "FOR EACH ROW " +
                     "WHEN ( OLD.artist!=1 AND (SELECT COUNT(*) FROM SONG WHERE artist=OLD.artist) == 0) " +
                     "BEGIN " +
-                    "DELETE FROM artist WHERE id=OLD.artist; " +
+                    "DELETE FROM artist WHERE _id=OLD.artist; " +
             "END;");
             mDb.execSQL("CREATE TRIGGER t_del_song_album " +
                     "AFTER DELETE ON song " +
                     "FOR EACH ROW " +
                     "WHEN ( OLD.album!=1 AND (SELECT COUNT(*) FROM SONG WHERE album=OLD.album) == 0) " +
                     "BEGIN " +
-                    "DELETE FROM album WHERE id=OLD.album; " +
+                    "DELETE FROM album WHERE _id=OLD.album; " +
             "END;");
             mDb.execSQL("CREATE TRIGGER t_del_song_genre " +
                     "AFTER DELETE ON song " +
                     "FOR EACH ROW " +
                     "WHEN ( OLD.genre>"+NB_PREDEFINED_GENRE+" AND (SELECT COUNT(*) FROM SONG WHERE genre=OLD.genre) == 0) " +
                     "BEGIN " +
-                    "DELETE FROM genre WHERE id=OLD.genre; " +
+                    "DELETE FROM genre WHERE _id=OLD.genre; " +
             "END;");
             mDb.execSQL("CREATE TRIGGER t_del_song_current_playlist " +
                     "AFTER DELETE ON song " +
@@ -244,7 +244,7 @@ public class MusicDB {
         try{
             if(cv.containsKey(Music.ARTIST.NAME) && cv.get(Music.ARTIST.NAME).length() > 0){
                 Log.v("INSERTION ARTISTE", "-"+cv.get(Music.ARTIST.NAME).length()+"-");
-                Cursor c = mDb.rawQuery("SELECT id FROM artist WHERE artist_name='"+cv.get(Music.ARTIST.NAME)+"'" ,null);
+                Cursor c = mDb.rawQuery("SELECT _id FROM artist WHERE artist_name='"+cv.get(Music.ARTIST.NAME)+"'" ,null);
                 if(c.next()){
                     artist = c.getInt(0);
                 }else{
@@ -256,7 +256,7 @@ public class MusicDB {
             }
 
             if(cv.containsKey(Music.ALBUM.NAME) && cv.get(Music.ALBUM.NAME).length() > 0){
-                Cursor c = mDb.rawQuery("SELECT id FROM album WHERE album_name='"+cv.get(Music.ALBUM.NAME)+"'" ,null);
+                Cursor c = mDb.rawQuery("SELECT _id FROM album WHERE album_name='"+cv.get(Music.ALBUM.NAME)+"'" ,null);
                 if(c.next()){
                     album = c.getInt(0);
                 }else{
@@ -268,7 +268,7 @@ public class MusicDB {
             }
 
             if(cv.containsKey(Music.GENRE.NAME) && cv.get(Music.GENRE.NAME).length() > 0){
-                Cursor c = mDb.rawQuery("SELECT id FROM genre WHERE genre_name='"+cv.get(Music.GENRE.NAME)+"'" ,null);
+                Cursor c = mDb.rawQuery("SELECT _id FROM genre WHERE genre_name='"+cv.get(Music.GENRE.NAME)+"'" ,null);
                 if(c.next()){
                     genre = c.getInt(0);
                 }else{
@@ -291,9 +291,9 @@ public class MusicDB {
                     url.replace("'", "''")+"','"+
                     title +"','"+
                     (cv.containsKey(Music.SONG.TRACK) ? cv.get(Music.SONG.TRACK) : "")+"',"+
-                    (artist != 0 ? artist : "(SELECT max(id) FROM artist)")+","+
-                    (album != 0 ? album : "(SELECT max(id) FROM album)")+","+
-                    (genre != 0 ? genre : "(SELECT max(id) FROM genre)")+")");
+                    (artist != 0 ? artist : "(SELECT max(_id) FROM artist)")+","+
+                    (album != 0 ? album : "(SELECT max(_id) FROM album)")+","+
+                    (genre != 0 ? genre : "(SELECT max(_id) FROM genre)")+")");
             // + 1 a cause du commit
             mDb.execSQL("COMMIT TRANSACTION");
 
@@ -376,9 +376,12 @@ public class MusicDB {
     public String getSong(int pos){
         Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+" AND song._id=current_playlist.id", null);
         if(!c.first()){
+            c.close();
             return null;
         }
-        return c.getString(0);
+        String s = c.getString(0);
+        c.close();
+        return s;
     }
 
     /**
@@ -443,18 +446,20 @@ public class MusicDB {
     public String[] getSongInfoFromCP(int i)
     {
         Cursor c = mDb.rawQuery("SELECT title, artist_name, album.cover_url FROM song, current_playlist, artist,album "
-                +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist.id and song.album = album.id", null);
+                +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist._id and song.album = album._id", null);
         if(!c.first()){
+            c.close();
             return null;
         }
         String str[] = {c.getString(0), c.getString(1), c.getString(2)};
+        c.close();
         return str;
     }
 
     public Cursor getPlayListInfo()
     {
         return mDb.rawQuery("SELECT title _id, artist_name FROM song, current_playlist, artist "
-                +"WHERE song._id=current_playlist.id and song.artist=artist.id", null);
+                +"WHERE song._id=current_playlist.id and song.artist=artist._id", null);
 
     }
 
@@ -470,6 +475,7 @@ public class MusicDB {
         {
             mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
         }
+        c.close();
     }
 
     public Cursor getDir()
@@ -490,17 +496,19 @@ public class MusicDB {
                 new File(c.getString(0)).delete();
             }while(c.next());
         }
+        c.close();
         mDb.execSQL("DELETE FROM song");
     }
 
     public void countUp(int i)
     {
-        Cursor c = mDb.rawQuery("SELECT count_played, song._id FROM song, current_playlist WHERE song._id=current_playlist.id and current_playlist.pos='"+i+"'",null);
+        Cursor c = mDb.rawQuery("SELECT count_played, song._id _id FROM song, current_playlist WHERE song._id=current_playlist.id and current_playlist.pos='"+i+"'",null);
         if(c.first())
         {
             int nb = c.getInt(0);
             nb++;
             String id = c.getString(1);
+            c.close();
             mDb.execSQL("UPDATE song SET count_played="+nb+" WHERE _id='"+id+"'");
             //Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
         }
@@ -519,6 +527,7 @@ public class MusicDB {
         {
             size = c.getInt(0);
         }
+        c.close();
         return size;
     }
 
@@ -536,19 +545,19 @@ public class MusicDB {
             case ALBUM :
                 return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album.id id " +
                         "FROM album, song "+
-                        "WHERE id = album "+
+                        "WHERE album._id = song.album "+
                         "GROUP BY album_name "+
                         "ORDER BY album_name",null);
             case ARTIST :
                 return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist.id id " +
                         "FROM artist, song " +
-                        "WHERE id = artist "+
+                        "WHERE artist._id = song.artist "+
                         "GROUP BY artist_name " +
                         "ORDER BY artist_name",null);
             case GENRE :
                 return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre.id id " +
                         "FROM genre,song "+
-                        "WHERE id = genre "+
+                        "WHERE genre._id = song.genre "+
                         "GROUP BY genre_name "+
                         "ORDER BY genre_name ",null);
             default : return null;
@@ -564,25 +573,28 @@ public class MusicDB {
         // because 1 is for unknown songs
         if(albumId == 1) return null;
 
-        return mDb.rawQuery("SELECT album_name, artist.id as id, artist_name " +
+        return mDb.rawQuery("SELECT album_name, artist._id _id, artist_name " +
                 "FROM song, album, artist " +
-                "WHERE album.id=album " +
-                "AND artist.id=artist " +
-                "AND album.id="+albumId+
+                "WHERE album._id=album " +
+                "AND artist._id=artist " +
+                "AND album._id="+albumId+
                 " GROUP BY artist_name", null);
     }
 
 
     public void setCover(int albumId, String cover){
         if(albumId > 1){
-            mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE "+albumId+" =album.id");
+            mDb.execSQL("UPDATE album SET cover_url='"+cover+"' WHERE "+albumId+" =album._id");
         }
     }
     
     public void deleteCover(int albumId){
         if(albumId > 1){
             // if cover was in cover folder, delete the image file
-            Cursor c = mDb.rawQuery("SELECT cover_url FROM album WHERE "+albumId+"=album.id AND cover_url NOT NULL AND cover_url<>''", null);
+            Cursor c = mDb.rawQuery("SELECT cover_url FROM album " +
+            		"WHERE cover_url=(" +
+            		    "SELECT cover_url FROM album WHERE "+albumId+"=album._id"+
+		    		") AND cover_url NOT NULL AND cover_url<>''", null);
             if(c.count() == 1 && c.first()){
                 // delete only if the cover isn't used anymore
                 String url = c.getString(0);
@@ -590,8 +602,9 @@ public class MusicDB {
                     new File(url).delete();
                 }
             }
+            c.close();
             // then delete the entry from db
-            mDb.execSQL("UPDATE album SET cover_url='' WHERE "+albumId+" =album.id");
+            mDb.execSQL("UPDATE album SET cover_url='' WHERE "+albumId+" =album._id");
         }
     }
 
@@ -600,11 +613,11 @@ public class MusicDB {
      * @return all (album,artist)
      */
     public Cursor getAlbumCovers(){
-        return mDb.rawQuery("SELECT DISTINCT artist_name _id, album_name, cover_url, album.id "+
+        return mDb.rawQuery("SELECT DISTINCT album._id _id, artist_name, album_name, cover_url "+
                 "FROM album, artist,song "+
-                "WHERE song.artist = artist.id "+
-                "AND song.album = album.id "+
-                "AND album.id > 1 "+
+                "WHERE song.artist = artist._id "+
+                "AND song.album = album._id "+
+                "AND album._id > 1 "+
                 "ORDER BY artist_name, album_name", null);
     }
 
@@ -614,11 +627,14 @@ public class MusicDB {
      * @return null if cover_url is null or empty
      */
     public String getAlbumCover(int albumId){
-        Cursor c = mDb.rawQuery("SELECT cover_url FROM album where cover_url<>'' AND cover_url NOT NULL AND id > 1 AND id="+albumId, null);
+        Cursor c = mDb.rawQuery("SELECT cover_url FROM album where cover_url<>'' AND cover_url NOT NULL AND _id > 1 AND _id="+albumId, null);
         if(c.first())
         {
-            return c.getString(0);
+            String s = c.getString(0);
+            c.close();
+            return s;
         }
+        c.close();
         return null;
     }
 }

@@ -83,9 +83,9 @@ public class PlayerUI extends Activity
     private IntentFilter intentF;
     private static String pathCover;
     
-    private static float firstClickPosX;
-    private static float firstClickPosY;
-    private static float firstClickTime;
+    private float firstClickPosX;
+    private float firstClickPosY;
+    private float firstClickTime;
     
     private static final float gapTime = 1000;
     private static final float gapY = 60;
@@ -246,8 +246,6 @@ public class PlayerUI extends Activity
         if(mService != null){
             resumeRefresh();
         }
-
-
     }
 
     /* ----------------------END ACTIVITY STATES -----------------------------*/
