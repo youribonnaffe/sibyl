@@ -91,6 +91,7 @@
     <string name="alb_empty">Your librairie is empty.\n Fill it first</string>
     
     <!-- CoverUI -->
+    <string name="cov_title">Cover manager</string>
     <string name="cov_back">Back</string>
     <string name="cov_reset">Reset</string>  
     <string name="cov_download">Download</string>
