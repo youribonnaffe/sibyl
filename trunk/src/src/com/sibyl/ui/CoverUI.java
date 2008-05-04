@@ -8,14 +8,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.sibyl.Directory;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
+import com.sibyl.ui.animation.ActivityTransition;
 
 /*
  * display all the cover available. The cover choosen is given to Album and associated with the current album
@@ -33,6 +37,7 @@ public class CoverUI extends Activity {
     public static final String[] EXT_TAB = { ".jpg", ".bmp", ".png"}; //file format search in directories
 
     private GridView gallery; //the main view of the ui
+    private LinearLayout groupView;
     private ImageAdapter imgAdapter;
 
     @Override
@@ -41,6 +46,7 @@ public class CoverUI extends Activity {
         Log.v(TAG,"CoverUI is launched");
 
         setContentView(R.layout.cover);
+        groupView = (LinearLayout) findViewById(R.id.group);
         gallery = (GridView) findViewById(R.id.gallery);
         gallery.setOnItemClickListener(galleryClickListenner);
         Bundle extras = getIntent().getExtras();
@@ -60,6 +66,28 @@ public class CoverUI extends Activity {
         }       
     }
 
+    @Override
+    protected void onResume() 
+    {
+        super.onResume();
+        ActivityTransition trans = new ActivityTransition( true );
+        trans.setDuration(500);
+        trans.setFillAfter(true);
+        trans.setInterpolator(new AccelerateInterpolator());
+        groupView.startAnimation(trans);
+    }
+    
+    @Override
+    protected void onPause() 
+    {
+        ActivityTransition trans = new ActivityTransition( false );
+        trans.setDuration(500);
+        trans.setFillAfter(true);
+        trans.setInterpolator(new DecelerateInterpolator());
+        groupView.startAnimation(trans);
+        super.onPause();
+    }
+    
     /**
      * manage click on cover. If no cover clicked (clicked in the emptyness, send a RESULT_CANCELED)
      */
@@ -114,10 +142,12 @@ public class CoverUI extends Activity {
         Cursor c = mdb.getDir();
         imgAdapter = new ImageAdapter(this);
         startManagingCursor(c);
+        Log.v(TAG, ">>>CoverUI::filldata ");
         while( c.next()){
             for(String extension : EXT_TAB){
                 for(String file : Directory.scanFiles(c.getString(0), extension)){
                     imgAdapter.add(file);
+                    Log.v(TAG, "    "+file);
                 }
             }
         }

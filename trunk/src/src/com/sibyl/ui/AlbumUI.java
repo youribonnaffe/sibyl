@@ -14,6 +14,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -22,6 +27,7 @@ import com.sibyl.CoverDownloader;
 import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
+import com.sibyl.ui.animation.ActivityTransition;
 
 /*
  * This activity list all the albums and display their cover. The albums are sorted by the artists order.
@@ -41,6 +47,7 @@ public class AlbumUI extends ListActivity {
     private MusicDB mdb;    //the database
     private Cursor listAlbum; // the cursor where the data displayed are
     private int selectedAlbum; // the id of the album selected when going to coverui
+    private LinearLayout groupView;
 
     // thread to run covertask
     Thread coverThread;
@@ -93,6 +100,7 @@ public class AlbumUI extends ListActivity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.album);
+        groupView = (LinearLayout) findViewById(R.id.group);
         setTitle(R.string.cov_title);
         Log.v(TAG,"CoverUI is launched");
         selectedAlbum = 0;
@@ -107,6 +115,28 @@ public class AlbumUI extends ListActivity {
         }
     }
 
+    @Override
+    protected void onResume() 
+    {
+        super.onResume();
+        ActivityTransition trans = new ActivityTransition( true );
+        trans.setDuration(500);
+        trans.setFillAfter(true);
+        trans.setInterpolator(new AccelerateInterpolator());
+        groupView.startAnimation(trans);
+    }
+    
+    @Override
+    protected void onPause() 
+    {
+        ActivityTransition trans = new ActivityTransition( false );
+        trans.setDuration(500);
+        trans.setFillAfter(true);
+        trans.setInterpolator(new DecelerateInterpolator());
+        groupView.startAnimation(trans);
+        super.onPause();
+    }
+    
     protected void onDestroy(){
         super.onDestroy();
         if( coverThread != null ){
