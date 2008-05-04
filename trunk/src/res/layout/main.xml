@@ -43,14 +43,15 @@
 		android:layout_gravity="center" />
 
 	<TextView android:id="@+id/artiste"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" 
 		android:textSize="16sp"
 		android:textStyle="italic"
 		android:singleLine="true"
 		android:text="@string/artiste"
 		android:padding="10dip" 
-		android:layout_gravity="center" />
+		android:layout_gravity="center"
+		android:textAlign="center" />
 	<!--
 		<Button
 		android:text="@string/short_text"
