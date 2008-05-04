@@ -68,7 +68,6 @@ public class CoverDownloader {
             try{
                 // build request, search for album
                 String q = QUERY_AMAZON + "&Title="+ URLEncoder.encode(c.getString(c.getColumnIndex(Music.ALBUM.NAME)), "UTF-8");
-                
                 if(c.getInt(c.getColumnIndex(Music.ARTIST.ID)) > 1){
                     // there is an artist associated so we add his name to the request
                     q+= "&Artist=" + URLEncoder.encode(c.getString(c.getColumnIndex(Music.ARTIST.NAME)), "UTF-8");
@@ -122,6 +121,8 @@ public class CoverDownloader {
                 // shouldn't happen
             }catch(IOException ioe){
                 Log.v(TAG, ioe.toString());
+            }finally{
+                c.close();
             }
         }
         // we haven't found any cover
