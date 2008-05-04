@@ -681,6 +681,9 @@ public class PlayerUI extends Activity
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
+        
+        //update play/pause button and timer
+        playRefresh();
     }
 
     /**
