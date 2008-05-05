@@ -19,8 +19,11 @@
 package com.sibyl.ui;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import android.app.ListActivity;
+import android.database.ArrayListCursor;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +31,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import com.sibyl.Music;
 import com.sibyl.MusicDB;
@@ -46,14 +50,16 @@ public class AddDirUI extends ListActivity
     private static final int ADD_ID = Menu.FIRST; // Elément du ménu permettant l'ajout d'un répertoire
     private static final int BACK_ID = Menu.FIRST +1; // Elément du ménu permettant l'arret de l'activité
     private static final String TAG = "ADD_DIR"; // TAG servant au débugage
-    
-    private IconifiedTextListAdapter ipla; // liste des éléments à afficher (texte + icone associée) 
+     
     private String parent;  // répertoire parent
     private String path;    // répertoire courant
     private MusicDB mdb;    //the database
-        /* TODO sachant qu'on l'utilise effectivement que dans une 
-         * seule méthode, est il judicieux d'en faire une variable à ce 
-         * niveau, ou une simple variable locale suffirait*/
+    Cursor c;
+    /* TODO sachant qu'on l'utilise effectivement que dans une 
+     * seule méthode, est il judicieux d'en faire une variable à ce 
+     * niveau, ou une simple variable locale suffirait*/
+    
+    private ArrayList<ArrayList> rows;
 
     /**
      * Called when the activity is first created.
@@ -71,9 +77,9 @@ public class AddDirUI extends ListActivity
         setTitle(getText(R.string.dir)+path);
 
         /* création du navigateur */
-        ipla = fillBD(path);
+        fillBD(path);
         
-        setListAdapter(ipla); 
+        //setListAdapter(ipla); 
         
         /* TODO utile ?*/
     	try
@@ -85,6 +91,13 @@ public class AddDirUI extends ListActivity
     	    Log.v(TAG, ex.toString());
     	}   
     }
+    
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        c.close();
+    }
 
     /**
      * Méthode gérant les actions a effectuer en fonction de l'objet de la liste sélectionné
@@ -92,25 +105,26 @@ public class AddDirUI extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) 
     {
-        if( ipla.isSelectable(position))
+        String item = (String) rows.get(position).get(1);
+        if(item == "..")
         {
-            String lPath = ((IconifiedText) ipla.getItem(position)).getText();
-            if(lPath == "..")
-            {
-                path = parent;
-                ipla = fillBD(path);
-            }
-            else
-            {
-                path = lPath;
-                ipla = fillBD(lPath);
-            }
-        	setListAdapter(ipla);
+            path = parent;
+            fillBD(path);
             setTitle(getText(R.string.dir)+path);
         }
         else
         {
-            setSelection(0);
+            File f = new File(item);
+            if(f.isDirectory())
+            {
+                path = item;
+                fillBD(path);
+                setTitle(getText(R.string.dir)+path);
+            }
+            else
+            {
+                setSelection(0);
+            }
         }
     }
 
@@ -119,18 +133,25 @@ public class AddDirUI extends ListActivity
      * @param path chemin du répertoire a afficher dans le navigateur
      * @return liste iconnifiée contenant tous les élément a afficher
      */
-    private IconifiedTextListAdapter fillBD (String path)
+    private void fillBD (String path)
     {
-        IconifiedTextListAdapter itlab = new IconifiedTextListAdapter(this);
+        String[] colName = {"image","file"};
+        ArrayList<String> row;
+        
+        this.rows = new ArrayList<ArrayList>();
+        ArrayList<ArrayList> rows = this.rows;
         
         File dir = new File(path);
         String parent = dir.getParent();
-        // might have to check !=null
-        if (parent != null)
+        if(parent != null)
         {
             this.parent = parent;
-            itlab.add(new IconifiedText("..",getResources().getDrawable(R.drawable.folder)));
+            row = new ArrayList<String>();
+            row.add(""+R.drawable.folder);
+            row.add("..");
+            rows.add(row);
         }
+        
         File[] listeFile = dir.listFiles();
         if (listeFile != null)
         {
@@ -138,7 +159,10 @@ public class AddDirUI extends ListActivity
             {
                 if (f.isDirectory())
                 {
-                    itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.folder)));
+                    row = new ArrayList<String>();
+                    row.add(""+R.drawable.folder);
+                    row.add(f.getPath());
+                    rows.add(row);
                 }
                 else
                 {
@@ -146,14 +170,21 @@ public class AddDirUI extends ListActivity
                     {
                         if(f.getName().endsWith(s))
                         {
-                            itlab.add(new IconifiedText(f.getPath(),getResources().getDrawable(R.drawable.audio),false));
+                            row = new ArrayList<String>();
+                            row.add(""+R.drawable.audio);
+                            row.add(f.getPath());
+                            rows.add(row);
                             break;
                         }   
                     }
                 }
             }
         }
-        return itlab;
+        c = new ArrayListCursor(colName,rows);
+        startManagingCursor(c);
+        int[] to = {R.id.imgFile,R.id.file};
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_dir_row,c,colName,to);
+        setListAdapter(adapter);
     }
 
     /**
