@@ -26,11 +26,12 @@
     	android:layout_height="10dip"/>
         
   	<TextView android:id="@+id/playlist"
-	        android:layout_width="wrap_content"
+	        android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
 	       	android:text="Playlist"
             android:textSize="12pt"
             android:textStyle="bold"
+            android:textAlign="center"
         	/>
         	
     <View         
