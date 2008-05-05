@@ -20,7 +20,7 @@
 
 ==IMPROVEMENTS:==
   * super barre de progression (étirable) + effet arrondi + effet brillant, relief (S/(I))
-  * lecture tag aac, m4a (Y)
+  * lecture tag aac, m4a (Y) _c'est du proprio à la apple je suis pas motivé si vous voulez vraiment je le fais_
   * nouvelle animation (I)
 
 =/!\ FAIRE LA PRÉSENTATION /!\=
