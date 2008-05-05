@@ -35,9 +35,6 @@ interface ISibylservice {
     /* pause the song. To start playing the paused song at its current position
         use start */
     
-    boolean isPlaying();
-    /* returns true if the service is playing: /!\ deprecated */
-    
     int getState();
     /* returns the state of the core service: CsState is an enum as defined in 
        Music.java of the possible states
@@ -59,11 +56,6 @@ interface ISibylservice {
     int getDuration();
     /* returns the duration of the played song in milliseconds */
     
-    void setLooping(in boolean looping);
-    /* activate or deactivate looping / repetition of the current song 
-        If looping is set to 0: the current song is played once 
-        If looping is set to 1: the current song is repeated while looping is not 0 
-        /!\ deprecated, use setLoopMode instead */
     
     void setLoopMode(int mode);
     /* sets the loop mode which is one of the loop mode defined in Music.java
@@ -85,11 +77,7 @@ interface ISibylservice {
     /* play the next song of the current playlist*/
     
     void prev();
-    /* play the previous song of the current playlist */
-    
-    void setRepeatAll();
-    /* the playlist will be repeated when finished  
-       /!\ deprecated, use setLoopMode instead */
+    /* play the previous song of the current playlist */   
     
     void setPlayMode(int mode);
     /* sets the play mode of the service. The mode is one of the modes defined in Music.java

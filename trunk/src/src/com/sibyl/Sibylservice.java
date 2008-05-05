@@ -405,10 +405,6 @@ public class Sibylservice extends Service
             return playerState;
         }
 
-        public boolean isPlaying() {
-            return playerState == Music.State.PLAYING;
-        }
-
         public int getCurrentSongIndex() {
             return currentSong;
         }
@@ -447,14 +443,6 @@ public class Sibylservice extends Service
             return true;
         }
 
-        public void setLooping(boolean loop) 
-        {
-            Log.v(TAG,"set looping :"+loop);
-            loopMode = (loop) ? Music.LoopMode.REPEAT_SONG : Music.LoopMode.NO_REPEAT;
-            //mp.setLooping(loop ? 1 : 0);//setLooping is waiting for an int
-            //and java doesn't do the implicit conversion from bool to int
-        }
-
         public int getLooping(){
             return loopMode;
         }
@@ -470,12 +458,6 @@ public class Sibylservice extends Service
         public void playSongPlaylist(int pos) 
         {
             playNumberI(pos);
-        }
-
-        public void setRepeatAll()
-        {
-            Log.v(TAG,"set repeatALL");
-            loopMode = Music.LoopMode.REPEAT_PLAYLIST;
         }
 
         public void setLoopMode(int mode)
