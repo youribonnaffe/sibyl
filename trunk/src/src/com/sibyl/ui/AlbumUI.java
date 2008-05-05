@@ -139,7 +139,7 @@ public class AlbumUI extends ListActivity {
     protected void onResume() 
     {
         super.onResume();
-        ActivityTransition trans = new ActivityTransition( true );
+        final ActivityTransition trans = new ActivityTransition( true );
         trans.setDuration(500);
         trans.setFillAfter(true);
         trans.setInterpolator(new AccelerateInterpolator());
@@ -149,7 +149,7 @@ public class AlbumUI extends ListActivity {
     @Override
     protected void onPause() 
     {
-        ActivityTransition trans = new ActivityTransition( false );
+        final ActivityTransition trans = new ActivityTransition( false );
         trans.setDuration(500);
         trans.setFillAfter(true);
         trans.setInterpolator(new DecelerateInterpolator());

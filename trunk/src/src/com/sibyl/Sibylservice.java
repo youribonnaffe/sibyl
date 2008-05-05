@@ -85,7 +85,6 @@ public class Sibylservice extends Service
     {        
         /* initialization of the state and mode of the service */
         playerState=Music.State.STOPPED;
-        playMode=Music.Mode.NORMAL;//RANDOM;
 
         //stack to store the list of played songs
         songHistory=new Stack<Integer>();
@@ -146,7 +145,6 @@ public class Sibylservice extends Service
     public void updateNotification(int idIcon, String text)
     {
         Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
-
         nm.notify(
                 R.layout.notification,                  // we use a string id because it is a unique
                 // number.  we use it later to cancel the
@@ -258,6 +256,7 @@ public class Sibylservice extends Service
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
         if( songInfo == null )
         {
+            songInfo = new String[2];
             songInfo[0] = songInfo[1] = getString(R.string.tags_unknown);
         }
         updateNotification(R.drawable.play, songInfo[0]+"-"+songInfo[1]);
