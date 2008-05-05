@@ -1,7 +1,7 @@
 #summary Liste des choses à faire avant la présentation
 
 ==TODO:==
-  * mettre l'acces au covermanager dans optionUI: via un bouton (B)
+  * mettre l'acces au covermanager dans optionUI: via un bouton (B) _on va attendre que vous ayez fini de faire joujou avec avant de déplacer l'accès_
   * ~~mettre un spinner pour les modes de lecture~~ (B)
   * ~~pouvoir desactiver l'animation pour les couvertures~~ (I)
   * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)
@@ -11,8 +11,8 @@
   * refaire l'interface de playerUI: alleger le xml, améliorer le lancement de Sibyl (Y-S)
   * de nombreuses issues sont en cours (tout le monde !)
   * playerui: gérer les noms tres longs (I/S)
-  * faire le multilingue (B)
-  * redessiner ConfigUI (B)
+  * faire le multilingue (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
+  * ~~redessiner ConfigUI~~ (B) _J'espère que ça vous plait_
 
 ==TEST:==
   * ~~différents mode de lecture~~ (Y)
