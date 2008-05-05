@@ -543,19 +543,19 @@ public class MusicDB {
                         "FROM song "+
                         "ORDER BY title",null);
             case ALBUM :
-                return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album.id id " +
+                return mDb.rawQuery("SELECT album_name _id, '( ' || COUNT(*) || ' )' num, album._id id " +
                         "FROM album, song "+
                         "WHERE album._id = song.album "+
                         "GROUP BY album_name "+
                         "ORDER BY album_name",null);
             case ARTIST :
-                return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist.id id " +
+                return mDb.rawQuery("SELECT artist_name _id, '( ' || COUNT(*) || ' )' num, artist._id id " +
                         "FROM artist, song " +
                         "WHERE artist._id = song.artist "+
                         "GROUP BY artist_name " +
                         "ORDER BY artist_name",null);
             case GENRE :
-                return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre.id id " +
+                return mDb.rawQuery("SELECT DISTINCT genre_name _id, '( ' || COUNT(*) || ' )' num, genre._id id " +
                         "FROM genre,song "+
                         "WHERE genre._id = song.genre "+
                         "GROUP BY genre_name "+
