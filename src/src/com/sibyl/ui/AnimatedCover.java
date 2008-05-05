@@ -21,14 +21,14 @@ package com.sibyl.ui;
 
 import java.util.Map;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.animation.Animation;
 
 import com.sibyl.ui.animation.CoverAnim;
 /**
@@ -42,11 +42,18 @@ public class AnimatedCover extends ImageView {
     private Drawable nextDrawable; // next image to be drawn when animation is finished
     private boolean animationActivated; //is the animation activated? 
                 //if true an animation is done when changing image
-    private int sense;//sense of the animation: next or previous image
+    private Move sense;//sense of the animation: next or previous image
     
-    public static int NEXT = -1;
-    public static int PREV = 1;
-    public static int NO_ANIM = 0;
+    public enum Move { 
+        NEXT, PREV, NO_ANIM;
+        public int getValue(){
+            switch(this){
+                case NEXT  : return -1;
+                case PREV : return 1; 
+                default : return 0;
+            }
+        }
+    }
     
     //constructors needed by main.xml else exception
     public AnimatedCover(Context c)
@@ -71,7 +78,7 @@ public class AnimatedCover extends ImageView {
     {
         animHandler = new Handler();
         animationActivated = true;  
-        sense = NEXT;
+        sense = Move.NEXT;
     }
     
     /** 
@@ -90,7 +97,7 @@ public class AnimatedCover extends ImageView {
      * 
      * @param drawable  the new image to be displayed
      */
-    public void setImageDrawable(Drawable drawable, int aSense)
+    public void setImageDrawable(Drawable drawable, Move aSense)
     {
         Log.v("AnimatedCover", ">>>AnimatedCover::setImageDrawable(): aSense="+aSense);
         if( getDrawable() == drawable )
@@ -98,7 +105,7 @@ public class AnimatedCover extends ImageView {
             return;
         }
         
-        if(animationActivated && aSense != NO_ANIM)
+        if(animationActivated && aSense != Move.NO_ANIM)
         {
             sense = aSense;
             nextDrawable=drawable;

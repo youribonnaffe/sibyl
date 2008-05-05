@@ -48,6 +48,7 @@ import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
+import com.sibyl.ui.AnimatedCover.Move;
 import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
 
 /**
@@ -129,9 +130,9 @@ public class PlayerUI extends Activity
             }else if(i.getAction().equals(Music.Action.PAUSE)){
                 pauseRefresh();
             }else if(i.getAction().equals(Music.Action.NEXT)){
-                songRefresh(AnimatedCover.NEXT);
+                songRefresh(Move.NEXT);
             }else if(i.getAction().equals(Music.Action.PREVIOUS)){
-                songRefresh(AnimatedCover.PREV);
+                songRefresh(Move.PREV);
             }else if(i.getAction().equals(Music.Action.NO_SONG)){
                 noSongRefresh();
             }
@@ -164,7 +165,7 @@ public class PlayerUI extends Activity
         {
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
-            mService = null;
+            // mService = null; not sure that it is a good idea since it will crash everything
             // IMPORTANT : should freeze the application and user has to relaunch it
 
             //remplacant du NotificationManager/notifyWithText
@@ -174,6 +175,7 @@ public class PlayerUI extends Activity
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
             enableButtons(false);
+            // TODO freeze total ?
             // remove calls to timer
             mTimeHandler.removeCallbacks(timerTask);
         }
@@ -438,14 +440,18 @@ public class PlayerUI extends Activity
                     try{
                         mService.next();    
                     }
-                    catch(DeadObjectException ex){}
+                    catch(DeadObjectException ex){
+                        Log.v(TAG, ex.toString());
+                    }
                 }
                 if( gap < -1*gapX && previous.isEnabled()){
                     Log.v(TAG, "<--GAUCHE");
                     try{
                         mService.prev();
                     }
-                    catch(DeadObjectException ex){}
+                    catch(DeadObjectException ex){
+                        Log.v(TAG, ex.toString());
+                    }
                 }
             }
         }
@@ -470,7 +476,7 @@ public class PlayerUI extends Activity
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_RIGHT :
-                if( next.isEnabled()){
+                if(next.isEnabled()){
                     try{
                         mService.next();
                         next.setBackground(android.R.drawable.btn_default);
@@ -480,7 +486,7 @@ public class PlayerUI extends Activity
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_CENTER :
-                if( lecture.isEnabled()){
+                if(lecture.isEnabled()){
                     playPauseAction();
                 }
                 return true;
@@ -636,7 +642,7 @@ public class PlayerUI extends Activity
     /**
      * refresh song information & buttons next, previous
      */
-    private void songRefresh(int sense){
+    private void songRefresh(Move sense){
         try{
             // refresh total time, song info
             int pos = mService.getCurrentSongIndex();
@@ -700,7 +706,8 @@ public class PlayerUI extends Activity
         tempsTotal.setText(R.string.time_zero);
         titre.setText(R.string.titre);
         lecture.setText(R.string.play);
-
+        cover.setImageDrawable(getResources().getDrawable(R.drawable.logo), Move.NO_ANIM);
+        pathCover = null;
         enableButtons(false);
 
     }
@@ -714,13 +721,13 @@ public class PlayerUI extends Activity
                 case Music.State.PLAYING :
                     enableButtons(true);
                     playRefresh();
-                    songRefresh(AnimatedCover.NO_ANIM);
+                    songRefresh(Move.NO_ANIM);
                     break;
                 case Music.State.PAUSED :
                     // we still have to refresh timer once
                     enableButtons(true);
                     pauseRefresh();
-                    songRefresh(AnimatedCover.NO_ANIM);
+                    songRefresh(Move.NO_ANIM);
                     timerRefresh();
                     break;
                 case Music.State.END_PLAYLIST_REACHED :
@@ -729,7 +736,7 @@ public class PlayerUI extends Activity
                     break;
                 case Music.State.STOPPED :
                     enableButtons(true);
-                    songRefresh(AnimatedCover.NO_ANIM);
+                    songRefresh(Move.NO_ANIM);
                     break;
                 default :
                     noSongRefresh();

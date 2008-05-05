@@ -18,14 +18,16 @@
 
 package com.sibyl.ui.animation;
 
-import android.view.animation.Animation;
 import android.graphics.Camera;
-import android.view.animation.Transformation;
 import android.graphics.Matrix;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
+
+import com.sibyl.ui.AnimatedCover.Move;
 
 /**
  * Class handling animation for covers:
- *  a rotation of 90¡ of the image is done
+ *  a rotation of 90ï¿½ of the image is done
  *
  */
 public class CoverAnim extends Animation {
@@ -33,22 +35,22 @@ public class CoverAnim extends Animation {
     private float posX; //center of the rotation (x coordinate)
     private float posY; //center of the rotation (y coordinate)
     private boolean reversed;//is the rotation done in the reversed sense
-                    //if true: second part of the animation will be done (rot from -90¡ to 0¡)
-                    //else: first part is done (rot from 0¡ to 90¡)
+                    //if true: second part of the animation will be done (rot from -90ï¿½ to 0ï¿½)
+                    //else: first part is done (rot from 0ï¿½ to 90ï¿½)
     private Camera camera;
-    private int sense;
+    private Move sense;
 
     /**
      * Constructor of CoverAnim: constructs a new animation
-     *  if reversed is true: second part of the animation will be done (rot from -90¡ to 0¡)
-     *  else: first part is done (rot from 0¡ to 90¡)
+     *  if reversed is true: second part of the animation will be done (rot from -90ï¿½ to 0ï¿½)
+     *  else: first part is done (rot from 0ï¿½ to 90ï¿½)
      * 
      * @param aPosX      X position of the center of the rotation
      * @param aPosY      Y position of the center of the rotation
      * @param aReversed  part of the animation (1st half or second half)
      * @param aSense     sense of rotation (for previous or next image): value: 1 or -1
      */
-    public CoverAnim(float aPosX, float aPosY, boolean aReversed, int aSense) {
+    public CoverAnim(float aPosX, float aPosY, boolean aReversed, Move aSense) {
         posX = aPosX;
         posY = aPosY;
         reversed = aReversed;
@@ -65,9 +67,9 @@ public class CoverAnim extends Animation {
     protected void applyTransformation(float interpolatedTime, Transformation t) 
     {
         float startDegrees = 0.0f;
-        float endDegrees = sense*90.0f;
+        float endDegrees = sense.getValue()*90.0f;
         if(reversed) {
-            startDegrees=sense*(-90.0f);
+            startDegrees=sense.getValue()*(-90.0f);
             endDegrees=0.0f;
         }
         
