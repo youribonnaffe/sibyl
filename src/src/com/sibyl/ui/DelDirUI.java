@@ -87,6 +87,7 @@ public class DelDirUI extends ListActivity
         {
             listDir.add(c.getString(0));
         }
+        c.close();
     }
     
     /**

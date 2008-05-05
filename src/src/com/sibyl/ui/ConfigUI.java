@@ -27,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
@@ -39,11 +40,11 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.sibyl.Directory;
 import com.sibyl.ISibylservice;
@@ -70,12 +71,21 @@ public class ConfigUI extends Activity
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
-    private Spinner repeatMusic;
-
-    private Spinner playMode;  // Spinner du mode de lecture en cours
+    private boolean dirVisible;
+    private ArrayList<String> rowRepeat;
+    private ArrayList<String> rowShuffle;
+    private ArrayList<ArrayList> rows;
+    private ArrayList<String> rowDir;
+    private int repeat;
+    private int shuffle;
+    private Cursor listMode;
+    static private final String[] colName = {"mode","etat"};
+    static private final int[] to = {R.id.mode,R.id.etat};
 
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
+    
+    private ListView liste;
 
     /**
      * Called when the activity is first created. 
@@ -93,29 +103,14 @@ public class ConfigUI extends Activity
         addDir = (Button) findViewById(R.id.addMusic);
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
-
-        repeatMusic = (Spinner) findViewById(R.id.repMusic);
-        String repeatString[] = {(String) getText(R.string.rep_no), 
-                (String) getText(R.string.rep_one), 
-                (String) getText(R.string.rep_all)};
-        ArrayAdapter<CharSequence> repeatAdapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
-        repeatMusic.setAdapter(repeatAdapter);
-
-        playMode = (Spinner) findViewById(R.id.shuMusic);
-        String shuffleString[] = { (String) getText(R.string.normal),
-                (String) getText(R.string.random)};
-        ArrayAdapter<CharSequence> shuffleAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, shuffleString);
-        playMode.setAdapter(shuffleAdapter);
-
+        dirVisible = false;
+        
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
-        repeatMusic.setOnItemSelectedListener(mRepeatMusic);
 
-        playMode.setOnItemSelectedListener(mShuffleMode);
-
-        Log.v(TAG,"ICI");
+        liste = (ListView) findViewById(R.id.listConfig);
 
         /* connexion à la base de données */
         try
@@ -127,6 +122,92 @@ public class ConfigUI extends Activity
         {
             Log.v(TAG, ex.toString());
         }
+    }
+    
+    OnItemClickListener mListe = new OnItemClickListener()
+    {
+        public void onItemClick(AdapterView parent, View v, int position, long id)
+        {            
+            switch(position)
+            {
+            case 0 :
+                repeat = (repeat+1)%3;
+                try 
+                {
+                    mService.setLoopMode(repeat);
+                } catch (DeadObjectException e) 
+                {
+                    e.printStackTrace();
+                }
+                fillData();
+                break;
+            case 1 :
+                shuffle = (shuffle+1)%2;
+                try 
+                {
+                    mService.setPlayMode(shuffle);
+                } catch (DeadObjectException e) {
+                    e.printStackTrace();
+                }
+                fillData();
+                break;
+            case 2 :
+                dirVisible = !dirVisible;
+                mListDir.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
+                addDir.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
+                delDir.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
+                updateMusic.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
+                break;
+            }
+        }
+    };
+    
+    private void fillData()
+    {
+        
+        rows = new ArrayList<ArrayList>();
+        
+        rowRepeat = new ArrayList<String>();
+        rowRepeat.add("Repeat :");
+        switch(repeat)
+        {
+        case Music.LoopMode.NO_REPEAT:
+            rowRepeat.add(getText(R.string.rep_no).toString());
+            break;
+        case Music.LoopMode.REPEAT_SONG:
+            rowRepeat.add(getText(R.string.rep_one).toString());
+            break;
+        case Music.LoopMode.REPEAT_PLAYLIST:
+            rowRepeat.add(getText(R.string.rep_all).toString());
+            break;
+        default:
+            rowRepeat.add(getText(R.string.rep_no).toString());
+        }
+        rows.add(rowRepeat);
+        
+        rowShuffle = new ArrayList<String>();
+        rowShuffle.add("Shuffle :");
+        switch(shuffle)
+        {
+        case Music.Mode.NORMAL:
+            rowShuffle.add(getText(R.string.normal).toString());
+            break;
+        case Music.Mode.RANDOM:
+            rowShuffle.add(getText(R.string.random).toString());
+            break;
+        default:
+            rowShuffle.add(getText(R.string.normal).toString());
+        }
+        rows.add(rowShuffle);
+        
+        rowDir = new ArrayList<String>();
+        rowDir.add("Manage Library...");
+        rowDir.add("");
+        rows.add(rowDir);
+        listMode = new ArrayListCursor(colName,rows);
+        SimpleCursorAdapter adapter =  new SimpleCursorAdapter(this,R.layout.config_row,listMode,colName, to);
+        liste.setAdapter(adapter);
+        liste.setOnItemClickListener(mListe);
     }
 
     /**
@@ -148,6 +229,7 @@ public class ConfigUI extends Activity
             //Log.v(TAG,"ADD "+c.getString(0));
         }
         mListDir.setText(str);
+        c.close();
     }
 
     /**
@@ -281,48 +363,6 @@ public class ConfigUI extends Activity
         }
     };
 
-
-    /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture : sans répétition
-     */
-    private OnItemSelectedListener mRepeatMusic = new OnItemSelectedListener()
-    {
-        public void onItemSelected(AdapterView parent, View v, int position, long id) 
-        {
-            try 
-            {
-                mService.setLoopMode(position);
-            } catch (DeadObjectException e) { }   
-        }
-
-        public void onNothingSelected(AdapterView arg0) 
-        {
-
-        }
-    };
-
-    /**
-     * Écouteur placé sur le bouton permettant le changement de mode de lecture : non aléatoire
-     */
-    private OnItemSelectedListener mShuffleMode = new OnItemSelectedListener()
-    {
-        public void onItemSelected(AdapterView parent, View v, int position, long id) 
-        {
-            try 
-            {
-                mService.setPlayMode(position);
-            } catch (DeadObjectException doe) 
-            { 
-                Log.v(TAG,doe.toString());
-            }
-        }
-
-        public void onNothingSelected(AdapterView arg0) 
-        {
-            
-        }
-    };
-
     /**
      * lancement du service
      */
@@ -347,19 +387,13 @@ public class ConfigUI extends Activity
         public void onServiceConnected(ComponentName className, IBinder service)
         {
             mService = ISibylservice.Stub.asInterface((IBinder)service);
-            repeatMusic.setFocusable(true);
-            playMode.setFocusable(true);
-            try 
-            {
-
-                repeatMusic.setSelection(mService.getLooping());
-
-                playMode.setSelection(mService.getPlayMode());
-
-            } catch (DeadObjectException doe) 
-            {
-                Log.v(TAG,doe.toString());
+            try {
+                repeat = mService.getLooping();
+                shuffle = mService.getPlayMode();
+            } catch (DeadObjectException e) {
+                e.printStackTrace();
             }
+            fillData();
         }
 
         /**
@@ -391,6 +425,7 @@ public class ConfigUI extends Activity
     protected void onDestroy() 
     {
         super.onDestroy();
+        listMode.close();
         unbindService(mConnection);
     }
 
