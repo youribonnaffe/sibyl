@@ -20,43 +20,20 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+    
+	<ListView android:id="@+id/listConfig"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
 		
-	<TextView android:layout_width="wrap_content"
-       	android:layout_height="wrap_content"
-       	android:text="Repeat mode : "
-        android:textSize="9pt"/>
-	    
-	<Spinner android:id="@+id/repMusic"
-		android:focusable="false"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="No Repeat"/>
-	
-
-	<TextView android:layout_width="wrap_content"
-       	android:layout_height="wrap_content"
-       	android:text="Play mode : "
-        android:textSize="9pt"/>
-       	
-	<Spinner android:id="@+id/shuMusic"
-		android:focusable="false"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="Normal"/>
-				
-	<TextView android:layout_width="wrap_content"
-       	android:layout_height="wrap_content"
-       	android:text="Library folders :"
-        android:textSize="10pt"/>
-
 	<EditText android:id="@+id/musicData" 
 		android:maxLines="5" 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" 
 		android:focusable="false"
-		android:scrollHorizontally="true"/>
+		android:scrollHorizontally="true"
+		android:visibility="gone"/>
 		
-		
+		 
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content">
@@ -70,17 +47,20 @@
 				android:text="Add folder"
 				android:focusable="true"
 		    	android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"/>
+			    android:layout_height="wrap_content"
+			    android:visibility="gone"/>
 			<Button android:id="@+id/updateMusic"
 				android:text="Update library"
 				android:focusable="false"
 		    	android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"/>
+			    android:layout_height="wrap_content"
+			    android:visibility="gone"/>
 			<Button android:id="@+id/delMusic"
 				android:text="Delete folder"
 				android:focusable="true"
 		    	android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"/>
+			    android:layout_height="wrap_content"
+			    android:visibility="gone"/>
 			    
 		</TableRow>
 	
