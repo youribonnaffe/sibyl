@@ -18,6 +18,8 @@
 
 package com.sibyl.ui;
 
+import java.util.ArrayList;
+
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentReceiver;
 import android.content.ServiceConnection;
+import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
@@ -35,6 +38,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
@@ -57,6 +61,8 @@ public class PlayListUI extends ListActivity
 
     //the database
     private MusicDB mdb;    
+    
+    private Cursor pl;
 
     private IntentFilter intentF;
     private IntentReceiver intentHandler = new IntentReceiver(){
@@ -143,6 +149,7 @@ public class PlayListUI extends ListActivity
     protected void onDestroy() 
     {
         super.onDestroy();
+        pl.close();
         unbindService(mConnection);        
     }
 
@@ -172,12 +179,17 @@ public class PlayListUI extends ListActivity
         Cursor c = mdb.getPlayListInfo();
         int icon;
         startManagingCursor(c);
-        IconifiedTextListAdapter rows = new IconifiedTextListAdapter(this);
+        String[] colName = {"iconPl","text1","textsep","text2"};
+        ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
         songPlayed = 0;
-        try{
+        try
+        {
+            ArrayList<String> row;
             int index = mService.getCurrentSongIndex()-1;
             int playerState = mService.getState();
-            while(c.next()){
+            while(c.next())
+            {
+                 row = new ArrayList<String>();
                 // display icon if is playing and this song is played
                 if( ( playerState == Music.State.PAUSED || playerState == Music.State.PLAYING )
                         && mService!= null && index == c.position()){
@@ -187,15 +199,23 @@ public class PlayListUI extends ListActivity
                 else{
                     icon = R.drawable.puce;
                 }
-                rows.add(new IconifiedText( c.getString(0)+ getString(R.string.sep_artiste_song)+  c.getString(1),
-                        getResources().getDrawable(icon)));
+                row.add(""+icon);
+                row.add(c.getString(0));
+                row.add(getString(R.string.sep_artiste_song));
+                row.add(c.getString(1));
+                rows.add(row);
             }
+
         }
         catch(DeadObjectException ex){
             Log.v(TAG, ex.toString());
         }
+        pl = new ArrayListCursor(colName,rows);
+        startManagingCursor(pl);
+        int[] to = {R.id.iconPl,R.id.text1,R.id.textsep,R.id.text2};
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.playlist_row,pl,colName,to);
         c.close();        
-        setListAdapter(rows);
+        setListAdapter(adapter);
         setSelection(songPlayed);
     }
 
