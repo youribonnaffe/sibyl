@@ -67,9 +67,12 @@ public class PlayListUI extends ListActivity
     private IntentFilter intentF;
     private IntentReceiver intentHandler = new IntentReceiver(){
         public void onReceiveIntent(Context c, Intent i){
-            //Log.v("INTENT", "RECEIVE PLAYLIST "+i.toString());
             // we are interessed if a new song is played
             if(i.getAction().equals(Music.Action.PLAY)){
+                fillData();
+            }else if(i.getAction().equals(Music.Action.NEXT)){
+                fillData();
+            }else if(i.getAction().equals(Music.Action.PREVIOUS)){
                 fillData();
             }else if(i.getAction().equals(Music.Action.NO_SONG)){
                 fillData();
@@ -113,6 +116,8 @@ public class PlayListUI extends ListActivity
         intentF = new IntentFilter();
         intentF.addAction(Music.Action.PLAY);
         intentF.addAction(Music.Action.NO_SONG);
+        intentF.addAction(Music.Action.NEXT);
+        intentF.addAction(Music.Action.PREVIOUS);
         launchService();
         songPlayed = 0;
         setContentView(R.layout.playlist);
