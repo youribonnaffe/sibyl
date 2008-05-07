@@ -60,9 +60,9 @@ public class PlayerUI extends Activity
 {
 
     // menu variables
-    private static final int QUIT_ID = Menu.FIRST;
-    private static final int PLAYLIST_ID = Menu.FIRST +1;
-    private static final int OPTION_ID = Menu.FIRST +2;
+    private static final int PLAYLIST_ID = Menu.FIRST ;
+    private static final int OPTION_ID = Menu.FIRST +1;
+    private static final int QUIT_ID = Menu.FIRST +2;
     private static final int COVER_ID = Menu.FIRST +3;
 
     // debug
@@ -92,13 +92,14 @@ public class PlayerUI extends Activity
     private static final float gapY = 60;
     private static final float gapX = 100;
 
+    private int maxTimer;
     //handler for calculating elapsed time when playing a song
     private Handler mTimeHandler = new Handler();
     //thread which shows the elapsed time when a song is played.
     private Runnable timerTask = new Runnable() 
     {
         private int timer = 0;
-
+        
         public void run() 
         {
             // re adjusting time
@@ -113,11 +114,15 @@ public class PlayerUI extends Activity
                 // old value will be kept, if the song can't be played anymore
                 // an error should be thrown by the service (or not)
             }
-            progress.setProgress(timer);
-            elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
+            if(timer <= maxTimer){
+                progress.setProgress(timer);
+                elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
+            }else{
+                progress.setProgress(maxTimer);
+                elapsedTime.setText(DateUtils.formatElapsedTime(maxTimer/1000));
+            }
             // again in 0.1s
             mTimeHandler.postDelayed(this, 1000);
-            //progress.redraw();
         }
     };
 
@@ -345,9 +350,9 @@ public class PlayerUI extends Activity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
+        menu.add(0, QUIT_ID, R.string.menu_quit);
         menu.add(0, COVER_ID, R.string.menu_cover_manager);
         return true;
     }
@@ -407,6 +412,7 @@ public class PlayerUI extends Activity
                 {
                     //remove timer
                     mTimeHandler.removeCallbacks(timerTask);
+                    maxTimer = mService.getDuration();
                     // add timer task to ui thread
                     mTimeHandler.post(timerTask);
                 }
@@ -627,6 +633,11 @@ public class PlayerUI extends Activity
         lecture.setText(R.string.pause);
         //update of the current time displayed
         mTimeHandler.removeCallbacks(timerTask);
+        try {
+            maxTimer = mService.getDuration();
+        } catch (DeadObjectException doe) {
+            Log.v(TAG, doe.toString());
+        }
         mTimeHandler.post(timerTask);
     }
 

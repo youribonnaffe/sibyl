@@ -48,9 +48,9 @@ import com.sibyl.Sibylservice;
 
 public class PlayListUI extends ListActivity
 {
-    private static final int ADD_ID = Menu.FIRST;
-    private static final int NEW_ID = Menu.FIRST +1;
-    private static final int BACK_ID = Menu.FIRST +2;
+    private static final int BACK_ID = Menu.FIRST;
+    private static final int ADD_ID = Menu.FIRST +1;
+    private static final int NEW_ID = Menu.FIRST +2;
 
     private static final String TAG = "PLAYLIST";
     private static final int ADD_UI = 1;
@@ -236,9 +236,9 @@ public class PlayListUI extends ListActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
+        menu.add(0, BACK_ID, R.string.menu_back);
         menu.add(0, ADD_ID, R.string.menu_add);
         menu.add(0, NEW_ID, R.string.menu_new);
-        menu.add(0, BACK_ID, R.string.menu_back);
         return true;
     }
 
