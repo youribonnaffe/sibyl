@@ -18,7 +18,7 @@
     player ui : playlist - option - quit
     playlist ui : back - add - new
 
-  * addui : aligner les numéros () à droite en violet rose bonbon
+  * ~~addui : aligner les numéros () à droite~~ en violet rose bonbon
     mettre des images( petit triangle)
     mettre des animations
 
