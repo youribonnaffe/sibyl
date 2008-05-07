@@ -11,8 +11,7 @@
           android:layout_height="wrap_content"
           android:textSize="20.0sp"
           android:layout_gravity="center"
-          android:lines="1"
-          android:text="Album titre"/>
+          android:lines="1"/>
           
     <GridView
         android:id="@+id/gallery"

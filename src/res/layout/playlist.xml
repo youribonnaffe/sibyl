@@ -28,7 +28,7 @@
   	<TextView android:id="@+id/playlist"
 	        android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
-	       	android:text="Playlist"
+	       	android:text="@string/playList_title"
             android:textSize="12pt"
             android:textStyle="bold"
             android:textAlign="center"
@@ -46,6 +46,6 @@
     <TextView android:id="@+id/android:empty"
           android:layout_width="fill_parent" 
           android:layout_height="fill_parent"
-          android:text="Playlist empty"/>
+          android:text="@string/playList_empty"/>
 	        
 </LinearLayout>

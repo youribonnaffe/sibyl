@@ -44,19 +44,19 @@
 		    android:gravity="center">
 			
 			<Button android:id="@+id/addMusic"
-				android:text="Add folder"
+				android:text="@string/config_add_folder"
 				android:focusable="true"
 		    	android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
 			    android:visibility="gone"/>
 			<Button android:id="@+id/updateMusic"
-				android:text="Update library"
+				android:text="@string/config_update"
 				android:focusable="false"
 		    	android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
 			    android:visibility="gone"/>
 			<Button android:id="@+id/delMusic"
-				android:text="Delete folder"
+				android:text="@string/config_del_folder"
 				android:focusable="true"
 		    	android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"

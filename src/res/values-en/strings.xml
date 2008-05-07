@@ -36,8 +36,11 @@
     <string name="next">&gt;&gt;</string>
     <string name="previous">&lt;&lt;</string>
     <string name="menu_cover_manager">Cover manager</string>
+    
     <!--  PlayListUI -->
-    <string name="playList">Playlist</string>
+    <string name="playList_title">Playlist</string>
+    <string name="playList_empty">Playlist is empty</string>
+    
     <string name="menu_quit">Quit</string>
     <string name="menu_playList">Playlist</string>
     <string name="menu_option">Option</string>
@@ -62,6 +65,8 @@
     <string name="add_empty_artist">No artist</string>
     <string name="add_empty_album">No album</string>
     <string name="add_empty_song">No song</string>
+    <string name="add_emptydb">Your library is empty, you should fill it first.</string>
+    
 
 
 
@@ -72,6 +77,10 @@
     <string name="dir">Directory: </string>
     <string name="normal">Normal</string>
     <string name="random">Shuffle</string>
+    <string name="dir_empty">Empty</string>
+    <string name="config_add_folder">Add folder</string>    
+    <string name="config_del_folder">Remove folder</string>
+    <string name="config_update">Update library</string>
         
 
     <!-- PLAYLIST -->
@@ -88,7 +97,7 @@
     <!-- AlbumUI -->
     <string name="alb_back">Back</string>
     <string name="alb_manual">Manual</string>
-    <string name="alb_empty">Your librairie is empty.\n Fill it first</string>
+    <string name="alb_empty">Your librairy is empty.\n Fill it first</string>
     
     <!-- CoverUI -->
     <string name="cov_title">Cover manager</string>

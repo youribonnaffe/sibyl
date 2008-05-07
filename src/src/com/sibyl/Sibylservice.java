@@ -114,7 +114,7 @@ public class Sibylservice extends Service
         //create or connect to the Database
         try{
             mdb = new MusicDB(this);
-            updateNotification(R.drawable.pause,"Sibyl, mobile your music !");
+            updateNotification(R.drawable.pause,getResources().getText(R.string.app_name));
 
             // set player state
             if(mdb.getPlaylistSize() == 0){
@@ -142,7 +142,7 @@ public class Sibylservice extends Service
      * @param idIcon     identifier of the notification
      * @param text       new text to be displayed by the notification manager
      */
-    public void updateNotification(int idIcon, String text)
+    public void updateNotification(int idIcon, CharSequence text)
     {
         Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
         nm.notify(
@@ -395,7 +395,7 @@ public class Sibylservice extends Service
         public void pause() {
             mp.pause();
             playerState=Music.State.PAUSED;
-            updateNotification(R.drawable.pause,"pause");
+            updateNotification(R.drawable.pause,getResources().getText(R.string.pause));
             // warn ui that we paused music playing
             broadcastIntent(new Intent(Music.Action.PAUSE));
         }
