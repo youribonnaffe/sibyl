@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.sibyl.Directory;
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.ui.animation.ActivityTransition;
@@ -161,9 +162,23 @@ public class CoverUI extends Activity {
         imgAdapter = new ImageAdapter(this);
         startManagingCursor(c);
         Log.v(TAG, ">>>CoverUI::filldata ");
+        boolean addCoverDir = true;
         while( c.next()){
+            // for each directory, we check if the coverdir is in it
+            if(Music.COVER_DIR.contains(c.getString(0))){
+                addCoverDir = false;
+            }
             for(String extension : EXT_TAB){
                 for(String file : Directory.scanFiles(c.getString(0), extension)){
+                    imgAdapter.add(file);
+                    Log.v(TAG, "    "+file);
+                }
+            }
+        }
+        // if coverdir hasn't been parsed we do it now
+        if(addCoverDir){
+            for(String extension : EXT_TAB){
+                for(String file : Directory.scanFiles(Music.COVER_DIR, extension)){
                     imgAdapter.add(file);
                     Log.v(TAG, "    "+file);
                 }

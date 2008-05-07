@@ -105,12 +105,13 @@ public class CoverDownloader {
                         out.write(buffer, 0, numRead);
                     }
                     out.close();
-                    
+                    in.close();
                     Log.v(TAG, "SET cover "+albumId+" "+filename);
                     
                     // save cover path to database
                     mdb.setCover(albumId, filename);
                     // we have found a cover, no need to search again
+                    c.close();
                     return true;
                 }
             }catch(UnsupportedEncodingException uee){
@@ -121,11 +122,10 @@ public class CoverDownloader {
                 // shouldn't happen
             }catch(IOException ioe){
                 Log.v(TAG, ioe.toString());
-            }finally{
-                c.close();
             }
         }
         // we haven't found any cover
+        c.close();
         return false;
     }
 }
