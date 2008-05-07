@@ -16,7 +16,7 @@
 
   * menus de toutes les fenêtres
     player ui : playlist - option - quit
-    playlist ui : back - add - new
+    ~~playlist ui : back - add - new~~
 
   * ~~addui : aligner les numéros () à droite~~ en violet rose bonbon
     mettre des images( petit triangle)
@@ -32,9 +32,9 @@
     fenêtre optionui : listes ? + espace
     
   * les 2 intents -> playpause sur le début :/
-  * mettre un time max pour éviter les dépassements à l'affichage
+  * ~~mettre un time max pour éviter les dépassements à l'affichage~~
   * titres sur toutes les fenêtres
-  * tracker les chaînes dans le java
+  * ~~tracker les chaînes dans le java~~
   * playlist : focus = défilement si texte trop long
   * uniformiser les unités du xml
   * agrandir les textes
