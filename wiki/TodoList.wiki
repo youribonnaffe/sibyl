@@ -35,7 +35,7 @@
   * ~~mettre un time max pour éviter les dépassements à l'affichage~~
   * titres sur toutes les fenêtres
   * ~~tracker les chaînes dans le java~~
-  * playlist : focus = défilement si texte trop long
+  * playlist : focus = défilement si texte trop long _youri : working on it_
   * uniformiser les unités du xml
   * agrandir les textes
   * addui -> afficher (25) pour les smartplaylists
