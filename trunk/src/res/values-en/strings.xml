@@ -65,6 +65,7 @@
     <string name="add_empty_artist">No artist</string>
     <string name="add_empty_album">No album</string>
     <string name="add_empty_song">No song</string>
+    <string name="add_empty_genre">No genre</string>
     <string name="add_emptydb">Your library is empty, you should fill it first.</string>
     
 
