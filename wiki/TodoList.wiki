@@ -14,6 +14,32 @@
   * faire le multilingue (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
   * ~~redessiner ConfigUI~~ (B) _J'espère que ça vous plait_
 
+  * menus de toutes les fenêtres
+    player ui : playlist - option - quit
+    playlist ui : back - add - new
+
+  * addui : aligner les numéros () à droite en violet rose bonbon
+    mettre des images( petit triangle)
+    mettre des animations
+
+  * progress bar : plus grosse, avec le temps dessus
+  * effets click'n'touch : double cick pause, haut bas : playlistui
+  * playerui:imagebutton
+  * optionui : + coverui
+    +regrouper les modes
+    avoir toujours les mêmes styles -> artist en italique...
+    titre des fenêtres
+    fenêtre optionui : listes ? + espace
+    
+  * les 2 intents -> playpause sur le début :/
+  * mettre un time max pour éviter les dépassements à l'affichage
+  * titres sur toutes les fenêtres
+  * tracker les chaînes dans le java
+  * playlist : focus = défilement si texte trop long
+  * uniformiser les unités du xml
+  * agrandir les textes
+  * addui -> afficher (25) pour les smartplaylists
+
 ==TEST:==
   * ~~différents mode de lecture~~ (Y)
   * tester les différents formats: ogg, aac(S)
