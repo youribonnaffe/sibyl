@@ -24,19 +24,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
-import android.util.Log;
-
 //string replace optimiser
 public class ID3TagReader extends TagReader{
 
-    private static final String[] tags = { "TALB", "TCON", "TIT2", "TRCK", "TPE1"};
+    private static final String[] tags = { "TALB", "TCON", "TIT2", "TRCK", "TPE1", "TPE2", "TPE3", "TOPE", "TCOM"};
 
+    private long fileSize;
     // could be static
     public ID3TagReader(String filename) throws FileNotFoundException, IOException {
 
         cv = new HashMap<String,String>();
 
         File fi = new File(filename);
+        fileSize = fi.length();
         FileInputStream f = new FileInputStream(fi);
         byte[] buff = new byte[3];
         f.read(buff);
@@ -48,7 +48,7 @@ public class ID3TagReader extends TagReader{
             size += f.read();
             readID3v2Tags(f, size);
         }else{
-            long count = fi.length()-131;
+            long count = fileSize-131;
             skipSure(f, count);
             if( f.read() == 'T' && f.read() == 'A' && f.read() == 'G' ){
                 readID3v1Tags(f);
@@ -62,6 +62,7 @@ public class ID3TagReader extends TagReader{
         int pos = 0;
         TagReader.skipSure(f, 3); // skip tags header
         f.read(buff, 0, 4); // read frame header
+        pos+=7;
         while(pos<taille && buff[0] >= 'A' && buff[0] <='Z'){
             int size;
             size = f.read()<<21;
@@ -74,7 +75,7 @@ public class ID3TagReader extends TagReader{
             for(i=0; i<tags.length; i++)
             {
                 if(tags[i].charAt(0) == buff[0] && tags[i].charAt(1) == buff[1] 
-                        && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3])
+                                                                             && tags[i].charAt(2) == buff[2] && tags[i].charAt(3) == buff[3])
                 {
                     // read frame size
                     byte[] buff2 = new byte[size-1];
@@ -82,18 +83,22 @@ public class ID3TagReader extends TagReader{
                     skipSure(f, 1);
                     f.read(buff2, 0, size-1);
                     pos+=size;
-                    // TODO two objects
-                    String val = new String(buff2);
-                    Log.v("TAG",cols[i] + " " + size);
-                    if(size>=2){
-                        // UTF-16 ?
-                        if(size >= 2 && 
-                                ( (buff2[0] == 0xFFFFFFFF && buff2[1] == 0xFFFFFFFE) 
-                                        || (buff2[0] == 0xFFFFFFFE && buff2[1]==0xFFFFFFFF))){
-                            val = new String(buff2, "UTF-16");
-                        }
+                    // trick to read multiple tags for the artist name
+                    int insert = i;
+                    if(i>=cols.length){
+                        insert = cols.length-1;
                     }
-                    cv.put(cols[i], val);
+                    String val;
+                    // UTF-16 ?
+                    if(size >= 2 && 
+                            ( (buff2[0] == 0xFFFFFFFF && buff2[1] == 0xFFFFFFFE) 
+                                    || (buff2[0] == 0xFFFFFFFE && buff2[1]==0xFFFFFFFF))){
+                        val = new String(buff2, "UTF-16");
+                    }else{
+                        val = new String(buff2);
+                    }
+
+                    cv.put(cols[insert], val);
                     break;
                 }
             }
@@ -103,6 +108,15 @@ public class ID3TagReader extends TagReader{
             }
             f.read(buff, 0, 4); // read next frame header
             pos += 10;
+        }
+
+        // if we didn't get any info we try ID3V1
+        if(cv.size() == 0){
+            long count = fileSize-131-4-pos; // so we remember what we have already read
+            skipSure(f, count);
+            if( f.read() == 'T' && f.read() == 'A' && f.read() == 'G' ){
+                readID3v1Tags(f);
+            }
         }
     }
 
