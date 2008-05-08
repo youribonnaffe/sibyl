@@ -56,11 +56,13 @@ public class AddUI extends ListActivity
             R.string.playlist_random}; /*string id list for Smart Play List menu*/
     private static int nbFieldSMP = 3;/*number of smart playlist*/
 
+    private enum TRANSLATION_TO {LEFT, RIGHT, NO_TRANS}; // sense of the animation when changing menu
     private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
     private STATE positionMenu = STATE.MAIN; //position in the menu
     private int positionRow = 0; //row position in main menu
 
-    private Animation anim;
+    private Animation RTLanim; //right to left translation
+    private Animation LTRanim; //left to right translation
     
     @Override
     protected void onCreate(Bundle icicle) 
@@ -68,7 +70,8 @@ public class AddUI extends ListActivity
         super.onCreate(icicle);
         Log.v(TAG,"AddUI start");
         setContentView(R.layout.add);
-        anim = AnimationUtils.loadAnimation(this, R.anim.translation);
+        LTRanim = AnimationUtils.loadAnimation(this, R.anim.ltrtranslation);
+        RTLanim = AnimationUtils.loadAnimation(this, R.anim.rtltranslation);
         try
         {
             mdb = new MusicDB(this);
@@ -77,7 +80,7 @@ public class AddUI extends ListActivity
         {
             Log.v(TAG, ex.toString());
         }   
-        displayMainMenu();
+        displayMainMenu(TRANSLATION_TO.LEFT);
         // 0 means that we didn't modify the playlist
         setResult(0);
     }
@@ -110,7 +113,7 @@ public class AddUI extends ListActivity
     }
 
     /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
-    private void displayMainMenu()
+    private void displayMainMenu(TRANSLATION_TO sense)
     {
         Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
@@ -119,7 +122,12 @@ public class AddUI extends ListActivity
         }
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
-        getListView().startAnimation(anim);
+        if( sense == TRANSLATION_TO.LEFT) {
+            getListView().startAnimation(RTLanim);
+        }
+        else if( sense == TRANSLATION_TO.RIGHT) {
+            getListView().startAnimation(LTRanim);
+        }
     }
 
     /*When a row is selected, the UI is update by this method*/
@@ -136,7 +144,7 @@ public class AddUI extends ListActivity
         TextView text = (TextView) row.findViewById(R.id.textfield);*/
         if( positionMenu == STATE.MAIN){
             positionRow = pos;
-            mainMenu();/*text.getText());*/
+            showSubMenu(TRANSLATION_TO.LEFT);/*text.getText());*/
         }
         else
         {   
@@ -174,18 +182,23 @@ public class AddUI extends ListActivity
             // 1 means that we did modify the playlist
             setResult(1);
             positionMenu = STATE.MAIN;
-            displayMainMenu();
+            displayMainMenu(TRANSLATION_TO.LEFT);
         }
 
     }
 
 
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
-    private void mainMenu(){ /*CharSequence text){*/
-        Log.v(TAG, ">>> AddUI::mainMenu() called");
-        getListView().startAnimation(anim);
+    private void showSubMenu(TRANSLATION_TO sense){ /*CharSequence text){*/
+        Log.v(TAG, ">>> AddUI::showSubMenu() called");
+        if( sense == TRANSLATION_TO.LEFT) {
+            getListView().startAnimation(RTLanim);
+        }
+        else if( sense == TRANSLATION_TO.RIGHT) {
+            getListView().startAnimation(LTRanim);
+        }
 
-        //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
+        //which line has been selected:  add artist, albums, songs,... except Smart Playlist
         switch( field[positionRow]){
             case R.string.add_artist: 
                 mCursor = mdb.getTableList(Music.Table.ARTIST);
@@ -215,7 +228,7 @@ public class AddUI extends ListActivity
 
                 setListAdapter(adapter);
                 positionMenu = STATE.SMART_PLAYLIST;
-                return; /*quit mainMenu when the smart playlist row are added */
+                return; /*quit subMenu when the smart playlist row are added */
         }
 
         /*if the cursor is empty, we adjust the text in function of the submenu*/
@@ -266,7 +279,7 @@ public class AddUI extends ListActivity
                     positionMenu == STATE.SMART_PLAYLIST ||
                     positionMenu == STATE.SONG ||
                     positionMenu == STATE.STYLE) {
-                displayMainMenu();
+                displayMainMenu(TRANSLATION_TO.RIGHT);
                 positionMenu = STATE.MAIN;
             }
         }
