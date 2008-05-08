@@ -18,7 +18,10 @@
 
 package com.sibyl.ui;
 
+import java.util.ArrayList;
+
 import android.app.ListActivity;
+import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
@@ -69,6 +72,7 @@ public class AddUI extends ListActivity
     };
     private int positionMenu = STATE.MAIN; //position in the menu
     private int positionRow = 0; //row position in main menu
+    private final String[] colName = {"MenuText","iconMenu"};
 
     private Animation RTLanim; //right to left translation
     private Animation LTRanim; //left to right translation
@@ -128,10 +132,20 @@ public class AddUI extends ListActivity
     private void displayMainMenu(int sense)
     {
         Log.v(TAG, ">>> AddUI::displayMainMenu() called");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
+        
+        ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
+        ArrayList<String> row;
         for( int i = 0; i < nbField; i++){ //add all strings to the adapter
-            adapter.addObject(getString(field[i]));
+            row = new ArrayList<String>();
+            row.add(getString(field[i]));
+            row.add(""+R.drawable.arrow);
+            rows.add(row);
         }
+        
+        ArrayListCursor listMenu = new ArrayListCursor(colName,rows);
+        startManagingCursor(listMenu);
+        int[] to = {R.id.textfield,R.id.iconAdd};
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_row,listMenu,colName,to); 
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
         if( sense == TRANSLATION_LEFT) {
