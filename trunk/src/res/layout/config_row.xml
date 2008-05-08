@@ -19,19 +19,12 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:shrinkColumns="0"
-    android:stretchColumns="0">
+    android:orientation="horizontal">
 	<TableRow>
 	    <TextView android:id="@+id/mode" 
 	    	android:textSize="9pt"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:gravity="center_vertical"/>             
-	    <TextView android:id="@+id/etat" 
-	    	android:textSize="9pt"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:gravity="center_vertical"/>
+	        android:text="TOTOO"/>
     </TableRow>
 </TableLayout>

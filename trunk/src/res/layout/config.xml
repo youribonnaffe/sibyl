@@ -20,50 +20,66 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    
-	<ListView android:id="@+id/listConfig"
+	
+	<ListView android:id="@+id/listConfigMode"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>		
+		
+	<Spinner android:id="@+id/repMusic"
+		android:focusable="false"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:text="Normal"/>
+
+    <Spinner android:id="@+id/shuMusic"
+		android:focusable="false"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:text="Normal"/>
+ 		
+	<ListView android:id="@+id/listConfigLibrary"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"/>
-		
-	<EditText android:id="@+id/musicData" 
-		android:maxLines="5" 
-		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content" 
-		android:focusable="false"
-		android:scrollHorizontally="true"
-		android:visibility="gone"/>
-		
+ 
+	    <EditText android:id="@+id/musicData" 
+			android:maxLines="5" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:focusable="false"
+			android:scrollHorizontally="true"
+			android:visibility="gone"/>
 		 
-	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content">
-	    
-	    <TableRow
+		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center">
-			
-			<Button android:id="@+id/addMusic"
-				android:text="@string/config_add_folder"
-				android:focusable="true"
-		    	android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		    
+		    <TableRow
+			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
-			    android:visibility="gone"/>
-			<Button android:id="@+id/updateMusic"
-				android:text="@string/config_update"
-				android:focusable="false"
-		    	android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:visibility="gone"/>
-			<Button android:id="@+id/delMusic"
-				android:text="@string/config_del_folder"
-				android:focusable="true"
-		    	android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:visibility="gone"/>
-			    
-		</TableRow>
-	
-	</TableLayout>
+			    android:gravity="center">
+				
+				<Button android:id="@+id/addMusic"
+					android:text="@string/config_add_folder"
+					android:focusable="true"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				<Button android:id="@+id/updateMusic"
+					android:text="@string/config_update"
+					android:focusable="false"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				<Button android:id="@+id/delMusic"
+					android:text="@string/config_del_folder"
+					android:focusable="true"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				    
+			</TableRow>
+		</TableLayout>
 	
 </LinearLayout>
