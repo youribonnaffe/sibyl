@@ -41,6 +41,10 @@
                      android:lines="1"
                      android:layout_width="fill_parent"
                      android:layout_height="wrap_content"/>
+                <ImageView android:id="@+id/iconAdd" 
+                    android:adjustViewBounds="true"
+                    android:padding="5px" 
+                    android:gravity="right|center"/>
              </TableRow>
     </TableLayout>
  </LinearLayout>
