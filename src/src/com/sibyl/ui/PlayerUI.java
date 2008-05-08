@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -120,7 +119,7 @@ public class PlayerUI extends Activity
             }else{
                 progress.setProgress(maxTimer);
             }
-            // again in 0.1s
+            // again in 1s
             mTimeHandler.postDelayed(this, 1000);
         }
     };
@@ -156,8 +155,8 @@ public class PlayerUI extends Activity
             mService = ISibylservice.Stub.asInterface((IBinder)service);
 
             //DEBUG remplacant du NotificationManager/notifyWithText
-            Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
-                    Toast.LENGTH_SHORT).show();
+            //Toast.makeText(PlayerUI.this, "Connexion au service reussie", 
+              //      Toast.LENGTH_SHORT).show();
 
             //now that we are connected to the service, user can click on buttons
             //to start playing music
@@ -173,8 +172,8 @@ public class PlayerUI extends Activity
             // IMPORTANT : should freeze the application and user has to relaunch it
 
             //remplacant du NotificationManager/notifyWithText
-            Toast.makeText(PlayerUI.this, "Deconnexion du service", 
-                    Toast.LENGTH_SHORT).show(); 
+            //Toast.makeText(PlayerUI.this, "Deconnexion du service", 
+              //      Toast.LENGTH_SHORT).show(); 
 
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
@@ -223,8 +222,8 @@ public class PlayerUI extends Activity
 
     protected void onDestroy() 
     {
-        super.onDestroy();
         unbindService(mConnection);
+        super.onDestroy();
     }
 
     /**
@@ -232,10 +231,10 @@ public class PlayerUI extends Activity
      */
     protected void onPause() 
     {
-        super.onPause();
         mTimeHandler.removeCallbacks(timerTask); // stop the timer update
         // unregister intents
         unregisterReceiver(intentHandler);
+        super.onPause();
     }
 
     /**
@@ -275,8 +274,7 @@ public class PlayerUI extends Activity
      */
     private void displayPlaylist() 
     {
-        Intent i = new Intent(this, PlayListUI.class);
-        startSubActivity(i, 0);
+        startSubActivity(new Intent(this, PlayListUI.class), 0);
     }
 
     /**
@@ -284,8 +282,7 @@ public class PlayerUI extends Activity
      */
     private void displayConfig() 
     {
-        Intent i = new Intent(this, ConfigUI.class);
-        startSubActivity(i, 0);
+        startSubActivity(new Intent(this, ConfigUI.class), 0);
     }
 
     /**
@@ -377,8 +374,7 @@ public class PlayerUI extends Activity
                 displayConfig();
                 break;
             case COVER_ID:
-                Intent i = new Intent(this, AlbumUI.class);
-                startSubActivity(i, 0);
+                startSubActivity(new Intent(this, AlbumUI.class), 0);
                 break;
         }
         return true;
@@ -388,7 +384,7 @@ public class PlayerUI extends Activity
     /* ---------------------  UI actions listener ----------------------------*/
 
     /*
-     * Manage when the progressbar is clicked.
+     * Manage when the progress bar is clicked.
      * If a music was played or paused, the song is played at the new position
      * If the service was stopped, but the playlist filled, we launch the play
      */
@@ -576,33 +572,6 @@ public class PlayerUI extends Activity
         }
     };
 
-    /*
-    //  Listener for the Button Avance. Avance the lecture of the song of 30sec
-    //  useful for tests of handling the end of the song
-    private OnClickListener mAvanceListener = new OnClickListener()
-    {
-        public void onClick(View v)
-        {
-            try
-            {
-                //avance de 30sec (30000ms)
-                int newTime=mService.getCurrentPosition()+30000;
-                if(newTime >= mService.getDuration()) 
-                {
-                    newTime=mService.getDuration()-3000;
-                }
-                mService.setCurrentPosition(newTime);
-
-                //update of the current time displayed
-                // ugly but only for debug
-                playRefresh();
-            }
-            catch (DeadObjectException ex){
-                Log.v(TAG, ex.toString());
-                // user should be warned
-            }
-        }
-    };*/
 
     /* --------------------- END UI actions listener -------------------------*/
 
