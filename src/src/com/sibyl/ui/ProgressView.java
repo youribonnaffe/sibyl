@@ -20,16 +20,18 @@ package com.sibyl.ui;
 
 import java.util.Map;
 
-import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.DateUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.sibyl.R;
+import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
 
 /*
  * An evoluated progress bar. The progress bar display is update when the progress is incremented.
@@ -42,6 +44,7 @@ public class ProgressView extends View {
     private Paint ptLine3; //the effect
     private Paint ptFull;   //the background of the progress bar
     private Paint ptBorder; //the border of the progress bar
+    private Paint ptText; 
     //shape
     private Rect elapse; //the elapsed time
     private Rect fullView2; // the effect
@@ -51,8 +54,10 @@ public class ProgressView extends View {
     private int progress;
     private int total;
     //dimension of the view
+    private final static int size = 20;
     private int width;
     private int height;
+    private final String sep = "/";
 
     private OnProgressChangeListener listener;
     private static final int padding = 1; //width of the border
@@ -86,6 +91,12 @@ public class ProgressView extends View {
         ptBorder.setAntiAlias(true);
         ptBorder.setARGB(255, 255, 255, 255); //border color
         
+        ptText = new Paint();
+        ptText.setAntiAlias(true);
+        ptText.setARGB(255, 70, 70, 70); //text color
+        ptText.setTextSize(size);
+        
+        
         elapse = new Rect(0,0,getWidth(),getHeight());
         fullView2 = new Rect(0,0,getWidth(),getHeight()/2);
         fullView = new Rect(0,0,0,0);//init at zero because we don't now the dimension of the view for the moment
@@ -95,7 +106,8 @@ public class ProgressView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        
+        String elaps = DateUtils.formatElapsedTime(progress/1000);
+        String tot = DateUtils.formatElapsedTime(total/1000);
         //background and border
         canvas.drawRect(fullView,ptFull );
         //elapsed time.
@@ -110,9 +122,10 @@ public class ProgressView extends View {
         canvas.drawLine(0,0, 0, height, ptBorder);
         canvas.drawLine(0,height, width, height, ptBorder);
         canvas.drawLine(width,0, width, height, ptBorder);
-        //log for debugging
-        //Log.v("PROGRESS", ((Integer)progress).toString()+"/"+((Integer)total).toString());
-        //Log.v("PROGRESS_INIT", ((Integer)getWidth()).toString()+"-"+((Integer)height).toString());
+        //be carefull: height and size are not in the same units. height is in pixel and size in something else
+        canvas.drawText(elaps, width/2-ptText.measureText(elaps), height/2+size/3, ptText);
+        canvas.drawText( sep, width/2, height/2+size/2, ptText);
+        canvas.drawText(tot, width/2+ptText.measureText(sep), height/2+size/3, ptText);
     }
     
     /*
@@ -122,7 +135,6 @@ public class ProgressView extends View {
         width = getWidth();
         height = getHeight();
         progress = 0;
-        Log.v("PROGRESS_INIT", ((Integer)getWidth()).toString()+"-"+((Integer)height).toString());
         fullView.set(0,0,width,height);
         invalidate();
     }
