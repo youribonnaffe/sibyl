@@ -12,7 +12,7 @@
     * mettre l'acces au covermanager : via un bouton (B)
     * ~~mettre un spinner pour les modes de lecture~~ (B)
     * ~~redessiner ConfigUI~~ (B)
-    * regrouper les modes (B)
+    * ~~regrouper les modes~~ (B)
     * fenêtre : listes ? + espace _?? je comprends pas..._
   * CoverUI :  
     * ~~redonner le nom de l'album~~ (S)
