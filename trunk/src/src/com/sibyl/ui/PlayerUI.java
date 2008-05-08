@@ -82,13 +82,16 @@ public class PlayerUI extends Activity
     private IntentFilter intentF;
     private static String pathCover;
     
+    //Click information for the touch mode
     private float firstClickPosX;
     private float firstClickPosY;
     private float firstClickTime;
-    
+    //constants for touch mode
+    private static final float gapDbClickTime = 500;
     private static final float gapTime = 1000;
-    private static final float gapY = 60;
-    private static final float gapX = 100;
+    private static final float gapSmall = 60;
+    private static final float gapLong = 100;
+    private static final float gapDbClick = 50;
 
     private int maxTimer;
     //handler for calculating elapsed time when playing a song
@@ -410,26 +413,32 @@ public class PlayerUI extends Activity
         }
     };
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
+     */
     public boolean onTouchEvent(MotionEvent ev){
         int action = ev.getAction();
         lecture.requestFocus();
 
         if(action == MotionEvent.ACTION_DOWN){
+            if((ev.getEventTime()-firstClickTime) < gapDbClickTime){
+                if( Math.sqrt( Math.pow(firstClickPosX-ev.getRawX(),2)+Math.pow(firstClickPosY-ev.getRawY(),2)) < gapDbClick){
+                    playPauseAction();
+                }
+            }
             firstClickPosX = ev.getRawX();
             firstClickPosY = ev.getRawY();
             firstClickTime = ev.getEventTime();
-            
-            Log.v(TAG, "Down! "+ ((Float)firstClickPosX).toString() +"-"+((Float)firstClickPosY).toString() );
         }
         
+        /*touch screen released: play next/previous song or display playlistUI*/
         if(action == MotionEvent.ACTION_UP){
-            Log.v(TAG, "Up! "+ ((Float)ev.getRawX()).toString() +"-"+((Float)ev.getRawY()).toString() );
-            
-            if( Math.abs(ev.getRawY()-firstClickPosY) < gapY && (ev.getEventTime()-firstClickTime) < gapTime){ 
-                /* if the Y gap is small and in 1 second*/
-                
+            /*if the Y gap is small and less than on second between the mouse down and up*/
+            if( Math.abs(ev.getRawY()-firstClickPosY) < gapSmall && (ev.getEventTime()-firstClickTime) < gapTime){ 
                 float gap =  ev.getRawX() - firstClickPosX;
-                if( gap > gapX && next.isEnabled()){
+                /*move from the left to the right*/
+                if( gap > gapLong && next.isEnabled()){
                     Log.v(TAG,"DROIT -->");
                     try{
                         mService.next();    
@@ -438,7 +447,8 @@ public class PlayerUI extends Activity
                         Log.v(TAG, ex.toString());
                     }
                 }
-                if( gap < -1*gapX && previous.isEnabled()){
+                /*move from the right to the left*/
+                if( gap < -1*gapLong && previous.isEnabled()){
                     Log.v(TAG, "<--GAUCHE");
                     try{
                         mService.prev();
@@ -447,6 +457,20 @@ public class PlayerUI extends Activity
                         Log.v(TAG, ex.toString());
                     }
                 }
+            }
+            else if( Math.abs(ev.getRawX()-firstClickPosX) < gapSmall && (ev.getEventTime()-firstClickTime) < gapTime){
+                float gap =  ev.getRawY() - firstClickPosY;
+                /*move from the up to the down*/
+                if( gap > gapLong){
+                    Log.v(TAG,"Down -->");
+                    displayPlaylist();
+                }
+                /*we can make on if loop,abs(gap) > gapLong, but if in the futur up->down and down->up are to different movement, each has its own loop*/
+                /*move from the down to the up*/
+                if( gap < -1*gapLong){
+                    Log.v(TAG, "<--UP");
+                    displayPlaylist();
+                }       
             }
         }
         return true;
