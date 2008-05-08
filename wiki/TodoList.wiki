@@ -5,7 +5,7 @@
     * ~~aligner les numéros () à droite~~ en violet rose bonbon
     * mettre des images( petit triangle)
     * mettre des animations
-    * afficher (25) pour les smartplaylists  
+    * ~~afficher (25) pour les smartplaylists~~
   * AlbumUI :
     * ~~nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net~~ (Y)
   * ConfigUI :
@@ -19,7 +19,7 @@
   * Général :
     * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)  
     * de nombreuses issues sont en cours (tout le monde !)
-    * faire le multilingue (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
+    * ~~faire le multilingue~~ (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
     * avoir toujours les mêmes styles -> artist en italique...
     * titres sur toutes les fenêtres
     * ~~tracker les chaînes dans le java~~
