@@ -47,22 +47,34 @@ public class AddUI extends ListActivity
     private MusicDB mdb;    //the database
 
     private Cursor mCursor = null;
-    private int[] field ={R.string.add_artist, R.string.add_album, R.string.add_style ,
+    private static final int[] field ={R.string.add_artist, R.string.add_album, R.string.add_style ,
             R.string.add_song, R.string.add_smart_playlist}; /* id List for main menu */
-    private static int nbField = 5; /*number of row in field*/
+    private static final int nbField = 5; /*number of row in field*/
 
-    private int[]  fieldSMP = { R.string.playlist_most_played, 
+    private static final int[]  fieldSMP = { R.string.playlist_most_played, 
             R.string.playlist_most_played,
             R.string.playlist_random}; /*string id list for Smart Play List menu*/
-    private static int nbFieldSMP = 3;/*number of smart playlist*/
+    private static final int nbFieldSMP = 3;/*number of smart playlist*/
 
-    private enum TRANSLATION_TO {LEFT, RIGHT, NO_TRANS}; // sense of the animation when changing menu
-    private enum STATE { MAIN, ARTIST, ALBUM, STYLE,SONG, SMART_PLAYLIST};
-    private STATE positionMenu = STATE.MAIN; //position in the menu
+    private static final int TRANSLATION_LEFT = 0; // sense of the animation when changing menu
+    private static final int TRANSLATION_RIGHT = 1;
+    //private static final int TRANSLATION_NO_TRANS = 2;
+    private static final class STATE {  // C++ style enum of the positions of AddUI
+        public static final int MAIN    = 0;
+        public static final int ARTIST  = 1;
+        public static final int ALBUM   = 2;
+        public static final int STYLE   = 3;
+        public static final int SONG    = 4;
+        public static final int SMART_PLAYLIST = 5;
+    };
+    private int positionMenu = STATE.MAIN; //position in the menu
     private int positionRow = 0; //row position in main menu
 
     private Animation RTLanim; //right to left translation
     private Animation LTRanim; //left to right translation
+    
+    private static final int NO_MODIF = 0; // activity has not modified the playlist
+    private static final int MODIF = 1; // activity has modified the playlist
     
     @Override
     protected void onCreate(Bundle icicle) 
@@ -80,9 +92,9 @@ public class AddUI extends ListActivity
         {
             Log.v(TAG, ex.toString());
         }   
-        displayMainMenu(TRANSLATION_TO.LEFT);
-        // 0 means that we didn't modify the playlist
-        setResult(0);
+        displayMainMenu(TRANSLATION_LEFT);
+        // NO_MODIF means that we didn't modify the playlist
+        setResult(NO_MODIF);
     }
 
     @Override
@@ -113,7 +125,7 @@ public class AddUI extends ListActivity
     }
 
     /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
-    private void displayMainMenu(TRANSLATION_TO sense)
+    private void displayMainMenu(int sense)
     {
         Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
@@ -122,10 +134,10 @@ public class AddUI extends ListActivity
         }
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
-        if( sense == TRANSLATION_TO.LEFT) {
+        if( sense == TRANSLATION_LEFT) {
             getListView().startAnimation(RTLanim);
         }
-        else if( sense == TRANSLATION_TO.RIGHT) {
+        else if( sense == TRANSLATION_RIGHT) {
             getListView().startAnimation(LTRanim);
         }
     }
@@ -142,9 +154,9 @@ public class AddUI extends ListActivity
         Log.v(TAG, ">>> AddUI::refreshMenu() called");
         /*LinearLayout row = (LinearLayout) vu;
         TextView text = (TextView) row.findViewById(R.id.textfield);*/
-        if( positionMenu == STATE.MAIN){
+        if( positionMenu == STATE.MAIN ){
             positionRow = pos;
-            showSubMenu(TRANSLATION_TO.LEFT);/*text.getText());*/
+            showSubMenu(TRANSLATION_LEFT);/*text.getText());*/
         }
         else
         {   
@@ -179,22 +191,22 @@ public class AddUI extends ListActivity
                     mdb.insertPlaylist(Music.SONG.GENRE, mCursor.getString(ID));
                 }
             }
-            // 1 means that we did modify the playlist
-            setResult(1);
+            // MODIF means that we did modify the playlist
+            setResult(MODIF);
             positionMenu = STATE.MAIN;
-            displayMainMenu(TRANSLATION_TO.LEFT);
+            displayMainMenu(TRANSLATION_LEFT);
         }
 
     }
 
 
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
-    private void showSubMenu(TRANSLATION_TO sense){ /*CharSequence text){*/
+    private void showSubMenu(int sense){ /*CharSequence text){*/
         Log.v(TAG, ">>> AddUI::showSubMenu() called");
-        if( sense == TRANSLATION_TO.LEFT) {
+        if( sense == TRANSLATION_LEFT ) {
             getListView().startAnimation(RTLanim);
         }
-        else if( sense == TRANSLATION_TO.RIGHT) {
+        else if( sense == TRANSLATION_RIGHT ) {
             getListView().startAnimation(LTRanim);
         }
 
@@ -233,19 +245,19 @@ public class AddUI extends ListActivity
 
         /*if the cursor is empty, we adjust the text in function of the submenu*/
         startManagingCursor(mCursor);
-        if( mCursor.count() == 0){
+        if( mCursor.count() == 0 ){
             TextView emptyText = (TextView) findViewById(android.R.id.empty);
             switch(positionMenu){
-                case ARTIST : 
+                case STATE.ARTIST : 
                     emptyText.setText(R.string.add_empty_artist);
                     break;
-                case ALBUM :
+                case STATE.ALBUM :
                     emptyText.setText(R.string.add_empty_album);
                     break;
-                case STYLE :
+                case STATE.STYLE :
                     emptyText.setText(R.string.add_empty_genre);
                     break;
-                case SONG :
+                case STATE.SONG :
                     emptyText.setText(R.string.add_empty_song);
                     break;
             }
@@ -268,9 +280,9 @@ public class AddUI extends ListActivity
             }
         }
 
-        if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+        if( keyCode == KeyEvent.KEYCODE_DPAD_LEFT ){
             /*quit AddUI*/
-            if( positionMenu == STATE.MAIN){
+            if( positionMenu == STATE.MAIN ){
                 finish();
             }
             /*Go upper in the menu*/
@@ -279,7 +291,7 @@ public class AddUI extends ListActivity
                     positionMenu == STATE.SMART_PLAYLIST ||
                     positionMenu == STATE.SONG ||
                     positionMenu == STATE.STYLE) {
-                displayMainMenu(TRANSLATION_TO.RIGHT);
+                displayMainMenu(TRANSLATION_RIGHT);
                 positionMenu = STATE.MAIN;
             }
         }

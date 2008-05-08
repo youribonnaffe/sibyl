@@ -23,7 +23,7 @@ public class Music {
     public static final String[] SUPPORTED_FILE_FORMAT = { ".mp3", ".ogg", ".m4a",".amr", ".mid", 
         ".smf", ".xmf", ".mxmf", ".imy", ".rtttl", ".rtx", "ota"};
 
-    public static class Action {
+    public static final class Action {
         // lets try to put strings with different sizes to optimize equals test
         // or thats just totally stupid
         public static final String PLAY  =    "play";
@@ -39,7 +39,7 @@ public class Music {
     public static final String PREFS = "sibyl_prefs";
 
     /* states of the service */
-    public static class State {
+    public static final class State {
         public static final int ERROR = -1;
         public static final int PLAYING = 0;
         public static final int PAUSED = 1;
@@ -48,7 +48,7 @@ public class Music {
     }
 
     /* Modes of the service */
-    public static class Mode {
+    public static final class Mode {
         public static final int NORMAL = 0; // songs are played in the order of the playlist
         public static final int RANDOM = 1; // songs are played randomly
         public static int getText(int mode){
@@ -59,7 +59,7 @@ public class Music {
         }
     }
 
-    public static class LoopMode {
+    public static final class LoopMode {
         public static final int NO_REPEAT = 0; // each song will be played once
         public static final int REPEAT_SONG = 1; // the current song will be repeated while loopmode is REPEAT_SONG 
         public static final int REPEAT_PLAYLIST = 2; // the current playlist will be repeated when finished  
@@ -82,7 +82,7 @@ public class Music {
         CURRENT_PLAYLIST.ID };
     public static final String[] DIR = {DIRECTORY.ID, DIRECTORY.DIR};
 
-    public static class SONG {
+    public static final class SONG {
         public static final String ID = "_id";
         public static final String URL = "url";
         public static final String TITLE = "title";
@@ -94,28 +94,28 @@ public class Music {
         public static final String GENRE = "genre";
     }
 
-    public static class ARTIST {
+    public static final class ARTIST {
         public static final String ID = "_id";
         public static final String NAME = "artist_name";
     }
 
-    public static class ALBUM {
+    public static final class ALBUM {
         public static final String ID = "_id";
         public static final String NAME = "album_name";
         public static final String COVER = "cover_url";
     }
 
-    public static class GENRE {
+    public static final class GENRE {
         public static final String ID = "_id";
         public static final String NAME = "genre_name";
     }
 
-    public static class CURRENT_PLAYLIST {
+    public static final class CURRENT_PLAYLIST {
         public static final String POS = "pos";
         public static final String ID = "id";
     }
 
-    public static class DIRECTORY 
+    public static final class DIRECTORY 
     {
         public static final String ID = "_id";
         public static final String DIR = "dir";
