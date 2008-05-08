@@ -23,16 +23,10 @@
     <string name="short_text">lll</string>
     <string name="medium_text">kkkoooppp</string>
     <string name="long_text">aaadddeeevvvcccwww</string>
-    
     <string name="titre">Sibyl</string>
-    <string name="titre_long">Song title very very very very very long</string>
     <string name="artiste">mobile your music</string>
-    <string name="artiste_long">Long Artiste is lllooonnnngggg</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
-    <string name="time_zero">00:00</string>
-    <string name="separateur">/</string>
-    <string name="time_total">05:00</string>
     <string name="next">&gt;&gt;</string>
     <string name="previous">&lt;&lt;</string>
     <string name="menu_cover_manager">Cover manager</string>
@@ -40,13 +34,10 @@
     <!--  PlayListUI -->
     <string name="playList_title">Playlist</string>
     <string name="playList_empty">Playlist is empty</string>
-    
     <string name="menu_quit">Quit</string>
     <string name="menu_playList">Playlist</string>
     <string name="menu_option">Option</string>
     <string name="sep_artiste_song">  -  </string>
-    
-    
     <string name="menu_add">Add...</string>
     <string name="menu_new">New...</string>
     <string name="menu_back">Back</string>

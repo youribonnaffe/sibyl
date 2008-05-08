@@ -71,8 +71,6 @@ public class PlayerUI extends Activity
     // views of the ui
     private TextView artiste;
     private TextView titre;
-    private TextView elapsedTime;
-    private TextView tempsTotal;
     private Button lecture;
     private Button next;
     private Button previous;
@@ -115,11 +113,9 @@ public class PlayerUI extends Activity
                 // an error should be thrown by the service (or not)
             }
             if(timer <= maxTimer){
-                progress.setProgress(timer);
-                elapsedTime.setText(DateUtils.formatElapsedTime(timer/1000));
+               progress.setProgress(timer);
             }else{
                 progress.setProgress(maxTimer);
-                elapsedTime.setText(DateUtils.formatElapsedTime(maxTimer/1000));
             }
             // again in 0.1s
             mTimeHandler.postDelayed(this, 1000);
@@ -203,7 +199,6 @@ public class PlayerUI extends Activity
         lecture.requestFocus();
         //launch the service.
         launchService();
-
         //register intent so we will be aware of service changes
         intentF = new IntentFilter();
         intentF.addAction(Music.Action.PAUSE);
@@ -319,12 +314,6 @@ public class PlayerUI extends Activity
         //get labels
         artiste = (TextView) findViewById(R.id.artiste);
         titre = (TextView) findViewById(R.id.titre);
-        tempsTotal = (TextView) findViewById(R.id.tpsTotal);
-        elapsedTime = (TextView) findViewById(R.id.tpsEcoule);
-
-        elapsedTime.setText(DateUtils.formatElapsedTime(0));
-        tempsTotal.setText(DateUtils.formatElapsedTime(0));
-
         //set cover
         cover = (AnimatedCover) findViewById(R.id.cover);
         cover.setImageResource(R.drawable.logo);
@@ -332,6 +321,7 @@ public class PlayerUI extends Activity
         //get progress
         progress = (ProgressView) findViewById(R.id.progress);
         progress.setOnProgressChangeListener(changeListener);
+        progress.setTotal(0);
     }
 
     /*
@@ -405,8 +395,6 @@ public class PlayerUI extends Activity
                 if( ! mService.setCurrentPosition(newPos) ) {
                     progress.setProgress(0);
                 }
-                //update UI
-                elapsedTime.setText(DateUtils.formatElapsedTime(newPos/1000));
                 //relaunch timer if we are playing
                 if( mService.getState() == Music.State.PLAYING )
                 {
@@ -619,7 +607,6 @@ public class PlayerUI extends Activity
     private void timerRefresh(){
         try{
             int time = mService.getCurrentPosition();
-            elapsedTime.setText(DateUtils.formatElapsedTime(time/1000));
             progress.setProgress(time);
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
@@ -660,7 +647,6 @@ public class PlayerUI extends Activity
             int plSize = mdb.getPlaylistSize();
             // set total time
             int time = mService.getDuration();
-            tempsTotal.setText(DateUtils.formatElapsedTime(time/1000));
             progress.setTotal(time);
             progress.initializeProgress();
 
@@ -710,17 +696,15 @@ public class PlayerUI extends Activity
         // remove timer
         mTimeHandler.removeCallbacks(timerTask);
         // reset all 
-        elapsedTime.setText(DateUtils.formatElapsedTime(0));
+        progress.setTotal(0);
         progress.setProgress(0);
         progress.initializeProgress();
         artiste.setText(R.string.artiste);
-        tempsTotal.setText(R.string.time_zero);
         titre.setText(R.string.titre);
         lecture.setText(R.string.play);
         cover.setImageDrawable(getResources().getDrawable(R.drawable.logo), Move.NO_ANIM);
         pathCover = null;
         enableButtons(false);
-
     }
 
     private void resumeRefresh(){
