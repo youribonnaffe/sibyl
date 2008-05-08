@@ -27,6 +27,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -58,12 +60,15 @@ public class AddUI extends ListActivity
     private STATE positionMenu = STATE.MAIN; //position in the menu
     private int positionRow = 0; //row position in main menu
 
+    private Animation anim;
+    
     @Override
     protected void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
         Log.v(TAG,"AddUI start");
         setContentView(R.layout.add);
+        anim = AnimationUtils.loadAnimation(this, R.anim.translation);
         try
         {
             mdb = new MusicDB(this);
@@ -107,12 +112,14 @@ public class AddUI extends ListActivity
     /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
     private void displayMainMenu()
     {
+        Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
         for( int i = 0; i < nbField; i++){ //add all strings to the adapter
             adapter.addObject(getString(field[i]));
         }
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
+        getListView().startAnimation(anim);
     }
 
     /*When a row is selected, the UI is update by this method*/
@@ -124,7 +131,7 @@ public class AddUI extends ListActivity
 
     /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
     private void refreshMenu(int pos){
-
+        Log.v(TAG, ">>> AddUI::refreshMenu() called");
         /*LinearLayout row = (LinearLayout) vu;
         TextView text = (TextView) row.findViewById(R.id.textfield);*/
         if( positionMenu == STATE.MAIN){
@@ -175,6 +182,8 @@ public class AddUI extends ListActivity
 
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
     private void mainMenu(){ /*CharSequence text){*/
+        Log.v(TAG, ">>> AddUI::mainMenu() called");
+        getListView().startAnimation(anim);
 
         //wich line has been selected:  add artist, albums, songs,... except Smart Playlist
         switch( field[positionRow]){
