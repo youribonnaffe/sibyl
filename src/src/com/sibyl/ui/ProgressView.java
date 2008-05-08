@@ -153,6 +153,7 @@ public class ProgressView extends View {
      */
     public void setTotal(int tot){
         total = tot;
+        invalidate();
     }
     
     /*
