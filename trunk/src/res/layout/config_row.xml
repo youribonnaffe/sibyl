@@ -24,7 +24,6 @@
 	    <TextView android:id="@+id/mode" 
 	    	android:textSize="9pt"
 	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:text="TOTOO"/>
+	        android:layout_height="wrap_content"/>
     </TableRow>
 </TableLayout>

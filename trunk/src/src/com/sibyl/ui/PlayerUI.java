@@ -64,7 +64,6 @@ public class PlayerUI extends Activity
     private static final int PLAYLIST_ID = Menu.FIRST ;
     private static final int OPTION_ID = Menu.FIRST +1;
     private static final int QUIT_ID = Menu.FIRST +2;
-    private static final int COVER_ID = Menu.FIRST +3;
 
     // debug
     private static final String TAG = "PLAYERUI";
@@ -354,7 +353,6 @@ public class PlayerUI extends Activity
         menu.add(0, PLAYLIST_ID, R.string.menu_playList);
         menu.add(0, OPTION_ID, R.string.menu_option);
         menu.add(0, QUIT_ID, R.string.menu_quit);
-        menu.add(0, COVER_ID, R.string.menu_cover_manager);
         return true;
     }
 
@@ -383,9 +381,6 @@ public class PlayerUI extends Activity
             case OPTION_ID:
                 //launch the option's activity
                 displayConfig();
-                break;
-            case COVER_ID:
-                startSubActivity(new Intent(this, AlbumUI.class), 0);
                 break;
         }
         return true;

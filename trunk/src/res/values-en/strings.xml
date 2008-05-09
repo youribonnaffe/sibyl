@@ -37,7 +37,6 @@
     <string name="pause">Pause</string>
     <string name="next">&gt;&gt;</string>
     <string name="previous">&lt;&lt;</string>
-    <string name="menu_cover_manager">Cover manager</string>
     
     <!--  PlayListUI -->
     <string name="playList_title">Playlist</string>
@@ -81,8 +80,9 @@
     <string name="config_add_folder">Add folder</string>    
     <string name="config_del_folder">Remove folder</string>
     <string name="config_update">Update library</string>
-    <string name="config_mode">Manage Modes..</string>
+    <string name="config_mode">Manage Modes...</string>
     <string name="config_library">Manage Library...</string>
+    <string name="button_cover_manager">Cover manager</string>
         
 
     <!-- PLAYLIST -->

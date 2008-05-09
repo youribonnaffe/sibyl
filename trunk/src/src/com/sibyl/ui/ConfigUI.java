@@ -27,7 +27,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
@@ -44,7 +43,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -74,6 +72,7 @@ public class ConfigUI extends Activity
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
+    private Button coverUI;
     private boolean dirVisible;
     private boolean modeVisible;
     private Spinner repeatMusic;
@@ -102,17 +101,15 @@ public class ConfigUI extends Activity
         addDir = (Button) findViewById(R.id.addMusic);
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
+        coverUI = (Button) findViewById(R.id.coverUI);
         dirVisible = false;
         modeVisible=false;
         
-        
-
         listeMode = (ListView) findViewById(R.id.listConfigMode);
         listeLibrary = (ListView) findViewById(R.id.listConfigLibrary);
         
         repeatMusic = (Spinner) findViewById(R.id.repMusic);
         
-
         playMode = (Spinner) findViewById(R.id.shuMusic);
         
 
@@ -205,6 +202,7 @@ public class ConfigUI extends Activity
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
+        coverUI.setOnClickListener(mCoverUI);
         
         String[] mode = {(String) getText(R.string.config_mode)};
         ArrayAdapter<String> adapterMode =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,mode);
@@ -299,7 +297,18 @@ public class ConfigUI extends Activity
             }
         }
     };
-
+    
+    private OnClickListener mCoverUI = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            displayAlbumUI();
+        }
+    };
+    private void displayAlbumUI()
+    {
+        startSubActivity(new Intent(this, AlbumUI.class), 0);
+    }
     /**
      * Classe gérant la mise a jour de la collection de musiques
      * Gestion faite dans un thread d'ou l'utilisation de Runnable
@@ -406,7 +415,6 @@ public class ConfigUI extends Activity
             { 
                 Log.v(TAG,doe.toString());
             }
-            fillData();
         }
 
         /**

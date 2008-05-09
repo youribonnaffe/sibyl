@@ -38,7 +38,11 @@
 		android:layout_height="wrap_content"
 		android:visibility="gone"
 		android:text="Normal"/>
- 		
+		
+	<View 
+		android:layout_width="fill_parent"
+		android:layout_height="10dip" /> 		
+		
 	<ListView android:id="@+id/listConfigLibrary"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"/>
@@ -81,5 +85,14 @@
 				    
 			</TableRow>
 		</TableLayout>
-	
+		
+	<View 
+		android:layout_width="fill_parent"
+		android:layout_height="10dip" />
+		
+	<Button android:id="@+id/coverUI"
+		android:text="@string/button_cover_manager" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left" />
 </LinearLayout>
