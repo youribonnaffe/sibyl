@@ -4,7 +4,7 @@
   * AddUI :
     * ~~aligner les numéros () à droite~~ en violet rose bonbon
     * mettre des images( petit triangle)
-    * mettre des animations
+    * ~~mettre des animations (I)~~
     * ~~afficher (25) pour les smartplaylists~~
   * AlbumUI :
     * ~~nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net~~ (Y)
@@ -30,7 +30,7 @@
     * refaire l'interface : alleger le xml, améliorer le lancement de Sibyl (Y-S)
     * gérer les noms tres longs (I/S)
     * menu : playlist - option - quit (B)
-    * effets click'n'touch : double cick pause, haut bas : playlistui
+    * effets click'n'touch : double click pause, haut bas : playlistui
     * progress bar : plus grosse, avec le temps dessus
     * imagebutton
     * les 2 intents -> playpause sur le début :/
