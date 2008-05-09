@@ -78,7 +78,8 @@ public class PlayListUI extends ListActivity
     private Runnable animTask = new Runnable(){
         public void run(){
             // start flipping if selected item is selected
-            if( (ViewFlipper)(getListView().getSelectedView().findViewById(R.id.text_switcher)) == previous){
+            if( getListView().getSelectedView() != null && 
+                    (ViewFlipper)(getListView().getSelectedView().findViewById(R.id.text_switcher)) == previous){
                 // called twice so we avoid second call
                 previous.setInAnimation(inAnimation);
                 previous.setOutAnimation(outAnimation);
