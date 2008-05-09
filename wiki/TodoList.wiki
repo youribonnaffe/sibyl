@@ -3,7 +3,7 @@
 ==TODO:==
   * AddUI :
     * ~~aligner les numéros () à droite~~ en violet rose bonbon
-    * mettre des images( petit triangle)
+    * ~~mettre des images( petit triangle)~~
     * ~~mettre des animations (I)~~
     * ~~afficher (25) pour les smartplaylists~~
   * AlbumUI :
@@ -20,8 +20,8 @@
     * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)  
     * de nombreuses issues sont en cours (tout le monde !)
     * ~~faire le multilingue~~ (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
-    * avoir toujours les mêmes styles -> artist en italique...
-    * titres sur toutes les fenêtres
+    * ~~avoir toujours les mêmes styles -> artist en italique...~~
+    * ~~titres sur toutes les fenêtres~~
     * ~~tracker les chaînes dans le java~~
     * uniformiser les unités du xml
     * agrandir les textes
@@ -38,7 +38,7 @@
   * PlayListUI :
     * sauvegarde de PL et pouvoir en recharger (B)
     * ~~menu : back - add - new~~
-    * focus = défilement si texte trop long _youri : working on it_
+    * ~~focus = défilement si texte trop long~~
 
 
 ==TEST:==
