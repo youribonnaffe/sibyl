@@ -30,7 +30,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.sibyl.R;
 import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
 
 /*
