@@ -32,13 +32,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.os.DeadObjectException;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.ViewFlipper;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
@@ -55,14 +62,33 @@ public class PlayListUI extends ListActivity
     private static final String TAG = "PLAYLIST";
     private static final int ADD_UI = 1;
 
+    private Animation outAnimation;
+    private Animation inAnimation;
+
     ISibylservice mService = null;
 
     private int songPlayed;
 
     //the database
     private MusicDB mdb;    
-    
+
     private Cursor pl;
+
+    // Animation task
+    private Runnable animTask = new Runnable(){
+        public void run(){
+            // start flipping if selected item is selected
+            if( (ViewFlipper)(getListView().getSelectedView().findViewById(R.id.text_switcher)) == previous){
+                // called twice so we avoid second call
+                previous.setInAnimation(inAnimation);
+                previous.setOutAnimation(outAnimation);
+                previous.startFlipping();
+            }
+        }
+    };
+    // the last row where we started an animation
+    private ViewFlipper previous; 
+
 
     private IntentFilter intentF;
     private IntentReceiver intentHandler = new IntentReceiver(){
@@ -105,6 +131,7 @@ public class PlayListUI extends ListActivity
     };
 
     /* ----------------------- ACTIVITY STATES -------------------------------*/
+    private Handler mHandler = new Handler();
 
     /** 
      * Called when the activity is first created. 
@@ -121,6 +148,33 @@ public class PlayListUI extends ListActivity
         launchService();
         songPlayed = 0;
         setContentView(R.layout.playlist);
+
+        inAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        outAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+
+        // to manage animation when moving in the list
+        getListView().setOnItemSelectedListener(new OnItemSelectedListener(){
+            public void onItemSelected(AdapterView av, View v, int position, long id){
+                ViewFlipper vs = (ViewFlipper)(v.findViewById(R.id.text_switcher));
+                if(!vs.isFlipping()){
+                    // stop previous viewflipper and display to song name
+                    if(previous != null && previous.isFlipping()){
+                        previous.stopFlipping();
+                        if(previous.getDisplayedChild() != 0 ){
+                            previous.showNext();
+                        }
+                    }
+                    // set previous viewflipper
+                    previous = vs;
+                    // remove previous call to effect
+                    mHandler.removeCallbacks(animTask);
+                    // start flipping in 500ms
+                    mHandler.postDelayed(animTask,500);
+                }
+            }
+            public void onNothingSelected(AdapterView parent){}
+        });
+
         try
         {
             mdb = new MusicDB(this);
@@ -130,6 +184,13 @@ public class PlayListUI extends ListActivity
         {
             Log.v(TAG, ex.toString());
         }   
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        Log.v(TAG, "event key up");
+        return super.onKeyUp(keyCode, event);
     }
 
     protected void onResume() {
@@ -184,7 +245,9 @@ public class PlayListUI extends ListActivity
         Cursor c = mdb.getPlayListInfo();
         int icon;
         startManagingCursor(c);
-        String[] colName = {"iconPl","text1","textsep","text2"};
+        String[] colName = {"iconPl","text1","text2"};
+        int[] to = {R.id.iconPl,R.id.text1, R.id.text2};
+
         ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
         songPlayed = 0;
         try
@@ -194,7 +257,7 @@ public class PlayListUI extends ListActivity
             int playerState = mService.getState();
             while(c.next())
             {
-                 row = new ArrayList<String>();
+                row = new ArrayList<String>();
                 // display icon if is playing and this song is played
                 if( ( playerState == Music.State.PAUSED || playerState == Music.State.PLAYING )
                         && mService!= null && index == c.position()){
@@ -206,20 +269,17 @@ public class PlayListUI extends ListActivity
                 }
                 row.add(""+icon);
                 row.add(c.getString(0));
-                row.add(getString(R.string.sep_artiste_song));
                 row.add(c.getString(1));
                 rows.add(row);
             }
-
         }
         catch(DeadObjectException ex){
             Log.v(TAG, ex.toString());
         }
-        pl = new ArrayListCursor(colName,rows);
+        pl = new ArrayListCursor(colName,rows);        
         startManagingCursor(pl);
-        int[] to = {R.id.iconPl,R.id.text1,R.id.textsep,R.id.text2};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.playlist_row,pl,colName,to);
-        c.close();        
+        c.close();
         setListAdapter(adapter);
         setSelection(songPlayed);
     }
