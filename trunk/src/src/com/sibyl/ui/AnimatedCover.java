@@ -48,8 +48,8 @@ public class AnimatedCover extends ImageView {
         NEXT, PREV, NO_ANIM;
         public int getValue(){
             switch(this){
-                case NEXT  : return -1;
-                case PREV : return 1; 
+                case NEXT  : return 1;
+                case PREV : return -1; 
                 default : return 0;
             }
         }
