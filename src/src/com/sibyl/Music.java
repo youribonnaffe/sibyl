@@ -131,11 +131,11 @@ public class Music {
         public String getQuery(){
             switch(this){
                 case RANDOM : 
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY random() LIMIT "+25;
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY random() LIMIT "+SIZE;
                 case LESS_PLAYED : 
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played ASC LIMIT "+25;
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played ASC LIMIT "+SIZE;
                 case MOST_PLAYED :
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played DESC LIMIT "+25;
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played DESC LIMIT "+SIZE;
                 default : 
                     return "";
             }
