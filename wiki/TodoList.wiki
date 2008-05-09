@@ -9,7 +9,7 @@
   * AlbumUI :
     * ~~nettoyer les menus de AlbumUI: enlever le mode Manual, faire une interface pour le mode de recherche sur le net~~ (Y)
   * ConfigUI :
-    * mettre l'acces au covermanager : via un bouton (B)
+    * ~~mettre l'acces au covermanager : via un bouton~~ (B)
     * ~~mettre un spinner pour les modes de lecture~~ (B)
     * ~~redessiner ConfigUI~~ (B)
     * ~~regrouper les modes~~ (B)
@@ -29,14 +29,14 @@
     * ~~pouvoir desactiver l'animation pour les couvertures~~ (I)
     * refaire l'interface : alleger le xml, améliorer le lancement de Sibyl (Y-S)
     * gérer les noms tres longs (I/S)
-    * menu : playlist - option - quit (B)
+    * ~~menu : playlist - option - quit~~ (B)
     * effets click'n'touch : double click pause, haut bas : playlistui
     * progress bar : plus grosse, avec le temps dessus
     * imagebutton
     * les 2 intents -> playpause sur le début :/
     * ~~mettre un time max pour éviter les dépassements à l'affichage~~
   * PlayListUI :
-    * sauvegarde de PL et pouvoir en recharger (B)
+    * sauvegarde de PL et pouvoir en recharger
     * ~~menu : back - add - new~~
     * ~~focus = défilement si texte trop long~~
 
