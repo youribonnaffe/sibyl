@@ -16,95 +16,127 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	
-	   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" 
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_weight="1.0"
-        android:layout_height="fill_parent">
 
-	<View 
-        android:layout_width="fill_parent"
-		android:layout_height="10dip" />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:layout_gravity="center" 
+	android:gravity="center">
 
-
-	<TextView android:id="@+id/titre"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" 
-		android:minHeight="40sp"
-		android:textSize="25sp"
-        android:singleLine="true"
-		android:text="@string/titre"
-		android:layout_gravity="center" />
-
-	<TextView android:id="@+id/artiste"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:textSize="16sp"
-		android:textStyle="italic"
-		android:singleLine="true"
-		android:text="@string/artiste"
-		android:padding="10dip" 
-		android:layout_gravity="center"
-		android:textAlign="center" />
-
-	<com.sibyl.ui.AnimatedCover android:id="@+id/cover"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:layout_gravity="center"
-		android:adjustViewBounds="true" 
-		android:maxHeight="200sp"
-		android:maxWidth="200sp" />
-</LinearLayout>
-
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical" 
-		android:layout_gravity="bottom"
 		android:layout_width="fill_parent"
-		android:layout_weight="0.0"
-		android:layout_height="wrap_content">
+		android:layout_height="fill_parent">
 
-                    <com.sibyl.ui.ProgressView
-                        android:id="@+id/progress" 
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dip"
-                        android:layout_gravity="bottom|center"
-                        android:padding="20dip"
-                        android:layout_weight="0.0" />
+		<LinearLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="vertical" 
+			android:layout_gravity="center"
+			android:layout_width="wrap_content" 
+			android:layout_weight="1.0"
+			android:layout_height="fill_parent">
 
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:orientation="horizontal"
-			android:layout_gravity="center|bottom"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			
-			<Button android:id="@+id/prec" 
-                android:text="&lt;&lt;"
-				android:focusable="true" 
+			<View 
+			    android:layout_width="fill_parent"
+				android:layout_height="10dip" />
+
+
+			<TextView 
+			    android:id="@+id/titre"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+				android:layout_height="wrap_content" 
+				android:minHeight="40sp"
+				android:textSize="25sp" 
+				android:singleLine="true"
+				android:text="@string/titre" 
 				android:layout_gravity="center" />
 
-			<Button android:id="@+id/lecture"
-				android:text="@string/play" 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center" />
+			<TextView 
+			    android:id="@+id/artiste"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:textSize="16sp"
+				android:textStyle="italic" 
+				android:singleLine="true"
+				android:text="@string/artiste" 
+				android:padding="10dip"
+				android:layout_gravity="center" 
+				android:textAlign="center" />
 
-			<Button android:id="@+id/next" 
-                android:text="&gt;&gt;"
-				android:focusable="true" 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center" />
+			<com.sibyl.ui.AnimatedCover 
+			    android:id="@+id/cover"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_gravity="center"
+				android:adjustViewBounds="true" 
+				android:maxHeight="200sp"
+				android:maxWidth="200sp" />
 				
 		</LinearLayout>
 
-	</LinearLayout>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="vertical" 
+			android:layout_gravity="bottom"
+			android:layout_width="fill_parent" 
+			android:layout_weight="0.0"
+			android:layout_height="wrap_content">
 
-</LinearLayout>
+			<com.sibyl.ui.ProgressView 
+			    android:id="@+id/progress"
+				android:layout_width="wrap_content" 
+				android:layout_height="25dip"
+				android:layout_gravity="bottom|center" 
+				android:padding="20dip"
+				android:layout_weight="0.0" />
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal"
+				android:layout_gravity="center|bottom"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+
+				<Button 
+				    android:id="@+id/prec" 
+				    android:text="&lt;&lt;"
+					android:focusable="true" 
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center" />
+
+				<Button 
+				    android:id="@+id/lecture"
+					android:text="@string/play" 
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center" />
+
+				<Button 
+				    android:id="@+id/next" 
+				    android:text="&gt;&gt;"
+					android:focusable="true" 
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center" />
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</LinearLayout>
+	
+	<LinearLayout 
+	    android:orientation="vertical"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:gravity="center" >
+		
+		<ImageView 
+		    android:id="@+id/imageover"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center" />
+			
+	</LinearLayout>
+	
+</FrameLayout>
