@@ -573,12 +573,11 @@ public class MusicDB {
         // because 1 is for unknown songs
         if(albumId == 1) return null;
 
-        return mDb.rawQuery("SELECT album_name, artist._id _id, artist_name " +
-                "FROM song, album, artist " +
-                "WHERE album._id=album " +
-                "AND artist._id=artist " +
-                "AND album._id="+albumId+
-                " GROUP BY artist_name", null);
+        return mDb.rawQuery("SELECT album_name, artist_name, artist._id " +
+                "FROM  album, artist, song " +
+                "WHERE album._id="+albumId+
+                " AND album._id=song.album " +
+                " AND song.artist=artist._id", null);
     }
 
 
@@ -613,12 +612,11 @@ public class MusicDB {
      * @return all (album,artist)
      */
     public Cursor getAlbumCovers(){
-        return mDb.rawQuery("SELECT DISTINCT album._id _id, artist_name, album_name, cover_url "+
-                "FROM album, artist,song "+
-                "WHERE song.artist = artist._id "+
-                "AND song.album = album._id "+
+        return mDb.rawQuery("SELECT DISTINCT album._id _id, album_name, cover_url "+
+                "FROM album, song "+
+                "WHERE song.album = album._id "+
                 "AND album._id > 1 "+
-                "ORDER BY artist_name, album_name", null);
+                "ORDER BY album_name", null);
     }
 
     /**
@@ -636,5 +634,15 @@ public class MusicDB {
         }
         c.close();
         return null;
+    }
+    
+    public Cursor getArtistFromAlbum(String albumName){
+        return mDb.rawQuery("SELECT DISTINCT artist_name" +
+        		" FROM artist, song, album" +
+        		" WHERE album_name='"+albumName+"'"+
+        		" AND album._id=song.album"+
+        		" AND song.artist=artist._id" +
+        		" ORDER BY artist_name"
+        		, null);
     }
 }

@@ -18,33 +18,38 @@
 -->
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="80px"
     android:orientation="horizontal"
     android:shrinkColumns="0"
     android:stretchColumns="0">
-    
     <TableRow>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="40px"
+            android:padding="5px"
+            android:orientation="vertical"
+            android:shrinkColumns="0,1"
+    android:stretchColumns="0,1">
                 
             <TextView android:id="@+id/album" android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical" />
-                             
-            <TextView android:id="@+id/artist" android:textSize="20sp"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
+                android:paddingBottom="2px"
+                />
+                             
+            <TextView android:id="@+id/artist" android:textSize="16sp"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:textStyle="italic"
-                android:gravity="center_vertical" />
+                android:layout_weight="1.0"
+              />
                 
         </LinearLayout>
                 
         <ImageView android:id="@+id/img" android:adjustViewBounds="true"
-            android:padding="5px" 
             android:gravity="center"
+            android:maxHeight="80px"
+            android:maxWidth="80px"
         />
     </TableRow>
 </TableLayout>

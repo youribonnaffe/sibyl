@@ -34,10 +34,11 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.sibyl.CoverDownloader;
 import com.sibyl.Music;
@@ -54,8 +55,8 @@ public class AlbumUI extends ListActivity {
 
     private static final String TAG = "ALBUMUI";
     //constants for the cursor
-    static private final String[] res = {"album_name","cover_url","artist_name"}; 
-    static private final int[] to = {R.id.album, R.id.img, R.id.artist};
+    static private final String[] res = {"album_name","cover_url"}; 
+    static private final int[] to = {R.id.album, R.id.img};
     //constant menu
     private static final int BACK_ID = Menu.FIRST;
     private static final int DOWNLOAD_ID = Menu.FIRST+1;
@@ -71,7 +72,7 @@ public class AlbumUI extends ListActivity {
     private Handler coverTaskHandler = new Handler();
 
     /* ----------------------- ACTIVITY THREADS -------------------------------*/
-    
+
     // to refresh a specific album cover in the listview
     private class CoverUpdate implements Runnable{
         public void run(){
@@ -114,7 +115,7 @@ public class AlbumUI extends ListActivity {
             }
         }
     };
-    
+
     /* ----------------------- ACTIVITY STATES -------------------------------*/
 
     protected void onCreate(Bundle icicle) {
@@ -145,7 +146,7 @@ public class AlbumUI extends ListActivity {
         trans.setInterpolator(new AccelerateInterpolator());
         groupView.startAnimation(trans);
     }
-    
+
     @Override
     protected void onPause() 
     {
@@ -156,7 +157,7 @@ public class AlbumUI extends ListActivity {
         groupView.startAnimation(trans);
         super.onPause();
     }
-    
+
     protected void onDestroy(){
         super.onDestroy();
         if( coverThread != null ){
@@ -166,7 +167,7 @@ public class AlbumUI extends ListActivity {
     }
 
     /* ----------------------- ACTIVITY EVENTS -------------------------------*/
-    
+
     /**
      *
      * @see android.app.Activity#onActivityResult(int, int, java.lang.String, android.os.Bundle)
@@ -230,7 +231,7 @@ public class AlbumUI extends ListActivity {
 
 
     /* --------------------------- utils -----------------------------------*/
-    
+
     /**
      * Fill the ListView with the association of the album and its cover
      */
@@ -246,10 +247,27 @@ public class AlbumUI extends ListActivity {
                 }else{
                     v.setImageDrawable(Drawable.createFromPath(url));
                 }
-                v.setMaxHeight(80);
-                v.setMaxWidth(80);
             }
         };
+        rows.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                if(columnIndex == cursor.getColumnIndex(Music.ALBUM.NAME)){
+                    String artists = new String();
+                    Cursor c = mdb.getArtistFromAlbum(cursor.getString(columnIndex));
+                    if(c.first()){
+                        artists+=c.getString(0);
+                    }
+                    while(c.next()){
+                        artists+=", "+c.getString(0);
+                    }
+                    Log.v(TAG, "set "+artists);
+                    c.close();
+                    ((TextView)view.getRootView().findViewById(R.id.artist)).setText(artists);
+                }
+                return false;
+            }
+        });
+        setSelection(0);
         setListAdapter(rows);
     }
 
