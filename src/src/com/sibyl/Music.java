@@ -20,8 +20,7 @@ package com.sibyl;
 
 public class Music {
 
-    public static final String[] SUPPORTED_FILE_FORMAT = { ".mp3", ".ogg", ".m4a",".amr", ".mid", 
-        ".smf", ".xmf", ".mxmf", ".imy", ".rtttl", ".rtx", "ota"};
+    public static final String[] SUPPORTED_FILE_FORMAT = { ".mp3", ".ogg" };
 
     public static final class Action {
         // lets try to put strings with different sizes to optimize equals test
