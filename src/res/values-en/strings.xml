@@ -81,6 +81,8 @@
     <string name="config_add_folder">Add folder</string>    
     <string name="config_del_folder">Remove folder</string>
     <string name="config_update">Update library</string>
+    <string name="config_mode">Manage Modes..</string>
+    <string name="config_library">Manage Library...</string>
         
 
     <!-- PLAYLIST -->

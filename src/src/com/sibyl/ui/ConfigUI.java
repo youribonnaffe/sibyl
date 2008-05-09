@@ -76,16 +76,8 @@ public class ConfigUI extends Activity
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
     private boolean dirVisible;
     private boolean modeVisible;
-    private ArrayList<String> rowMode;
-    private ArrayList<String> rowDir;
-    private ArrayList<ArrayList> rowsMode;
-    private ArrayList<ArrayList> rowsDir;
     private Spinner repeatMusic;
     private Spinner playMode;
-    private Cursor listMode;
-    private Cursor listDir;
-    static private final String[] colName = {"mode"};
-    static private final int[] to = {R.id.mode};
 
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
@@ -214,22 +206,13 @@ public class ConfigUI extends Activity
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
         
-        rowsMode = new ArrayList<ArrayList>();
-        rowsDir = new ArrayList<ArrayList>();
-        
-        rowMode = new ArrayList<String>();
-        rowMode.add("Manage Modes...");
-        rowsMode.add(rowMode);
-        listMode = new ArrayListCursor(colName,rowsMode);
-        SimpleCursorAdapter adapterMode =  new SimpleCursorAdapter(this,R.layout.config_row,listMode,colName, to);
+        String[] mode = {(String) getText(R.string.config_mode)};
+        ArrayAdapter<String> adapterMode =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,mode);
         listeMode.setAdapter(adapterMode);
         listeMode.setOnItemClickListener(mListeMode);
         
-        rowDir = new ArrayList<String>();
-        rowDir.add("Manage Library...");
-        rowsDir.add(rowDir);
-        listDir = new ArrayListCursor(colName,rowsDir);
-        SimpleCursorAdapter adapterDir =  new SimpleCursorAdapter(this,R.layout.config_row,listDir,colName, to);
+        String[] library = {(String) getText(R.string.config_library)};
+        ArrayAdapter<String> adapterDir =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,library);
         listeLibrary.setAdapter(adapterDir);      
         listeLibrary.setOnItemClickListener(mListeDir);
         
@@ -423,13 +406,6 @@ public class ConfigUI extends Activity
             { 
                 Log.v(TAG,doe.toString());
             }
-            /*try {
-                
-                repeat = mService.getLooping();
-                shuffle = mService.getPlayMode();
-            } catch (DeadObjectException e) {
-                e.printStackTrace();
-            }*/
             fillData();
         }
 
@@ -462,7 +438,6 @@ public class ConfigUI extends Activity
     protected void onDestroy() 
     {
         super.onDestroy();
-        listMode.close();
         unbindService(mConnection);
     }
 
