@@ -249,7 +249,7 @@ public class AddUI extends ListActivity
             case R.string.add_smart_playlist:
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
                 for( int i = 0; i < nbFieldSMP; i++){
-                    adapter.addObject(getString(fieldSMP[i]));
+                    adapter.addObject(getString(fieldSMP[i])+" ("+Music.SmartPlaylist.SIZE+")");
                 }
 
                 setListAdapter(adapter);

@@ -126,15 +126,16 @@ public class Music {
     {
         RANDOM, LESS_PLAYED, MOST_PLAYED;
 
+        public static final int SIZE = 25;
         // SQL query associated with a playlist
         public String getQuery(){
             switch(this){
                 case RANDOM : 
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY random() LIMIT 25";
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY random() LIMIT "+25;
                 case LESS_PLAYED : 
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played ASC LIMIT 25";
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played ASC LIMIT "+25;
                 case MOST_PLAYED :
-                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played DESC LIMIT 25";
+                    return "INSERT INTO current_playlist(id) SELECT _id FROM song ORDER BY count_played DESC LIMIT "+25;
                 default : 
                     return "";
             }
