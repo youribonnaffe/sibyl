@@ -41,9 +41,6 @@ public abstract class TagReader {
         }
     }
 
-    public HashMap<String, String> getValues(){
-        return cv;
-    }
-
+    public abstract HashMap<String, String> getValues();
 
 }
