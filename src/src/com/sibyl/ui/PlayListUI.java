@@ -139,6 +139,7 @@ public class PlayListUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setTitle(R.string.playlist_title);
         //register intent so we will be aware of service changes
         intentF = new IntentFilter();
         intentF.addAction(Music.Action.PLAY);

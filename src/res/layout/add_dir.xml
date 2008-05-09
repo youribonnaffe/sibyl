@@ -21,6 +21,16 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">            
             
+            <View         
+        android:layout_width="fill_parent"
+        android:layout_height="10dip"/>
+    <TextView android:id="@+id/add_dir_location"
+          android:layout_width="fill_parent" 
+          android:layout_height="fill_parent"/>
+   <View         
+        android:layout_width="fill_parent"
+        android:layout_height="10dip"/>
+          
     <ListView android:id="@+id/android:list"
           android:layout_width="fill_parent"
           android:textSize="15sp"

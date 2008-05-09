@@ -59,6 +59,7 @@ public class DelDirUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setTitle(R.string.del_dir_title);
         setContentView(R.layout.del_dir);
         
         mStrings = new ArrayList<String>();

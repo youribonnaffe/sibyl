@@ -20,23 +20,6 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    
-    <View         
-    	android:layout_width="fill_parent"
-    	android:layout_height="10dip"/>
-        
-  	<TextView android:id="@+id/playlist"
-	        android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"
-	       	android:text="@string/playList_title"
-            android:textSize="12pt"
-            android:textStyle="bold"
-            android:textAlign="center"
-        	/>
-        	
-    <View         
-    	android:layout_width="fill_parent"
-    	android:layout_height="15dip"/>
         	
     <ListView android:id="@+id/android:list"
           android:layout_width="wrap_content"

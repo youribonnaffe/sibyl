@@ -20,7 +20,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:shrinkColumns="0"
+    android:shrinkColumns="1"
     android:stretchColumns="1"
 >
 <TableRow>

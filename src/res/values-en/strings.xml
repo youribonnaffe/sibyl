@@ -17,7 +17,15 @@
  * limitations under the License.
  -->
 <resources>
-
+    <!--  UIs titles -->
+    <string name="options_title">Sibyl - Options</string>
+    <string name="playlist_title">Sibyl - Playlist</string>
+    <string name="add_title">Sibyl - Add to playlist</string>
+    <string name="cover_manager_title">Sibyl - Cover Manager</string>
+    <string name="cover_manager_album_title">Sibyl - Cover Manager</string>
+    <string name="add_dir_title">Sibyl - Add folder to library</string>
+    <string name="del_dir_title">Sibyl - Remove folder from library</string>
+    
     <!--  PlayerUI -->
     <string name="app_name">Sibyl, mobile your music</string>
     <string name="short_text">lll</string>
@@ -66,7 +74,7 @@
 	<string name="rep_no">No repeat</string>
     <string name="rep_one">Repeat song</string>
     <string name="rep_all">Repeat All</string>
-    <string name="dir">Directory: </string>
+    <string name="dir">Directory : </string>
     <string name="normal">Normal</string>
     <string name="random">Shuffle</string>
     <string name="dir_empty">Empty</string>

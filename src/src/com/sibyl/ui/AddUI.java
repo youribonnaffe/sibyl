@@ -84,6 +84,7 @@ public class AddUI extends ListActivity
     protected void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setTitle(R.string.add_title);
         Log.v(TAG,"AddUI start");
         setContentView(R.layout.add);
         LTRanim = AnimationUtils.loadAnimation(this, R.anim.ltrtranslation);
