@@ -100,6 +100,7 @@ public class ConfigUI extends Activity
     public void onCreate(Bundle icicle) 
     {
         super.onCreate(icicle);
+        setTitle(R.string.options_title);
         setContentView(R.layout.config);
 
         launchService(); // lancement du service

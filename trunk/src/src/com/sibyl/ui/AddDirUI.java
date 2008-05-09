@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.sibyl.Music;
 import com.sibyl.MusicDB;
@@ -68,13 +69,12 @@ public class AddDirUI extends ListActivity
     public void onCreate(Bundle icicle) 
     {
     	super.onCreate(icicle);
+    	setTitle(R.string.add_dir_title);
         setContentView(R.layout.add_dir);
         
         // répertoire par défaut : /data/musique
         path = "/data/music";
         
-        /* Association des élément aux fichiers XML */
-        setTitle(getText(R.string.dir)+path);
 
         /* création du navigateur */
         fillBD(path);
@@ -110,7 +110,6 @@ public class AddDirUI extends ListActivity
         {
             path = parent;
             fillBD(path);
-            setTitle(getText(R.string.dir)+path);
         }
         else
         {
@@ -119,7 +118,6 @@ public class AddDirUI extends ListActivity
             {
                 path = item;
                 fillBD(path);
-                setTitle(getText(R.string.dir)+path);
             }
             else
             {
@@ -161,7 +159,7 @@ public class AddDirUI extends ListActivity
                 {
                     row = new ArrayList<String>();
                     row.add(""+R.drawable.folder);
-                    row.add(f.getPath());
+                    row.add(f.getName());
                     rows.add(row);
                 }
                 else
@@ -172,7 +170,7 @@ public class AddDirUI extends ListActivity
                         {
                             row = new ArrayList<String>();
                             row.add(""+R.drawable.audio);
-                            row.add(f.getPath());
+                            row.add(f.getName());
                             rows.add(row);
                             break;
                         }   
@@ -185,6 +183,8 @@ public class AddDirUI extends ListActivity
         int[] to = {R.id.imgFile,R.id.file};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_dir_row,c,colName,to);
         setListAdapter(adapter);
+        ((TextView)findViewById(R.id.add_dir_location)).setText(getText(R.string.dir)+" "+path);
+
     }
 
     /**

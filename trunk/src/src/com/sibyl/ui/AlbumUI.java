@@ -119,9 +119,9 @@ public class AlbumUI extends ListActivity {
 
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        setTitle(R.string.cover_manager_title);
         setContentView(R.layout.album);
         groupView = (LinearLayout) findViewById(R.id.group);
-        setTitle(R.string.cov_title);
         Log.v(TAG,"CoverUI is launched");
         selectedAlbum = 0;
         try

@@ -63,7 +63,7 @@ public class CoverUI extends Activity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         Log.v(TAG,"CoverUI is launched");
-
+        setTitle(R.string.cover_manager_album_title);
         setContentView(R.layout.cover);
         groupView = (LinearLayout) findViewById(R.id.group);
         gallery = (GridView) findViewById(R.id.gallery);
