@@ -741,14 +741,14 @@ public class PlayerUI extends Activity
             switch(mService.getState()){
                 case Music.State.PLAYING :
                     enableButtons(true);
-                    playRefresh();
                     songRefresh(Move.NO_ANIM);
+                    playRefresh();
                     break;
                 case Music.State.PAUSED :
                     // we still have to refresh timer once
                     enableButtons(true);
-                    pauseRefresh();
                     songRefresh(Move.NO_ANIM);
+                    pauseRefresh();
                     timerRefresh();
                     break;
                 case Music.State.END_PLAYLIST_REACHED :
