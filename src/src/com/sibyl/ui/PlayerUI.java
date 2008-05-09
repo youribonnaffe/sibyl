@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -223,11 +224,6 @@ public class PlayerUI extends Activity
             // user should be warned
         }
         
-        //animation for imageOver which disappears smoothly with an alpha animation
-        imageOverAnim = new AlphaAnimation(1.0f, 0.0f);
-        imageOverAnim.setStartOffset(1000);
-        imageOverAnim.setDuration(800);
-        imageOverAnim.setInterpolator(new LinearInterpolator());
     }
 
     protected void onDestroy() 
@@ -254,6 +250,13 @@ public class PlayerUI extends Activity
     {
         super.onResume();
 
+        //animation for imageOver which disappears smoothly with an alpha animation
+        imageOverAnim = new AlphaAnimation(1.0f, 0.0f);
+        imageOverAnim.setStartOffset(1000);
+        imageOverAnim.setDuration(800);
+        imageOverAnim.setInterpolator(new LinearInterpolator());
+        imageOverAnim.setAnimationListener(new imageOverAnimListener());
+        
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
         Log.v(TAG, "resume");
@@ -332,6 +335,7 @@ public class PlayerUI extends Activity
         
         //get image over
         imageOver = (ImageView) findViewById(R.id.imageover);
+        imageOver.setVisibility(View.INVISIBLE);
     }
 
     /*
@@ -450,6 +454,7 @@ public class PlayerUI extends Activity
                     }
                     //showing image to inform the user we have recognized its move
                     imageOver.setImageResource(R.drawable.next_notification);
+                    imageOver.setVisibility(View.VISIBLE);
                     imageOver.startAnimation(imageOverAnim);
                 }
                 /*move from the right to the left*/
@@ -463,6 +468,7 @@ public class PlayerUI extends Activity
                     }
                     //showing image to inform the user we have recognized its move
                     imageOver.setImageResource(R.drawable.prev_notification2);
+                    imageOver.setVisibility(View.VISIBLE);
                     imageOver.startAnimation(imageOverAnim);
                 }
             }
@@ -584,6 +590,21 @@ public class PlayerUI extends Activity
         }
     };
 
+    
+    private class imageOverAnimListener implements Animation.AnimationListener 
+    {
+
+        public void onAnimationEnd() {
+            imageOver.setVisibility(View.INVISIBLE);
+        }
+
+        public void onAnimationRepeat() {
+        }
+
+        public void onAnimationStart() {
+        }
+        
+    }
 
     /* --------------------- END UI actions listener -------------------------*/
 
