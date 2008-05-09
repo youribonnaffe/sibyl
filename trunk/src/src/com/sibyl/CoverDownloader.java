@@ -68,7 +68,8 @@ public class CoverDownloader {
             try{
                 // build request, search for album
                 String q = QUERY_AMAZON + "&Title="+ URLEncoder.encode(c.getString(c.getColumnIndex(Music.ALBUM.NAME)), "UTF-8");
-                if(c.getInt(c.getColumnIndex(Music.ARTIST.ID)) > 1){
+                int col = c.getColumnIndex(Music.ARTIST.ID);
+                if(col >= 0 && c.getInt(col) > 1){
                     // there is an artist associated so we add his name to the request
                     q+= "&Artist=" + URLEncoder.encode(c.getString(c.getColumnIndex(Music.ARTIST.NAME)), "UTF-8");
                 }
@@ -80,6 +81,7 @@ public class CoverDownloader {
 
                 // retrieve images from answer
                 String answer = ap.getResult();
+                Log.v("DL", q+" avant "+answer);
                 if(answer != null){
                     // save cover and add it to database
 
