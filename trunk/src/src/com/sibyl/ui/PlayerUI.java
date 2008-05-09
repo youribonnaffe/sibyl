@@ -38,9 +38,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
@@ -75,6 +77,9 @@ public class PlayerUI extends Activity
     private Button previous;
     private AnimatedCover cover;
     private ProgressView progress;
+    private ImageView imageOver;
+    
+    private AlphaAnimation imageOverAnim;
 
     private MusicDB mdb;    //the database
     private ISibylservice mService = null;
@@ -218,6 +223,12 @@ public class PlayerUI extends Activity
             Log.v(TAG, e.getMessage());
             // user should be warned
         }
+        
+        //animation for imageOver which disappears smoothly with an alpha animation
+        imageOverAnim = new AlphaAnimation(1.0f, 0.0f);
+        imageOverAnim.setStartOffset(1000);
+        imageOverAnim.setDuration(800);
+        imageOverAnim.setInterpolator(new LinearInterpolator());
     }
 
     protected void onDestroy() 
@@ -251,6 +262,8 @@ public class PlayerUI extends Activity
             resumeRefresh();
         }
     }
+    
+    
 
     /* ----------------------END ACTIVITY STATES -----------------------------*/
 
@@ -266,7 +279,6 @@ public class PlayerUI extends Activity
         lecture.setEnabled(enable);
         next.setEnabled(enable);
         previous.setEnabled(enable);
-        //avance.setEnabled(enable);
     }
 
     /**
@@ -293,9 +305,6 @@ public class PlayerUI extends Activity
         lecture = (Button) findViewById(R.id.lecture);
         next = (Button) findViewById(R.id.next);
         previous = (Button) findViewById(R.id.prec);
-        ///avance = (Button) findViewById(R.id.avance);
-
-        //avance.setVisibility(4);
 
         //disable buttons until we are connected to the service
         enableButtons(false);
@@ -304,7 +313,6 @@ public class PlayerUI extends Activity
         lecture.setOnClickListener(mPlayListener);
         next.setOnClickListener(mNextListener);
         previous.setOnClickListener(mPreviousListener);
-        //avance.setOnClickListener(mAvanceListener);
 
         //set focusable
         next.setFocusableInTouchMode(true);
@@ -322,6 +330,9 @@ public class PlayerUI extends Activity
         progress = (ProgressView) findViewById(R.id.progress);
         progress.setOnProgressChangeListener(changeListener);
         progress.setTotal(0);
+        
+        //get image over
+        imageOver = (ImageView) findViewById(R.id.imageover);
     }
 
     /*
@@ -442,6 +453,9 @@ public class PlayerUI extends Activity
                     catch(DeadObjectException ex){
                         Log.v(TAG, ex.toString());
                     }
+                    //showing image to inform the user we have recognized its move
+                    imageOver.setImageResource(R.drawable.next_notification);
+                    imageOver.startAnimation(imageOverAnim);
                 }
                 /*move from the right to the left*/
                 if( gap < -1*gapLong && previous.isEnabled()){
@@ -452,6 +466,9 @@ public class PlayerUI extends Activity
                     catch(DeadObjectException ex){
                         Log.v(TAG, ex.toString());
                     }
+                    //showing image to inform the user we have recognized its move
+                    imageOver.setImageResource(R.drawable.prev_notification2);
+                    imageOver.startAnimation(imageOverAnim);
                 }
             }
             else if( Math.abs(ev.getRawX()-firstClickPosX) < gapSmall && (ev.getEventTime()-firstClickTime) < gapTime){
