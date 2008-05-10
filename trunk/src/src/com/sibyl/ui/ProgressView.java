@@ -41,14 +41,15 @@ public class ProgressView extends View {
     private Paint ptLine; //the elapsed time
     private Paint ptLine2; //the effect
     private Paint ptLine3; //the effect
-    private Paint ptFull;   //the background of the progress bar
+    private Paint ptLine4; //the effect
     private Paint ptBorder; //the border of the progress bar
     private Paint ptText; 
     //shape
     private Rect elapse; //the elapsed time
     private Rect fullView2; // the effect
-    private Rect fullView; //the full background
     private Rect fullView3;
+    private Rect fullView4;
+
     //time
     private int progress;
     private int total;
@@ -66,25 +67,24 @@ public class ProgressView extends View {
      */
     public ProgressView(Context context, AttributeSet attr, Map inflateParams){
         super(context, attr, inflateParams);
-        Log.v("PROGRESS","Create");
         progress = 0;
         total = 1; //not 0 (divide by 0)
 
         ptLine = new Paint();
         ptLine.setAntiAlias(true);
         ptLine.setARGB(255, 255, 120, 40); //time elapsed color
-        
+
         ptLine2 = new Paint();
         ptLine2.setAntiAlias(true);
-        ptLine2.setARGB(40, 255, 255, 255); //effect: white with alpha
+        ptLine2.setARGB(30, 255, 255, 255); //effect: white with alpha
         
         ptLine3 = new Paint();
         ptLine3.setAntiAlias(true);
-        ptLine3.setARGB(80, 255, 255, 255); //effect: white with alpha
+        ptLine3.setARGB(50, 255, 255, 255); //effect: white with alpha
         
-        ptFull = new Paint();
-        ptFull.setAntiAlias(true);
-        ptFull.setARGB(255, 255, 210, 80); //background color
+        ptLine4 = new Paint();
+        ptLine4.setAntiAlias(true);
+        ptLine4.setARGB(80, 255, 255, 255); //effect: white with alpha
         
         ptBorder = new Paint();
         ptBorder.setAntiAlias(true);
@@ -95,36 +95,38 @@ public class ProgressView extends View {
         ptText.setARGB(255, 70, 70, 70); //text color
         ptText.setTextSize(size);
         
-        
         elapse = new Rect(0,0,getWidth(),getHeight());
         fullView2 = new Rect(0,0,getWidth(),getHeight()/2);
-        fullView = new Rect(0,0,0,0);//init at zero because we don't now the dimension of the view for the moment
+        //init at zero because we don't now the dimension of the view for the moment
         fullView3 = new Rect(0,0,0,0);
+        fullView4 = new Rect(0,0,0,0);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        String elaps = DateUtils.formatElapsedTime(progress/1000);
-        String tot = DateUtils.formatElapsedTime(total/1000);
-        //background and border
-        canvas.drawRect(fullView,ptFull );
-        //elapsed time.
-        elapse.set(1, 1, Math.round(((float)progress)/total*width), height-1); //normal elapsed time
-        fullView2.set(1, 1, width, height/2); //effect: just the upper part
-        fullView3.set(1, 1, width, height/4); //effect: just the upper part
-        canvas.drawRect(elapse, ptLine);
-        canvas.drawRect(fullView2, ptLine2);
-        canvas.drawRect(fullView3, ptLine3);
-        //border
-        canvas.drawLine(0,0, width, 0, ptBorder);
-        canvas.drawLine(0,0, 0, height, ptBorder);
-        canvas.drawLine(0,height, width, height, ptBorder);
-        canvas.drawLine(width,0, width, height, ptBorder);
-        //be carefull: height and size are not in the same units. height is in pixel and size in something else
-        canvas.drawText(elaps, width/2-ptText.measureText(elaps), height/2+size/3, ptText);
-        canvas.drawText( sep, width/2, height/2+size/2, ptText);
-        canvas.drawText(tot, width/2+ptText.measureText(sep), height/2+size/3, ptText);
+        if(width != 0){
+            String elaps = DateUtils.formatElapsedTime(progress/1000);
+            String tot = DateUtils.formatElapsedTime(total/1000);
+            //background and border
+            //canvas.drawRect(fullView,ptFull );
+            canvas.drawARGB(255, 255, 210, 80); 
+            //elapsed time.
+            elapse.set(1, 1, Math.round(((float)progress)/total*width), height-1); //normal elapsed time
+            canvas.drawRect(elapse, ptLine);
+            canvas.drawRect(fullView2, ptLine2);
+            canvas.drawRect(fullView3, ptLine3);
+            canvas.drawRect(fullView4, ptLine4);
+            //border
+            canvas.drawLine(0,0, width, 0, ptBorder);
+            canvas.drawLine(0,0, 0, height, ptBorder);
+            canvas.drawLine(0,height, width, height, ptBorder);
+            canvas.drawLine(width,0, width, height, ptBorder);
+            //be carefull: height and size are not in the same units. height is in pixel and size in something else
+            canvas.drawText(elaps, width/2-ptText.measureText(elaps), height/2+size/3, ptText);
+            canvas.drawText( sep, width/2, height/2+size/3, ptText);
+            canvas.drawText(tot, width/2+ptText.measureText(sep), height/2+size/3, ptText);
+        }
     }
     
     /*
@@ -134,7 +136,9 @@ public class ProgressView extends View {
         width = getWidth();
         height = getHeight();
         progress = 0;
-        fullView.set(0,0,width,height);
+        fullView2.set(1, 1, width, height/2); //effect: just the upper part
+        fullView3.set(1, 1, width, height/3); //effect: just the upper part
+        fullView4.set(1, 1, width, height/4); //effect: just the upper part
         invalidate();
     }
     
@@ -145,6 +149,7 @@ public class ProgressView extends View {
     public void setProgress(int prog){
         progress = prog;
         invalidate();
+        Log.v("PROGRESS","setProgress:"+((Integer)prog).toString()+"/"+((Integer)progress).toString());
     }
         
     /*
@@ -166,7 +171,6 @@ public class ProgressView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
                 float x_mouse = event.getX() - padding;
                 float width = getWidth() - 2*padding;
@@ -174,6 +178,7 @@ public class ProgressView extends View {
                 if (progress < 0){
                     progress = 0;
                 }
+                Log.v("PROGRESS", "Clicked:"+ ((Integer)progress).toString());
                 this.setProgress(progress);
                 if (listener != null){
                     listener.onProgressChanged(this, progress);
@@ -181,5 +186,4 @@ public class ProgressView extends View {
         }
         return true;
     }
-
 }
