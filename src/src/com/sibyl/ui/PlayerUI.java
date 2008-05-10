@@ -261,6 +261,7 @@ public class PlayerUI extends Activity
         
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
+        progress.initializeProgress();
         Log.v(TAG, "resume");
         if(mService != null){
             resumeRefresh();
@@ -421,14 +422,18 @@ public class PlayerUI extends Activity
                     progress.setProgress(0);
                 }
                 //relaunch timer if we are playing
-                if( mService.getState() == Music.State.PLAYING )
-                {
+                if( mService.getState() == Music.State.PLAYING){
                     //remove timer
                     mTimeHandler.removeCallbacks(timerTask);
                     maxTimer = mService.getDuration();
                     // add timer task to ui thread
                     mTimeHandler.post(timerTask);
                 }
+                else if( mService.getState() == Music.State.PAUSED){
+                    mService.start();
+                    mTimeHandler.post(timerTask);
+                }
+                
 
             }
             catch(DeadObjectException ex){}
@@ -797,6 +802,13 @@ public class PlayerUI extends Activity
         }catch(DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
+    }
+
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+        progress.initializeProgress();
     }
 
 }
