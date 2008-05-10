@@ -73,7 +73,7 @@ public class AddDirUI extends ListActivity
         setContentView(R.layout.add_dir);
         
         // répertoire par défaut : /data/musique
-        path = "/data/music";
+        path = Music.MUSIC_DIR;
         
 
         /* création du navigateur */

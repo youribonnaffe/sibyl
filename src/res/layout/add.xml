@@ -23,8 +23,7 @@
             
     <ListView android:id="@+id/android:list"
           android:layout_width="fill_parent"
-          android:textSize="15sp"
-          android:fadingEdgeLength="1.0sp"
+          android:fadingEdgeLength="1.0dp"
           android:layout_height="fill_parent"/>
             
     <TextView android:id="@+id/android:empty"

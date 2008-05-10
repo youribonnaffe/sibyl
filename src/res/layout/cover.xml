@@ -9,7 +9,7 @@
     <TextView android:id="@+id/titre"
           android:layout_width="wrap_content" 
           android:layout_height="wrap_content"
-          android:textSize="20.0sp"
+          android:textSize="@dimen/text_huge"
           android:layout_gravity="center"
           android:lines="1"/>
           
@@ -17,7 +17,6 @@
         android:id="@+id/gallery"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="fill_parent"
-	    android:padding="0dip"
 	    android:verticalSpacing="10"
 	    android:horizontalSpacing="10"
 	    android:numColumns="auto_fit"

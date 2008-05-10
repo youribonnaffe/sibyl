@@ -28,22 +28,22 @@
                         
             <TableRow>
                 <TextView android:id="@+id/textfield"
-                     android:textSize="9pt"
+                     android:textSize="@dimen/text_big"
                      android:textStyle="bold"
                      android:layout_width="wrap_content"
                      android:lines="1"
                      android:layout_height="wrap_content"/>
                 <TextView android:id="@+id/textnum"
-                     android:textSize="8pt"
+                     android:textSize="@dimen/text_small"
                      android:textStyle="bold"
-                     android:paddingLeft="10sp"
+                     android:paddingLeft="10dp"
                      android:textAlign="end"
                      android:lines="1"
                      android:layout_width="fill_parent"
                      android:layout_height="wrap_content"/>
                 <ImageView android:id="@+id/iconAdd" 
                     android:adjustViewBounds="true"
-                    android:padding="5px" 
+                    android:padding="5dp" 
                     android:gravity="right|center"/>
              </TableRow>
     </TableLayout>

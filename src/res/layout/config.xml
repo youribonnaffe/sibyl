@@ -41,7 +41,7 @@
 		
 	<View 
 		android:layout_width="fill_parent"
-		android:layout_height="10dip" /> 		
+		android:layout_height="10dp" /> 		
 		
 	<ListView android:id="@+id/listConfigLibrary"
 		android:layout_width="fill_parent"
@@ -88,7 +88,7 @@
 		
 	<View 
 		android:layout_width="fill_parent"
-		android:layout_height="10dip" />
+		android:layout_height="10dp" />
 		
 	<Button android:id="@+id/coverUI"
 		android:text="@string/button_cover_manager" 

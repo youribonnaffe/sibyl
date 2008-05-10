@@ -39,15 +39,15 @@
 
 			<View 
 			    android:layout_width="fill_parent"
-				android:layout_height="10dip" />
+				android:layout_height="10dp" />
 
 
 			<TextView 
 			    android:id="@+id/titre"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" 
-				android:minHeight="40sp"
-				android:textSize="25sp" 
+				android:minHeight="40dp"
+				android:textSize="@dimen/text_huge" 
 				android:singleLine="true"
 				android:text="@string/titre" 
 				android:layout_gravity="center" />
@@ -56,11 +56,11 @@
 			    android:id="@+id/artiste"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content" 
-				android:textSize="16sp"
+				android:textSize="@dimen/text_big"
 				android:textStyle="italic" 
 				android:singleLine="true"
 				android:text="@string/artiste" 
-				android:padding="10dip"
+				android:padding="10dp"
 				android:layout_gravity="center" 
 				android:textAlign="center" />
 
@@ -70,8 +70,8 @@
 				android:layout_height="wrap_content" 
 				android:layout_gravity="center"
 				android:adjustViewBounds="true" 
-				android:maxHeight="200sp"
-				android:maxWidth="200sp" />
+				android:maxHeight="200dp"
+				android:maxWidth="200dp" />
 				
 		</LinearLayout>
 
@@ -85,9 +85,9 @@
 			<com.sibyl.ui.ProgressView 
 			    android:id="@+id/progress"
 				android:layout_width="wrap_content" 
-				android:layout_height="25dip"
+				android:layout_height="25dp"
 				android:layout_gravity="bottom|center" 
-				android:padding="20dip"
+				android:padding="20dp"
 				android:layout_weight="0.0" />
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

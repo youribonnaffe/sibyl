@@ -27,9 +27,9 @@
     
     <ImageView android:id="@+id/imgFile" 
     	android:adjustViewBounds="true"
-        android:padding="5px" 
+        android:padding="5dp" 
         android:gravity="left"/>
-    <TextView android:id="@+id/file" android:textSize="20sp"
+    <TextView android:id="@+id/file" android:textSize="@dimen/text_huge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     </TableRow>
