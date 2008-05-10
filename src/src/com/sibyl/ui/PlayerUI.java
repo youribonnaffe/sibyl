@@ -139,8 +139,10 @@ public class PlayerUI extends Activity
                 pauseRefresh();
             }else if(i.getAction().equals(Music.Action.NEXT)){
                 songRefresh(Move.NEXT);
+                playRefresh();
             }else if(i.getAction().equals(Music.Action.PREVIOUS)){
                 songRefresh(Move.PREV);
+                playRefresh();
             }else if(i.getAction().equals(Music.Action.NO_SONG)){
                 noSongRefresh();
             }
@@ -609,7 +611,7 @@ public class PlayerUI extends Activity
     /* --------------------- END UI actions listener -------------------------*/
 
     /**
-     * when lecture button is used
+     * when lecture button is used, play or pause the service
      */
     private void playPauseAction (){
         try{ 
@@ -628,7 +630,10 @@ public class PlayerUI extends Activity
     }
 
     /**
-     * refresh elapsed time, only once !
+     * refresh <u>elapsed</u> time, only for once, doesnt start timertask
+     * a song should be loaded in the service
+     * used when resuming in paused state
+     * 
      */
     private void timerRefresh(){
         try{
@@ -640,7 +645,9 @@ public class PlayerUI extends Activity
     }
 
     /**
-     * refresh lecture button & timer
+     * refresh lecture button (display pause)
+     * start timertask to refresh time display
+     * the player should be playing
      */
     private void playRefresh(){
         lecture.setText(R.string.pause);
@@ -655,7 +662,7 @@ public class PlayerUI extends Activity
     }
 
     /**
-     * refresh lecture button & timer
+     * refresh lecture button & stop timertask
      */
     private void pauseRefresh(){
         lecture.setText(R.string.play);
@@ -664,7 +671,11 @@ public class PlayerUI extends Activity
     }
 
     /**
-     * refresh song information & buttons next, previous
+     * refresh song information :
+     * <u>total</u> time
+     * textual information (artist, song, ...)
+     * plays changing effect with param sense
+     * set next&previous button (disabled/enabled considering the playlist)
      */
     private void songRefresh(Move sense){
         try{
@@ -710,13 +721,14 @@ public class PlayerUI extends Activity
         }catch( DeadObjectException doe){
             Log.v(TAG, doe.toString());
         }
-        
-        //update play/pause button and timer
-        playRefresh();
     }
 
     /**
      * when there is no song to display
+     * displays default text
+     * disables buttons
+     * set timer to 0:0
+     * set cover to default image
      */
     private void noSongRefresh(){
         // remove timer
@@ -742,12 +754,14 @@ public class PlayerUI extends Activity
                 case Music.State.PLAYING :
                     enableButtons(true);
                     songRefresh(Move.NO_ANIM);
+                    // start timer & set lecture button text
                     playRefresh();
                     break;
                 case Music.State.PAUSED :
                     // we still have to refresh timer once
                     enableButtons(true);
                     songRefresh(Move.NO_ANIM);
+                    // set lecture button text
                     pauseRefresh();
                     timerRefresh();
                     break;
