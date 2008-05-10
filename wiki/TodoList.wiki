@@ -13,7 +13,7 @@
     * ~~mettre un spinner pour les modes de lecture~~ (B)
     * ~~redessiner ConfigUI~~ (B)
     * ~~regrouper les modes~~ (B)
-    * fenêtre : listes ? + espace _?? je comprends pas..._
+    * espacer les Manage... + faire un Manage covers comme les autres + les déplier par défaut
   * CoverUI :  
     * ~~redonner le nom de l'album~~ (S)
   * Général :
@@ -23,14 +23,14 @@
     * ~~avoir toujours les mêmes styles -> artist en italique...~~
     * ~~titres sur toutes les fenêtres~~
     * ~~tracker les chaînes dans le java~~
-    * uniformiser les unités du xml
+    * ~~uniformiser les unités du xml~~
     * agrandir les textes
   * PlayerUI :
     * ~~pouvoir desactiver l'animation pour les couvertures~~ (I)
     * refaire l'interface : alleger le xml, améliorer le lancement de Sibyl (Y-S)
     * gérer les noms tres longs (I/S)
     * ~~menu : playlist - option - quit~~ (B)
-    * effets click'n'touch : double click pause, haut bas : playlistui
+    * ~~effets click'n'touch : double click pause, haut bas : playlistui~~
     * progress bar : plus grosse, avec le temps dessus
     * imagebutton
     * les 2 intents -> playpause sur le début :/
