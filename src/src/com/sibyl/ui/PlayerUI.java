@@ -348,6 +348,20 @@ public class PlayerUI extends Activity
         bindService(new Intent(PlayerUI.this,
                 Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
     }
+    
+    private void startTouchEventAnimation(int imageRes)
+    {
+        try
+        {
+            imageOver.setImageResource(imageRes);
+            imageOver.setVisibility(View.VISIBLE);
+            imageOver.startAnimation(imageOverAnim);
+        }
+        catch(NullPointerException ex)
+        {//imageOver or imageOverAnim not yet initialized
+            Log.v(TAG, ex.toString());
+        }
+    }
 
     /* ---------------------  END utils --------------------------------------*/
 
@@ -430,9 +444,10 @@ public class PlayerUI extends Activity
         lecture.requestFocus();
 
         if(action == MotionEvent.ACTION_DOWN){
+            //double click => play or pause 
             if((ev.getEventTime()-firstClickTime) < gapDbClickTime){
                 if( Math.sqrt( Math.pow(firstClickPosX-ev.getRawX(),2)+Math.pow(firstClickPosY-ev.getRawY(),2)) < gapDbClick){
-                    playPauseAction();
+                    playPauseAction(true);
                 }
             }
             firstClickPosX = ev.getRawX();
@@ -455,9 +470,7 @@ public class PlayerUI extends Activity
                         Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
-                    imageOver.setImageResource(R.drawable.next_notification);
-                    imageOver.setVisibility(View.VISIBLE);
-                    imageOver.startAnimation(imageOverAnim);
+                    startTouchEventAnimation(R.drawable.next_notification);
                 }
                 /*move from the right to the left*/
                 if( gap < -1*gapLong && previous.isEnabled()){
@@ -469,9 +482,7 @@ public class PlayerUI extends Activity
                         Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
-                    imageOver.setImageResource(R.drawable.prev_notification2);
-                    imageOver.setVisibility(View.VISIBLE);
-                    imageOver.startAnimation(imageOverAnim);
+                    startTouchEventAnimation(R.drawable.prev_notification);
                 }
             }
             else if( Math.abs(ev.getRawX()-firstClickPosX) < gapSmall && (ev.getEventTime()-firstClickTime) < gapTime){
@@ -521,7 +532,7 @@ public class PlayerUI extends Activity
                 return true;
             case KeyEvent.KEYCODE_DPAD_CENTER :
                 if(lecture.isEnabled()){
-                    playPauseAction();
+                    playPauseAction(false);
                 }
                 return true;
         }
@@ -558,7 +569,7 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
-            playPauseAction();
+            playPauseAction(false);
         }
     };
 
@@ -613,15 +624,21 @@ public class PlayerUI extends Activity
     /**
      * when lecture button is used, play or pause the service
      */
-    private void playPauseAction (){
+    private void playPauseAction (boolean fromTouchMode){
         try{ 
             if( mService.getState() == Music.State.PLAYING) //call if a music is played (pause the music)
             {
                 mService.pause();
+                if(fromTouchMode) {
+                    startTouchEventAnimation(R.drawable.pause_notification);
+                }
             }
             else // to start listening a music or resume.
             {
                 mService.start();
+                if(fromTouchMode) {
+                    startTouchEventAnimation(R.drawable.play_notification);
+                }
             }
         }
         catch(DeadObjectException ex) {
