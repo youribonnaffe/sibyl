@@ -23,17 +23,19 @@
             
             <View         
         android:layout_width="fill_parent"
-        android:layout_height="10dip"/>
+        android:layout_height="10dp"/>
     <TextView android:id="@+id/add_dir_location"
           android:layout_width="fill_parent" 
-          android:layout_height="fill_parent"/>
+          android:textSize="@dimen/text_huge"
+          android:layout_height="fill_parent"
+          android:textAlign="center"/>
    <View         
         android:layout_width="fill_parent"
-        android:layout_height="10dip"/>
+        android:layout_height="10dp"/>
           
     <ListView android:id="@+id/android:list"
           android:layout_width="fill_parent"
-          android:textSize="15sp"
+          android:textSize="@dimen/text_small"
             android:layout_height="wrap_content"/>
             
     <TextView android:id="@+id/android:empty"

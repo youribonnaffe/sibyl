@@ -16,20 +16,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/group"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">            
-            
-    <ListView android:id="@+id/android:list"
-          android:layout_width="fill_parent"
-          android:fadingEdgeLength="1.0dp"
-          android:layout_height="wrap_content"/>
-            
-    <TextView android:id="@+id/android:empty"
-          android:layout_width="fill_parent" 
-          android:layout_height="fill_parent"
-          android:text="@string/alb_empty"/>
-            
-</LinearLayout>
+ <resources>
+    <dimen name="text_huge">26sp</dimen>
+    <dimen name="text_big">22sp</dimen>
+    <dimen name="text_small">20sp</dimen>
+    <dimen name="text_smaller">16sp</dimen>
+</resources>
