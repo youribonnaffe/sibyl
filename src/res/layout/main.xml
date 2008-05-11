@@ -64,7 +64,7 @@
 				android:layout_gravity="center" 
 				android:textAlign="center" />
 
-			<com.sibyl.ui.AnimatedCover 
+			<com.sibyl.ui.widget.AnimatedCover 
 			    android:id="@+id/cover"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content" 
@@ -82,7 +82,7 @@
 			android:layout_weight="0.0"
 			android:layout_height="wrap_content">
 
-			<com.sibyl.ui.ProgressView 
+			<com.sibyl.ui.widget.ProgressView 
 			    android:id="@+id/progress"
 				android:layout_width="wrap_content" 
 				android:layout_height="25dp"

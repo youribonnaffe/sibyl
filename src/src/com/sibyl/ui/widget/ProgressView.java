@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.sibyl.ui;
+package com.sibyl.ui.widget;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
+import com.sibyl.ui.widget.ProgressBarClickable.OnProgressChangeListener;
 
 /*
  * An evoluated progress bar. The progress bar display is update when the progress is incremented.

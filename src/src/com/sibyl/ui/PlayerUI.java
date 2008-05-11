@@ -50,8 +50,10 @@ import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
-import com.sibyl.ui.AnimatedCover.Move;
-import com.sibyl.ui.ProgressBarClickable.OnProgressChangeListener;
+import com.sibyl.ui.widget.AnimatedCover;
+import com.sibyl.ui.widget.ProgressView;
+import com.sibyl.ui.widget.AnimatedCover.Move;
+import com.sibyl.ui.widget.ProgressBarClickable.OnProgressChangeListener;
 
 /**
  * The player activity. It launches the service and you can control the music: play, stop, play next/previous.

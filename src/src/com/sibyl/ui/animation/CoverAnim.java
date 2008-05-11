@@ -23,7 +23,7 @@ import android.graphics.Matrix;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
-import com.sibyl.ui.AnimatedCover.Move;
+import com.sibyl.ui.widget.AnimatedCover.Move;
 
 /**
  * Class handling animation for covers:
