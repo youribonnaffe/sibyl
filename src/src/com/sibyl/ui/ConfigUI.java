@@ -27,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
@@ -75,14 +76,17 @@ public class ConfigUI extends Activity
     private Button coverUI;
     private boolean dirVisible;
     private boolean modeVisible;
+    private boolean animVisible;
     private Spinner repeatMusic;
     private Spinner playMode;
+    private Spinner coverAnims;
 
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
     
     private ListView listeMode;
     private ListView listeLibrary;
+    private ListView listeCoverAnim;
 
     /**
      * Called when the activity is first created. 
@@ -103,16 +107,19 @@ public class ConfigUI extends Activity
         updateMusic = (Button) findViewById(R.id.updateMusic);
         coverUI = (Button) findViewById(R.id.coverUI);
         dirVisible = false;
-        modeVisible=false;
+        modeVisible = false;
+        animVisible = true;
         
         listeMode = (ListView) findViewById(R.id.listConfigMode);
         listeLibrary = (ListView) findViewById(R.id.listConfigLibrary);
+        listeCoverAnim = (ListView) findViewById(R.id.listCoverAnim);
         
         repeatMusic = (Spinner) findViewById(R.id.repMusic);
         
         playMode = (Spinner) findViewById(R.id.shuMusic);
         
-
+        coverAnims = (Spinner) findViewById(R.id.covAnims);
+        
         /* connexion à la base de données */
         try
         {
@@ -149,6 +156,15 @@ public class ConfigUI extends Activity
         }
     };
     
+    OnItemClickListener mListeAnim = new OnItemClickListener()
+    {
+        public void onItemClick(AdapterView parent, View v, int position, long id)
+        {   
+            animVisible = !animVisible;
+            coverAnims.setVisibility(animVisible ? View.VISIBLE : View.GONE);
+        }
+    };
+    
     private OnItemSelectedListener mRepeatMusic = new OnItemSelectedListener()
     {
         public void onItemSelected(AdapterView parent, View v, int position, long id)
@@ -181,12 +197,26 @@ public class ConfigUI extends Activity
         } 
     };
     
+    private OnItemSelectedListener mCoverAnimation = new OnItemSelectedListener()
+    {
+        public void onItemSelected(AdapterView parent, View v, int position, long id)
+        {
+            // save animation type for covers
+            SharedPreferences.Editor prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE).edit();
+            prefs.putInt("coverAnimType", position);
+            prefs.commit();
+        }
+        public void onNothingSelected(AdapterView arg0)
+        {
+        } 
+    };
+    
     
     private void fillData()
     {
         String repeatString[] = {(String) getText(R.string.rep_no),
-        (String) getText(R.string.rep_one),
-        (String) getText(R.string.rep_all)};
+                (String) getText(R.string.rep_one),
+                (String) getText(R.string.rep_all)};
         ArrayAdapter<CharSequence> repeatAdapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
         repeatMusic.setAdapter(repeatAdapter);
         
@@ -195,8 +225,15 @@ public class ConfigUI extends Activity
         ArrayAdapter<CharSequence> shuffleAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, shuffleString);
         playMode.setAdapter(shuffleAdapter);
         
+        String animString[] = { (String) getText(R.string.no_anim),
+                (String) getText(R.string.translation_anim),
+                (String) getText(R.string.rotation_anim)};
+        ArrayAdapter<CharSequence> animAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, animString);
+        coverAnims.setAdapter(animAdapter);
+        
         repeatMusic.setOnItemSelectedListener(mRepeatMusic);
         playMode.setOnItemSelectedListener(mShuffleMode);
+        coverAnims.setOnItemSelectedListener(mCoverAnimation);
         
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
@@ -213,6 +250,11 @@ public class ConfigUI extends Activity
         ArrayAdapter<String> adapterDir =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,library);
         listeLibrary.setAdapter(adapterDir);      
         listeLibrary.setOnItemClickListener(mListeDir);
+        
+        String[] anims = {(String) getText(R.string.config_anims)};
+        ArrayAdapter<String> adapterAnims =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,anims);
+        listeCoverAnim.setAdapter(adapterAnims);      
+        listeCoverAnim.setOnItemClickListener(mListeAnim);
         
     }
 

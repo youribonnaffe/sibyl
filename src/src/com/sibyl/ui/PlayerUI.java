@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentReceiver;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -260,6 +261,9 @@ public class PlayerUI extends Activity
         imageOverAnim.setDuration(800);
         imageOverAnim.setInterpolator(new LinearInterpolator());
         imageOverAnim.setAnimationListener(new imageOverAnimListener());
+        
+        SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
+        cover.setAnimationType( prefs.getInt("coverAnimType", 1) );
         
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
