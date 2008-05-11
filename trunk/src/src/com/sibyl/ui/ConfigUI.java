@@ -231,6 +231,8 @@ public class ConfigUI extends Activity
         ArrayAdapter<CharSequence> animAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, animString);
         coverAnims.setAdapter(animAdapter);
         
+        coverAnims.setSelection(getSharedPreferences(Music.PREFS, MODE_PRIVATE).getInt("coverAnimType", 1) );
+        
         repeatMusic.setOnItemSelectedListener(mRepeatMusic);
         playMode.setOnItemSelectedListener(mShuffleMode);
         coverAnims.setOnItemSelectedListener(mCoverAnimation);
