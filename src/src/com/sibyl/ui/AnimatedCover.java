@@ -25,9 +25,9 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import com.sibyl.ui.animation.CoverAnim;
@@ -43,6 +43,12 @@ public class AnimatedCover extends ImageView {
     private boolean animationActivated; //is the animation activated? 
                 //if true an animation is done when changing image
     private Move sense;//sense of the animation: next or previous image
+    private int animType;//rotation or translation of the cover
+    
+    public static class AnimationType {
+        public static final int ROTATION = 0;
+        public static final int TRANSLATION = 1;
+    }
     
     public enum Move { 
         NEXT, PREV, NO_ANIM;
@@ -79,6 +85,7 @@ public class AnimatedCover extends ImageView {
         animHandler = new Handler();
         animationActivated = true;  
         sense = Move.NEXT;
+        animType = AnimationType.TRANSLATION;
     }
     
     /** 
@@ -99,7 +106,6 @@ public class AnimatedCover extends ImageView {
      */
     public void setImageDrawable(Drawable drawable, Move aSense)
     {
-        Log.v("AnimatedCover", ">>>AnimatedCover::setImageDrawable(): aSense="+aSense);
         if( getDrawable() == drawable )
         {
             return;
@@ -132,11 +138,22 @@ public class AnimatedCover extends ImageView {
      * Creates, initializes and starts the animation
      */
     private void applyAnimation() {
-        CoverAnim anim = new CoverAnim( getWidth()/2.0f, getHeight()/2.0f, false, sense);
+        Animation anim;
+        if( animType == AnimationType.ROTATION )
+        {
+            anim = new CoverAnim( getWidth()/2.0f, getHeight()/2.0f, false, sense);
+        }
+        else 
+        {
+            anim = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0, 
+                Animation.RELATIVE_TO_PARENT, sense.getValue()*-1.0f, Animation.RELATIVE_TO_SELF, 0, 
+                Animation.RELATIVE_TO_SELF, 0);
+        }
         anim.setDuration(500);
         anim.setFillAfter(true);
         anim.setInterpolator(new LinearInterpolator());
         anim.setAnimationListener(new AnimListener());
+        
         startAnimation(anim);
     }
     
@@ -176,7 +193,16 @@ public class AnimatedCover extends ImageView {
     {
         public void run() {
             setImageDrawableWithoutAnim(nextDrawable);
-            CoverAnim anim = new CoverAnim( getWidth()/2.0f, getHeight()/2.0f, true, sense);
+            Animation anim;
+            if( animType == AnimationType.ROTATION )
+            {
+                anim = new CoverAnim( getWidth()/2.0f, getHeight()/2.0f, true, sense);
+            }
+            else {
+                anim = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, sense.getValue()*1.0f, 
+                    Animation.RELATIVE_TO_PARENT, 0f, Animation.RELATIVE_TO_SELF, 0, 
+                    Animation.RELATIVE_TO_SELF, 0);
+            }
             anim.setDuration(500);
             anim.setFillAfter(true);
             anim.setInterpolator(new LinearInterpolator());
