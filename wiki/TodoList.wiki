@@ -14,6 +14,7 @@
     * ~~redessiner ConfigUI~~ (B)
     * ~~regrouper les modes~~ (B)
     * espacer les Manage... + faire un Manage covers comme les autres + les déplier par défaut
+    * configurer les animations (I)
   * CoverUI :  
     * ~~redonner le nom de l'album~~ (S)
   * Général :
@@ -49,6 +50,6 @@
 ==IMPROVEMENTS:==
   * super barre de progression (étirable) + effet arrondi + effet brillant, relief (S/(I))
   * lecture tag aac, m4a (Y) _c'est du proprio à la apple je suis pas motivé si vous voulez vraiment je le fais_ _en plus c'est affreux comment c'est codé_
-  * nouvelle animation (I)
+  * ~~nouvelle animation pour les couvertures~~ (I)
 
 =/!\ FAIRE LA PRÉSENTATION /!\=
