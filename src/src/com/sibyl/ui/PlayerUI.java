@@ -43,6 +43,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -75,9 +76,9 @@ public class PlayerUI extends Activity
     // views of the ui
     private TextView artiste;
     private TextView titre;
-    private Button lecture;
-    private Button next;
-    private Button previous;
+    private ImageButton lecture;
+    private ImageButton next;
+    private ImageButton previous;
     private AnimatedCover cover;
     private ProgressView progress;
     private ImageView imageOver;
@@ -313,9 +314,9 @@ public class PlayerUI extends Activity
      */
     private void initializeViews(){        
         //get buttons
-        lecture = (Button) findViewById(R.id.lecture);
-        next = (Button) findViewById(R.id.next);
-        previous = (Button) findViewById(R.id.prec);
+        lecture = (ImageButton) findViewById(R.id.play);
+        next = (ImageButton) findViewById(R.id.next);
+        previous = (ImageButton) findViewById(R.id.prev);
 
         //disable buttons until we are connected to the service
         enableButtons(false);
@@ -398,7 +399,7 @@ public class PlayerUI extends Activity
                     Log.v(TAG, ex.toString());
                     // user should be warned
                 }
-                lecture.setText(R.string.play);
+                lecture.setImageResource(R.drawable.playbtn);
                 finish();
                 break;
             case PLAYLIST_ID:
@@ -678,7 +679,7 @@ public class PlayerUI extends Activity
      * the player should be playing
      */
     private void playRefresh(){
-        lecture.setText(R.string.pause);
+        lecture.setImageResource(R.drawable.pausebtn);
         //update of the current time displayed
         mTimeHandler.removeCallbacks(timerTask);
         try {
@@ -688,12 +689,12 @@ public class PlayerUI extends Activity
         }
         mTimeHandler.post(timerTask);
     }
-
+ 
     /**
      * refresh lecture button & stop timertask
      */
     private void pauseRefresh(){
-        lecture.setText(R.string.play);
+        lecture.setImageResource(R.drawable.playbtn);
         // stop timer update
         mTimeHandler.removeCallbacks(timerTask);
     }
@@ -767,7 +768,7 @@ public class PlayerUI extends Activity
         progress.initializeProgress();
         artiste.setText(R.string.artiste);
         titre.setText(R.string.titre);
-        lecture.setText(R.string.play);
+        lecture.setImageResource(R.drawable.playbtn);
         cover.setImageDrawable(getResources().getDrawable(R.drawable.logo), Move.NO_ANIM);
         pathCover = null;
         enableButtons(false);

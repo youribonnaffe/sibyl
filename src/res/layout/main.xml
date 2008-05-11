@@ -97,28 +97,25 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content">
 
-				<Button 
-				    android:id="@+id/prec" 
-				    android:text="&lt;&lt;"
-					android:focusable="true" 
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center" />
-
-				<Button 
-				    android:id="@+id/lecture"
-					android:text="@string/play" 
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center" />
-
-				<Button 
-				    android:id="@+id/next" 
-				    android:text="&gt;&gt;"
-					android:focusable="true" 
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center" />
+				
+		        <ImageButton 
+                    android:id="@+id/prev" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/prevbtn"
+                    android:layout_gravity="center" />
+                <ImageButton 
+                    android:id="@+id/play" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/playbtn"
+                    android:layout_gravity="center" />
+                <ImageButton 
+                    android:id="@+id/next" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/nextbtn"
+                    android:layout_gravity="center" />
 
 			</LinearLayout>
 
