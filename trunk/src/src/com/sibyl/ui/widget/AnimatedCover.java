@@ -40,14 +40,14 @@ public class AnimatedCover extends ImageView {
 
     private Handler animHandler;   // handler for managing the end of the first part of the animation
     private Drawable nextDrawable; // next image to be drawn when animation is finished
-    private boolean animationActivated; //is the animation activated? 
-                //if true an animation is done when changing image
+    
     private Move sense;//sense of the animation: next or previous image
     private int animType;//rotation or translation of the cover
     
     public static class AnimationType {
-        public static final int ROTATION = 0;
+        public static final int NO_ANIM = 0;
         public static final int TRANSLATION = 1;
+        public static final int ROTATION = 2;
     }
     
     public enum Move { 
@@ -82,19 +82,18 @@ public class AnimatedCover extends ImageView {
     
     private void initWidget()
     {
-        animHandler = new Handler();
-        animationActivated = true;  
+        animHandler = new Handler();  
         sense = Move.NEXT;
         animType = AnimationType.TRANSLATION;
     }
     
     /** 
-     * Activate or deactivate animations
-     * @param a     if true, animations are activated
+     * Sets the type of animation to play when changing image (nothing, rotation or translation)
+     * @param type     the type of animation as listed in AnimationType
      */
-    public void setAnimationActivated(boolean a)
+    public void setAnimationType(int type)
     {
-        animationActivated = a;
+        animType = type;
     }
     
     /**
@@ -111,7 +110,7 @@ public class AnimatedCover extends ImageView {
             return;
         }
         
-        if(animationActivated && aSense != Move.NO_ANIM)
+        if(animType != AnimationType.NO_ANIM && aSense != Move.NO_ANIM)
         {
             sense = aSense;
             nextDrawable=drawable;

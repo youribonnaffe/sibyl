@@ -39,6 +39,17 @@
 		android:visibility="gone"
 		android:text="Normal"/>
 		
+	<ListView android:id="@+id/listCoverAnim"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>      
+        
+    <Spinner android:id="@+id/covAnims"
+        android:focusable="false"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:text="Normal"/>
+		
 	<View 
 		android:layout_width="fill_parent"
 		android:layout_height="10dp" /> 		
