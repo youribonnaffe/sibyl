@@ -89,7 +89,7 @@
 				android:layout_gravity="bottom|center"/>
             <View  xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
-                android:layout_height="7px"/>
+                android:layout_height="5px"/>
             
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal"
@@ -98,24 +98,27 @@
 				android:layout_height="wrap_content">
 
 				
-		        <ImageButton 
+		        <com.sibyl.ui.widget.ImageControl 
                     android:id="@+id/prev" 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/prevbtn"
-                    android:layout_gravity="center" />
-                <ImageButton 
+                    android:layout_gravity="center" 
+                    android:paddingBottom="10dp"/>
+                <com.sibyl.ui.widget.ImageControl 
                     android:id="@+id/play" 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/playbtn"
-                    android:layout_gravity="center" />
-                <ImageButton 
+                    android:layout_gravity="center"
+                    android:paddingBottom="10dp" />
+                <com.sibyl.ui.widget.ImageControl 
                     android:id="@+id/next" 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/nextbtn"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:paddingBottom="10dp" />
 
 			</LinearLayout>
 
