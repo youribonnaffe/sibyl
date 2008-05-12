@@ -19,7 +19,7 @@
     * ~~redonner le nom de l'album~~ (S)
   * Général :
     * ~~refaire apparaitre Sibyl dans la liste des applications~~ (Y)  
-    * de nombreuses issues sont en cours (tout le monde !)
+    * ~~de nombreuses issues sont en cours~~ (tout le monde !)
     * ~~faire le multilingue~~ (B) _on peut traduire mais comme on ne peut pas changer de locale, l'utilité est faible_
     * ~~avoir toujours les mêmes styles -> artist en italique...~~
     * ~~titres sur toutes les fenêtres~~
