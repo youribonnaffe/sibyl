@@ -33,6 +33,7 @@ import android.view.Menu.Item;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.sibyl.Music;
 import com.sibyl.MusicDB;
 import com.sibyl.R;
 
@@ -86,7 +87,7 @@ public class DelDirUI extends ListActivity
         Cursor c = mdb.getDir();
         while (c.next())
         {
-            listDir.add(c.getString(0));
+            listDir.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
         }
         c.close();
     }

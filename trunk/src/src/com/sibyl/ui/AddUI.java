@@ -55,7 +55,7 @@ public class AddUI extends ListActivity
     private static final int nbField = 5; /*number of row in field*/
 
     private static final int[]  fieldSMP = { R.string.playlist_most_played, 
-            R.string.playlist_most_played,
+            R.string.playlist_less_played,
             R.string.playlist_random}; /*string id list for Smart Play List menu*/
     private static final int nbFieldSMP = 3;/*number of smart playlist*/
 
@@ -192,7 +192,6 @@ public class AddUI extends ListActivity
             }
             else{
                 mCursor.moveTo(pos);
-                Log.v(TAG,mCursor.getString(2));
                 if(positionMenu == STATE.ARTIST){
                     mdb.insertPlaylist(Music.SONG.ARTIST, mCursor.getString(ID));
                 }
