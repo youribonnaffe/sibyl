@@ -42,8 +42,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +51,7 @@ import com.sibyl.MusicDB;
 import com.sibyl.R;
 import com.sibyl.Sibylservice;
 import com.sibyl.ui.widget.AnimatedCover;
+import com.sibyl.ui.widget.ImageControl;
 import com.sibyl.ui.widget.ProgressView;
 import com.sibyl.ui.widget.AnimatedCover.Move;
 import com.sibyl.ui.widget.ProgressBarClickable.OnProgressChangeListener;
@@ -70,15 +69,20 @@ public class PlayerUI extends Activity
     private static final int OPTION_ID = Menu.FIRST +1;
     private static final int QUIT_ID = Menu.FIRST +2;
 
+    
+    //images for play/pause button
+    private static final int PLAY_IMG = 1;
+    private static final int PAUSE_IMG = 2;
+    
     // debug
     private static final String TAG = "PLAYERUI";
 
     // views of the ui
     private TextView artiste;
     private TextView titre;
-    private ImageButton lecture;
-    private ImageButton next;
-    private ImageButton previous;
+    private ImageControl lecture;
+    private ImageControl next;
+    private ImageControl previous;
     private AnimatedCover cover;
     private ProgressView progress;
     private ImageView imageOver;
@@ -314,10 +318,19 @@ public class PlayerUI extends Activity
      */
     private void initializeViews(){        
         //get buttons
-        lecture = (ImageButton) findViewById(R.id.play);
-        next = (ImageButton) findViewById(R.id.next);
-        previous = (ImageButton) findViewById(R.id.prev);
+        lecture = (ImageControl) findViewById(R.id.play);
+        next = (ImageControl) findViewById(R.id.next);
+        previous = (ImageControl) findViewById(R.id.prev);
 
+        //set images
+        next.setStatesImgFromRes(R.drawable.nextbtn, R.drawable.nextbtn_selected);
+        previous.setStatesImgFromRes(R.drawable.prevbtn, R.drawable.prevbtn_selected);
+        
+        lecture.setNumberOfImages(2);
+        int[] defaultImages = {R.drawable.playbtn, R.drawable.pausebtn};
+        int[] selectedImages = {R.drawable.playbtn_selected, R.drawable.pausebtn_selected};
+        lecture.setStatesImgFromRes(defaultImages, selectedImages);
+        
         //disable buttons until we are connected to the service
         enableButtons(false);
 
@@ -399,7 +412,7 @@ public class PlayerUI extends Activity
                     Log.v(TAG, ex.toString());
                     // user should be warned
                 }
-                lecture.setImageResource(R.drawable.playbtn);
+                lecture.changeImageUsedTo(PLAY_IMG);
                 finish();
                 break;
             case PLAYLIST_ID:
@@ -524,9 +537,10 @@ public class PlayerUI extends Activity
                 return true;
             case KeyEvent.KEYCODE_DPAD_LEFT :
                 if(previous.isEnabled()){
+                    previous.setSelected(false);
                     try{
                         mService.prev();
-                        previous.setBackground(android.R.drawable.btn_default);
+                        //previous.setBackground(android.R.drawable.btn_default);
                     }catch(DeadObjectException doe){
                         Log.v(TAG, doe.toString());
                     }
@@ -534,9 +548,10 @@ public class PlayerUI extends Activity
                 return true;
             case KeyEvent.KEYCODE_DPAD_RIGHT :
                 if(next.isEnabled()){
+                    next.setSelected(false);
                     try{
                         mService.next();
-                        next.setBackground(android.R.drawable.btn_default);
+                        //next.setBackground(android.R.drawable.btn_default);
                     }catch(DeadObjectException doe){
                         Log.v(TAG, doe.toString());
                     }
@@ -545,6 +560,7 @@ public class PlayerUI extends Activity
             case KeyEvent.KEYCODE_DPAD_CENTER :
                 if(lecture.isEnabled()){
                     playPauseAction(false);
+                    lecture.setSelected(false);
                 }
                 return true;
         }
@@ -560,15 +576,18 @@ public class PlayerUI extends Activity
                 return true;
             case KeyEvent.KEYCODE_DPAD_LEFT :
                 if( previous.isEnabled()){
-                    previous.setBackground(android.R.drawable.btn_default_selected);
+                    previous.setSelected(true);
+                    //previous.setBackground(android.R.drawable.btn_default_selected);
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_RIGHT :
                 if( next.isEnabled()){
-                    next.setBackground(android.R.drawable.btn_default_selected);
+                    next.setSelected(true);
+                    //next.setBackground(android.R.drawable.btn_default_selected);
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_CENTER :
+                lecture.setSelected(true);
                 return true;
         }
         return super.onKeyDown(keycode, event);
@@ -679,7 +698,8 @@ public class PlayerUI extends Activity
      * the player should be playing
      */
     private void playRefresh(){
-        lecture.setImageResource(R.drawable.pausebtn);
+        //lecture.setImageResource(R.drawable.pausebtn);
+        lecture.changeImageUsedTo(PAUSE_IMG);
         //update of the current time displayed
         mTimeHandler.removeCallbacks(timerTask);
         try {
@@ -694,7 +714,8 @@ public class PlayerUI extends Activity
      * refresh lecture button & stop timertask
      */
     private void pauseRefresh(){
-        lecture.setImageResource(R.drawable.playbtn);
+        //lecture.setImageResource(R.drawable.playbtn);
+        lecture.changeImageUsedTo(PLAY_IMG);
         // stop timer update
         mTimeHandler.removeCallbacks(timerTask);
     }
@@ -768,7 +789,8 @@ public class PlayerUI extends Activity
         progress.initializeProgress();
         artiste.setText(R.string.artiste);
         titre.setText(R.string.titre);
-        lecture.setImageResource(R.drawable.playbtn);
+        //lecture.setImageResource(R.drawable.playbtn);
+        lecture.changeImageUsedTo(PLAY_IMG);
         cover.setImageDrawable(getResources().getDrawable(R.drawable.logo), Move.NO_ANIM);
         pathCover = null;
         enableButtons(false);
