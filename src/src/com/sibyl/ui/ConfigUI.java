@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -36,15 +37,20 @@ import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewInflate;
 import android.view.Menu.Item;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -67,6 +73,7 @@ public class ConfigUI extends Activity
 {
     private static final int BACK_ID = Menu.FIRST; // Elément du ménu permettant l'arret de l'activité
     private static final String TAG = "CONFIG"; // Tag servant au débugage
+    private static final long TIME_LEAP = 500;
 
     private ISibylservice mService = null;  //core service s'occupant de la lecture
     private EditText mListDir;  // liste des répertoires de musique
@@ -87,6 +94,8 @@ public class ConfigUI extends Activity
     private ListView listeLibrary;
     private ListView listeCoverAnim;
     private ListView listeCoverManager;
+
+    private long timeLastTouch;
 
     /**
      * Called when the activity is first created. 
@@ -511,6 +520,28 @@ public class ConfigUI extends Activity
                 break;
         }
         return true;
+    }
+
+    public boolean onTouchEvent(MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN
+                && (System.currentTimeMillis()-timeLastTouch) < TIME_LEAP){
+            // retrieve viewflipper
+            ViewInflate inflate = (ViewInflate) getSystemService(Context.INFLATE_SERVICE);
+            ViewFlipper vf = (ViewFlipper)((LinearLayout)inflate.inflate(R.layout.easter_egg, null, null)).findViewById(R.id.easter_egg_vf);
+            // set animations
+            vf.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
+            vf.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
+            vf.startFlipping();
+            // display dialog
+            new AlertDialog.Builder(this)
+            .setCancelable(true)
+            .setTitle(R.string.easter_egg_title)
+            .setView(vf)
+            .show();
+        }else{
+            timeLastTouch = System.currentTimeMillis();
+        }
+        return super.onTouchEvent(event);
     }
 
 }

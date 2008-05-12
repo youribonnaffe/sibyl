@@ -259,10 +259,10 @@ public class AlbumUI extends ListActivity {
             String artist = new String();
             Cursor c = mdb.getArtistFromAlbum(listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
             if(c.first()){
-                artist+=c.getString(0);
+                artist+=c.getString(c.getColumnIndex(Music.ARTIST.NAME));
             }
             while(c.next()){
-                artist+=", "+c.getString(0);
+                artist+=", "+c.getString(c.getColumnIndex(Music.ARTIST.NAME));
             }
             artists[i++] = artist;
             c.close();
