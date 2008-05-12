@@ -323,13 +323,16 @@ public class PlayerUI extends Activity
         previous = (ImageControl) findViewById(R.id.prev);
 
         //set images
-        next.setStatesImgFromRes(R.drawable.nextbtn, R.drawable.nextbtn_selected);
-        previous.setStatesImgFromRes(R.drawable.prevbtn, R.drawable.prevbtn_selected);
+        next.setStatesImgFromRes(R.drawable.nextbtn, R.drawable.nextbtn_selected, 
+                R.drawable.nextbtn_disabled);
+        previous.setStatesImgFromRes(R.drawable.prevbtn, R.drawable.prevbtn_selected, 
+                R.drawable.prevbtn_disabled);
         
         lecture.setNumberOfImages(2);
         int[] defaultImages = {R.drawable.playbtn, R.drawable.pausebtn};
         int[] selectedImages = {R.drawable.playbtn_selected, R.drawable.pausebtn_selected};
-        lecture.setStatesImgFromRes(defaultImages, selectedImages);
+        int[] disabledImages = {R.drawable.playbtn_disabled, R.drawable.pausebtn_disabled};
+        lecture.setStatesImgFromRes(defaultImages, selectedImages, disabledImages);
         
         //disable buttons until we are connected to the service
         enableButtons(false);
@@ -657,14 +660,16 @@ public class PlayerUI extends Activity
      */
     private void playPauseAction (boolean fromTouchMode){
         try{ 
-            if( mService.getState() == Music.State.PLAYING) //call if a music is played (pause the music)
+            int serviceState = mService.getState();
+            if( serviceState == Music.State.PLAYING) //call if a music is played (pause the music)
             {
                 mService.pause();
                 if(fromTouchMode) {
                     startTouchEventAnimation(R.drawable.pause_notification);
                 }
             }
-            else // to start listening a music or resume.
+            // to start listening a music or resume.
+            else if(serviceState != Music.State.END_PLAYLIST_REACHED)
             {
                 mService.start();
                 if(fromTouchMode) {

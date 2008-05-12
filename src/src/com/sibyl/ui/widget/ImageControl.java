@@ -20,8 +20,11 @@ package com.sibyl.ui.widget;
 
 import java.util.Map;
 
+import com.sibyl.R;
+
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 
 /**
@@ -34,16 +37,19 @@ public class ImageControl extends ImageView {
     {
         public int defaultResId;//image to draw from resource when the control is in default state
         public int selectedResId;//image to draw from resource when the control is in selected state
+        public int disabledResId;//image to draw from resource when the control is in disabled state
         
-        public ResImageStates(int d, int s) {
+        public ResImageStates(int d, int s, int dis) {
             defaultResId = d;
             selectedResId = s;
+            disabledResId = dis;
         }
     }
     
     private ResImageStates[] states;
     private int nbImages;//number of different images, the control can support and switch to
     private int currentImage;//image shown
+    private boolean mEnabled;
     
     /**
      * @param context
@@ -76,6 +82,7 @@ public class ImageControl extends ImageView {
     
     public void init()
     {
+        mEnabled = true;
         setNumberOfImages(1);
     }
     
@@ -92,21 +99,23 @@ public class ImageControl extends ImageView {
         setImageResource(states[currentImage].defaultResId);
     }
     
-    public void setStatesImgFromRes(int[] defaultResId, int[] selectedResId) 
+    public void setStatesImgFromRes(int[] defaultResId, int[] selectedResId, int[] disabledResId) 
     {
         for(int i=0; i<nbImages; i++)
         {
-            states[i] = new ResImageStates(defaultResId[i], selectedResId[i]);
+            states[i] = new ResImageStates(defaultResId[i], selectedResId[i], disabledResId[i]);
         }
     }
     
-    public void setStatesImgFromRes(int defaultResId, int selectedResId) 
+    public void setStatesImgFromRes(int defaultResId, int selectedResId, int disabledResId ) 
     {
-        states[0] = new ResImageStates(defaultResId, selectedResId);
+        states[0] = new ResImageStates(defaultResId, selectedResId, disabledResId);
     }
     
+    @Override
     public void setSelected(boolean selected)
     {
+        super.setSelected(selected);
         if(selected) {
             setImageResource(states[currentImage].selectedResId);
         }
@@ -115,5 +124,22 @@ public class ImageControl extends ImageView {
         }
     }
     
+    @Override
+    public void setEnabled(boolean enabled) 
+    {
+        mEnabled = enabled;
+        if(!enabled) {
+            setImageResource(states[currentImage].disabledResId);
+        }
+        else {
+            setImageResource(states[currentImage].defaultResId);
+        }
+    }
+    
+    @Override
+    public boolean isEnabled()
+    {
+        return mEnabled;
+    }
     
 }
