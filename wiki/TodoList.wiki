@@ -13,7 +13,7 @@
     * ~~mettre un spinner pour les modes de lecture~~ (B)
     * ~~redessiner ConfigUI~~ (B)
     * ~~regrouper les modes~~ (B)
-    * espacer les Manage... + faire un Manage covers comme les autres + les déplier par défaut
+    * espacer les Manage... + ~~faire un Manage covers comme les autres~~ + les déplier par défaut
     * ~~configurer les animations~~ (I)
   * CoverUI :  
     * ~~redonner le nom de l'album~~ (S)
@@ -34,7 +34,7 @@
     * ~~effets click'n'touch : double click pause, haut bas : playlistui~~
     * progress bar : plus grosse, avec le temps dessus
     * ~~imagebutton~~ (I)
-    * les 2 intents -> playpause sur le début :/
+    * ~~les 2 intents -> playpause sur le début :/~~
     * ~~mettre un time max pour éviter les dépassements à l'affichage~~
   * PlayListUI :
     * sauvegarde de PL et pouvoir en recharger
