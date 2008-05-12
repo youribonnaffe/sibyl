@@ -14,7 +14,7 @@
     * ~~redessiner ConfigUI~~ (B)
     * ~~regrouper les modes~~ (B)
     * espacer les Manage... + faire un Manage covers comme les autres + les déplier par défaut
-    * configurer les animations (I)
+    * ~~configurer les animations~~ (I)
   * CoverUI :  
     * ~~redonner le nom de l'album~~ (S)
   * Général :
@@ -33,7 +33,7 @@
     * ~~menu : playlist - option - quit~~ (B)
     * ~~effets click'n'touch : double click pause, haut bas : playlistui~~
     * progress bar : plus grosse, avec le temps dessus
-    * imagebutton
+    * ~~imagebutton~~ (I)
     * les 2 intents -> playpause sur le début :/
     * ~~mettre un time max pour éviter les dépassements à l'affichage~~
   * PlayListUI :
