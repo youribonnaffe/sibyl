@@ -590,7 +590,10 @@ public class PlayerUI extends Activity
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_CENTER :
-                lecture.setSelected(true);
+                if( lecture.isEnabled() )
+                {
+                    lecture.setSelected(true);
+                }
                 return true;
         }
         return super.onKeyDown(keycode, event);
@@ -603,7 +606,9 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
-            playPauseAction(false);
+            if(v.isEnabled()) {
+                playPauseAction(false);
+            }
         }
     };
 
@@ -614,6 +619,10 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
+            if(!v.isEnabled()) { 
+                return; 
+            } 
+                
             try{
                 mService.next();
             }catch(DeadObjectException doe){
@@ -629,6 +638,10 @@ public class PlayerUI extends Activity
     {
         public void onClick(View v)
         {
+            if(!v.isEnabled()) { 
+                return; 
+            } 
+            
             try{
                 mService.prev();
             }catch(DeadObjectException doe){
