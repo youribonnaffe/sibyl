@@ -16,6 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
+ <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+ 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -23,7 +28,7 @@
 	
 	<ListView android:id="@+id/listConfigMode"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>		
+		android:layout_height="26dp"/>		
 		
 	<Spinner android:id="@+id/repMusic"
 		android:focusable="false"
@@ -38,16 +43,20 @@
 		android:layout_height="wrap_content"
 		android:visibility="gone"
 		android:text="Normal"/>
-		
+	
+	<View 
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+        	
 	<ListView android:id="@+id/listCoverAnim"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>      
+        android:layout_height="@dimen/text_config"/>      
         
     <Spinner android:id="@+id/covAnims"
         android:focusable="false"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         android:text="Normal"/>
 		
 	<View 
@@ -56,7 +65,7 @@
 		
 	<ListView android:id="@+id/listConfigLibrary"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_height="@dimen/text_config"/>
  
 	    <EditText android:id="@+id/musicData" 
 			android:maxLines="5" 
@@ -65,7 +74,7 @@
 			android:focusable="false"
 			android:scrollHorizontally="true"
 			android:visibility="gone"/>
-		 
+			
 		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content">
@@ -101,9 +110,9 @@
 		android:layout_width="fill_parent"
 		android:layout_height="10dp" />
 		
-	<Button android:id="@+id/coverUI"
-		android:text="@string/button_cover_manager" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="left" />
+    <ListView android:id="@+id/listCoverManager"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/text_config"/>
+	
 </LinearLayout>
+</ScrollView>

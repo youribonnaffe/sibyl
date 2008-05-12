@@ -165,11 +165,11 @@ public class CoverUI extends Activity {
         boolean addCoverDir = true;
         while( c.next()){
             // for each directory, we check if the coverdir is in it
-            if(Music.COVER_DIR.contains(c.getString(0))){
+            if(Music.COVER_DIR.contains(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)))){
                 addCoverDir = false;
             }
             for(String extension : EXT_TAB){
-                for(String file : Directory.scanFiles(c.getString(0), extension)){
+                for(String file : Directory.scanFiles(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)), extension)){
                     imgAdapter.add(file);
                     Log.v(TAG, "    "+file);
                 }

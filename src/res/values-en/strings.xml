@@ -80,10 +80,10 @@
     <string name="config_add_folder">Add folder</string>    
     <string name="config_del_folder">Remove folder</string>
     <string name="config_update">Update library</string>
-    <string name="config_mode">Manage Modes...</string>
-    <string name="config_library">Manage Library...</string>
-    <string name="config_anims">Manage Cover Animations...</string>
-    <string name="button_cover_manager">Cover manager</string>
+    <string name="config_mode">Modes...</string>
+    <string name="config_library">Library...</string>
+    <string name="config_anims">Cover Animations...</string>
+    <string name="config_covers">Covers...</string>
     <string name="no_anim">No animation</string>
     <string name="translation_anim">Translation</string>
     <string name="rotation_anim">Rotation</string>
