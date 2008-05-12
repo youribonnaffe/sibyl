@@ -21,4 +21,6 @@
     <dimen name="text_big">22sp</dimen>
     <dimen name="text_small">20sp</dimen>
     <dimen name="text_smaller">16sp</dimen>
+    <dimen name="text_config">26dip</dimen>
+    
 </resources>

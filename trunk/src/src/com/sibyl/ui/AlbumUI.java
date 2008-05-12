@@ -61,10 +61,11 @@ public class AlbumUI extends ListActivity {
     private static final int BACK_ID = Menu.FIRST;
     private static final int DOWNLOAD_ID = Menu.FIRST+1;
 
+    private LinearLayout groupView;
     private MusicDB mdb;    //the database
     private Cursor listAlbum; // the cursor where the data displayed are
     private int selectedAlbum; // the id of the album selected when going to coverui
-    private LinearLayout groupView;
+    private String[] artists; // artist names for each albums
 
     // thread to run covertask
     Thread coverThread;
@@ -242,6 +243,7 @@ public class AlbumUI extends ListActivity {
         SimpleCursorAdapter rows = new SimpleCursorAdapter(this, R.layout.album_cover_row, listAlbum, res, to){
             // need to override this method to set default image if undefined
             public void setViewImage(ImageView v, String url){
+                Log.v(TAG, "SET IMAGE "+url);
                 if(url == null || url.equals("")){
                     v.setImageResource(R.drawable.logo);
                 }else{
@@ -249,20 +251,28 @@ public class AlbumUI extends ListActivity {
                 }
             }
         };
+        
+        // retrieve artist names
+        artists = new String[listAlbum.count()];
+        int i = 0;
+        while(listAlbum.next()){
+            String artist = new String();
+            Cursor c = mdb.getArtistFromAlbum(listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
+            if(c.first()){
+                artist+=c.getString(0);
+            }
+            while(c.next()){
+                artist+=", "+c.getString(0);
+            }
+            artists[i++] = artist;
+            c.close();
+        }
+        listAlbum.move(0);
+        
         rows.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 if(columnIndex == cursor.getColumnIndex(Music.ALBUM.NAME)){
-                    String artists = new String();
-                    Cursor c = mdb.getArtistFromAlbum(cursor.getString(columnIndex));
-                    if(c.first()){
-                        artists+=c.getString(0);
-                    }
-                    while(c.next()){
-                        artists+=", "+c.getString(0);
-                    }
-                    Log.v(TAG, "set "+artists);
-                    c.close();
-                    ((TextView)view.getRootView().findViewById(R.id.artist)).setText(artists);
+                    ((TextView)view.getRootView().findViewById(R.id.artist)).setText(artists[cursor.position()]);
                 }
                 return false;
             }

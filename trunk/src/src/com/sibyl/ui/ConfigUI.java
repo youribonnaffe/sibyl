@@ -73,7 +73,6 @@ public class ConfigUI extends Activity
     private Button addDir;    // bouton permettant l'ajout de répertoires musiques
     private Button delDir;    // bouton permettant la suppression de répertoires de musiques
     private Button updateMusic; // bouton servant à mettre a jour la base de donnée
-    private Button coverUI;
     private boolean dirVisible;
     private boolean modeVisible;
     private boolean animVisible;
@@ -83,10 +82,11 @@ public class ConfigUI extends Activity
 
     private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
-    
+
     private ListView listeMode;
     private ListView listeLibrary;
     private ListView listeCoverAnim;
+    private ListView listeCoverManager;
 
     /**
      * Called when the activity is first created. 
@@ -105,21 +105,21 @@ public class ConfigUI extends Activity
         addDir = (Button) findViewById(R.id.addMusic);
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
-        coverUI = (Button) findViewById(R.id.coverUI);
         dirVisible = false;
         modeVisible = false;
-        animVisible = true;
-        
+        animVisible = false;
+
         listeMode = (ListView) findViewById(R.id.listConfigMode);
         listeLibrary = (ListView) findViewById(R.id.listConfigLibrary);
         listeCoverAnim = (ListView) findViewById(R.id.listCoverAnim);
-        
+        listeCoverManager = (ListView) findViewById(R.id.listCoverManager);
+
         repeatMusic = (Spinner) findViewById(R.id.repMusic);
-        
+
         playMode = (Spinner) findViewById(R.id.shuMusic);
-        
+
         coverAnims = (Spinner) findViewById(R.id.covAnims);
-        
+
         /* connexion à la base de données */
         try
         {
@@ -132,7 +132,15 @@ public class ConfigUI extends Activity
         }
         fillData();
     }
-    
+
+    OnItemClickListener mListeCover = new OnItemClickListener()
+    {
+        public void onItemClick(AdapterView parent, View v, int position, long id)
+        {   
+            displayAlbumUI();
+        }
+    };
+
     OnItemClickListener mListeDir = new OnItemClickListener()
     {
         public void onItemClick(AdapterView parent, View v, int position, long id)
@@ -142,10 +150,10 @@ public class ConfigUI extends Activity
             addDir.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
             delDir.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
             updateMusic.setVisibility(dirVisible ? View.VISIBLE : View.GONE);
-            
+
         }
     };
-    
+
     OnItemClickListener mListeMode = new OnItemClickListener()
     {
         public void onItemClick(AdapterView parent, View v, int position, long id)
@@ -155,7 +163,7 @@ public class ConfigUI extends Activity
             playMode.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
         }
     };
-    
+
     OnItemClickListener mListeAnim = new OnItemClickListener()
     {
         public void onItemClick(AdapterView parent, View v, int position, long id)
@@ -164,7 +172,7 @@ public class ConfigUI extends Activity
             coverAnims.setVisibility(animVisible ? View.VISIBLE : View.GONE);
         }
     };
-    
+
     private OnItemSelectedListener mRepeatMusic = new OnItemSelectedListener()
     {
         public void onItemSelected(AdapterView parent, View v, int position, long id)
@@ -174,12 +182,12 @@ public class ConfigUI extends Activity
                 mService.setLoopMode(position);
             } catch (DeadObjectException e) { }
         }
-        
+
         public void onNothingSelected(AdapterView arg0)
         {
         }
     };
-    
+
     private OnItemSelectedListener mShuffleMode = new OnItemSelectedListener()
     {
         public void onItemSelected(AdapterView parent, View v, int position, long id)
@@ -196,7 +204,7 @@ public class ConfigUI extends Activity
         {
         } 
     };
-    
+
     private OnItemSelectedListener mCoverAnimation = new OnItemSelectedListener()
     {
         public void onItemSelected(AdapterView parent, View v, int position, long id)
@@ -210,8 +218,8 @@ public class ConfigUI extends Activity
         {
         } 
     };
-    
-    
+
+
     private void fillData()
     {
         String repeatString[] = {(String) getText(R.string.rep_no),
@@ -219,45 +227,48 @@ public class ConfigUI extends Activity
                 (String) getText(R.string.rep_all)};
         ArrayAdapter<CharSequence> repeatAdapter = new ArrayAdapter<CharSequence>(this, R.layout.spinner_row, repeatString);
         repeatMusic.setAdapter(repeatAdapter);
-        
+
         String shuffleString[] = { (String) getText(R.string.normal),
-        (String) getText(R.string.random)};
+                (String) getText(R.string.random)};
         ArrayAdapter<CharSequence> shuffleAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, shuffleString);
         playMode.setAdapter(shuffleAdapter);
-        
+
         String animString[] = { (String) getText(R.string.no_anim),
                 (String) getText(R.string.translation_anim),
                 (String) getText(R.string.rotation_anim)};
         ArrayAdapter<CharSequence> animAdapter = new ArrayAdapter<CharSequence>(this,R.layout.spinner_row, animString);
         coverAnims.setAdapter(animAdapter);
-        
+
         coverAnims.setSelection(getSharedPreferences(Music.PREFS, MODE_PRIVATE).getInt("coverAnimType", 1) );
         
         repeatMusic.setOnItemSelectedListener(mRepeatMusic);
         playMode.setOnItemSelectedListener(mShuffleMode);
         coverAnims.setOnItemSelectedListener(mCoverAnimation);
-        
+
         /* Mise en place des actions correspondantes aux boutons */
         addDir.setOnClickListener(mAddMusic);
         delDir.setOnClickListener(mDelMusic);
         updateMusic.setOnClickListener(mUpdateMusic);
-        coverUI.setOnClickListener(mCoverUI);
-        
+
         String[] mode = {(String) getText(R.string.config_mode)};
         ArrayAdapter<String> adapterMode =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,mode);
         listeMode.setAdapter(adapterMode);
         listeMode.setOnItemClickListener(mListeMode);
-        
+
         String[] library = {(String) getText(R.string.config_library)};
         ArrayAdapter<String> adapterDir =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,library);
         listeLibrary.setAdapter(adapterDir);      
         listeLibrary.setOnItemClickListener(mListeDir);
-        
+
         String[] anims = {(String) getText(R.string.config_anims)};
         ArrayAdapter<String> adapterAnims =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,anims);
         listeCoverAnim.setAdapter(adapterAnims);      
         listeCoverAnim.setOnItemClickListener(mListeAnim);
-        
+
+        String[] covers = {(String) getText(R.string.config_covers)};
+        ArrayAdapter<String> adapterCovers =  new ArrayAdapter<String>(this,R.layout.config_row,R.id.mode,covers);
+        listeCoverManager.setOnItemClickListener(mListeCover);
+        listeCoverManager.setAdapter(adapterCovers);
     }
 
     /**
@@ -274,9 +285,8 @@ public class ConfigUI extends Activity
         String str ="";
         while (c.next())
         {
-            listFile.add(c.getString(0));
-            str += c.getString(0)+'\n';
-            //Log.v(TAG,"ADD "+c.getString(0));
+            listFile.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
+            str += c.getString(c.getColumnIndex(Music.DIRECTORY.DIR))+'\n';
         }
         mListDir.setText(str);
         c.close();
@@ -337,18 +347,11 @@ public class ConfigUI extends Activity
                 Thread t = new Thread (updateTask);
                 t.start();
             }catch(DeadObjectException doe){
-               Log.v(TAG, doe.toString());
+                Log.v(TAG, doe.toString());
             }
         }
     };
-    
-    private OnClickListener mCoverUI = new OnClickListener()
-    {
-        public void onClick(View v)
-        {
-            displayAlbumUI();
-        }
-    };
+
     private void displayAlbumUI()
     {
         startSubActivity(new Intent(this, AlbumUI.class), 0);
@@ -454,7 +457,7 @@ public class ConfigUI extends Activity
             {
                 repeatMusic.setSelection(mService.getLooping());
                 playMode.setSelection(mService.getPlayMode());
-                                
+
             } catch (DeadObjectException doe)
             { 
                 Log.v(TAG,doe.toString());

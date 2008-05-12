@@ -480,7 +480,7 @@ public class MusicDB {
 
     public Cursor getDir()
     {
-        return mDb.rawQuery("SELECT dir FROM directory",null);
+        return mDb.rawQuery("SELECT _id, dir FROM directory",null);
     }
 
     public void delDir(String dir)
