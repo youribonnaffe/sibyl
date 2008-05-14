@@ -77,7 +77,7 @@ public class AddDirUI extends ListActivity
         
 
         /* création du navigateur */
-        fillBD(path);
+        fillBD();
         
         //setListAdapter(ipla); 
         
@@ -88,7 +88,7 @@ public class AddDirUI extends ListActivity
     	}
     	catch(SQLiteDiskIOException ex)
     	{
-    	    Log.v(TAG, ex.toString());
+    	    //Log.v(TAG, ex.toString());
     	}   
     }
     
@@ -109,15 +109,21 @@ public class AddDirUI extends ListActivity
         if(item == "..")
         {
             path = parent;
-            fillBD(path);
+            fillBD();
         }
         else
         {
+            if(!path.equals("/")){
+                item = path+"/"+item;
+            }else{
+                item = path+item;
+            }
+            Log.v(TAG, item);
             File f = new File(item);
             if(f.isDirectory())
             {
                 path = item;
-                fillBD(path);
+                fillBD();
             }
             else
             {
@@ -131,7 +137,7 @@ public class AddDirUI extends ListActivity
      * @param path chemin du répertoire a afficher dans le navigateur
      * @return liste iconnifiée contenant tous les élément a afficher
      */
-    private void fillBD (String path)
+    private void fillBD ()
     {
         String[] colName = {"image","file"};
         ArrayList<String> row;
@@ -149,6 +155,7 @@ public class AddDirUI extends ListActivity
             row.add("..");
             rows.add(row);
         }
+        Log.v(TAG, " "+path+" "+parent+" "+dir.getAbsoluteFile()+" "+dir.getAbsolutePath() );
         
         File[] listeFile = dir.listFiles();
         if (listeFile != null)
@@ -183,7 +190,7 @@ public class AddDirUI extends ListActivity
         int[] to = {R.id.imgFile,R.id.file};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_dir_row,c,colName,to);
         setListAdapter(adapter);
-        ((TextView)findViewById(R.id.add_dir_location)).setText(getText(R.string.dir)+" "+path);
+        ((TextView)findViewById(R.id.add_dir_location)).setText(getText(R.string.dir)+" "+dir.getAbsolutePath());
 
     }
 

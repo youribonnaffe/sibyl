@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -184,14 +183,14 @@ public class PlayListUI extends ListActivity
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }   
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
-        Log.v(TAG, "event key up");
+        //Log.v(TAG, "event key up");
         return super.onKeyUp(keyCode, event);
     }
 
@@ -232,7 +231,7 @@ public class PlayListUI extends ListActivity
                 mService.playlistChange();
             }
             catch(DeadObjectException ex){
-                Log.v(TAG, ex.toString());
+                //Log.v(TAG, ex.toString());
             }
         }
 
@@ -276,7 +275,7 @@ public class PlayListUI extends ListActivity
             }
         }
         catch(DeadObjectException ex){
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }
         pl = new ArrayListCursor(colName,rows);        
         startManagingCursor(pl);
@@ -320,7 +319,7 @@ public class PlayListUI extends ListActivity
                 {
                     mService.clear();
                 } catch (DeadObjectException e) {
-                    Log.v(TAG, e.toString());
+                    //Log.v(TAG, e.toString());
                     // warn user
                 }
                 i = new Intent(this, AddUI.class);
@@ -339,7 +338,7 @@ public class PlayListUI extends ListActivity
         try {
             mService.playSongPlaylist(position);
         } catch (DeadObjectException e) {
-            Log.v(TAG, e.toString());
+            //Log.v(TAG, e.toString());
         }
     }
 

@@ -36,7 +36,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.DeadObjectException;
 import android.os.IBinder;
-import android.util.Log;
 
 public class Sibylservice extends Service
 {
@@ -58,7 +57,7 @@ public class Sibylservice extends Service
         private static final String CALL_OUT = "IDLE";
         private static final String PHONE_STATE = "state";
         public void onReceiveIntent(Context arg0, Intent arg1) {
-            Log.v("CALL", arg1.toString());
+            //Log.v("CALL", arg1.toString());
             try{
                 String state = arg1.getExtras().getString(PHONE_STATE);
                 if(state==null) state = "";
@@ -74,7 +73,7 @@ public class Sibylservice extends Service
                     wasPlaying = false;
                 }
             }catch(DeadObjectException doe){
-                Log.v("callFilter", doe.toString());
+                //Log.v("callFilter", doe.toString());
             }
         }
     };
@@ -95,7 +94,7 @@ public class Sibylservice extends Service
 
         // retrieve preferences
         SharedPreferences prefs = getSharedPreferences(Music.PREFS, MODE_PRIVATE);
-        Log.v("SibylService", prefs.getAll().toString());
+        //Log.v("SibylService", prefs.getAll().toString());
         currentSong= prefs.getInt("currentSong", 1);
         loopMode = prefs.getInt("loopMode", Music.LoopMode.NO_REPEAT);
         playMode = prefs.getInt("playMode", Music.Mode.NORMAL);
@@ -128,7 +127,7 @@ public class Sibylservice extends Service
 
             registerReceiver(callFilter, new IntentFilter(Intent.PHONE_STATE_CHANGED_ACTION));
         }catch (SQLiteDiskIOException e){
-            Log.v("SibylService", e.getMessage());
+            //Log.v("SibylService", e.getMessage());
             // what should we do ? updateNotification ?
         }
 
@@ -194,10 +193,10 @@ public class Sibylservice extends Service
         }
         catch ( IOException ioe) 
         {
-            Log.v(TAG, ioe.toString());
+            //Log.v(TAG, ioe.toString());
         }
         catch (IllegalArgumentException iae){
-            Log.v(TAG, iae.toString());
+            //Log.v(TAG, iae.toString());
         }
     }
 

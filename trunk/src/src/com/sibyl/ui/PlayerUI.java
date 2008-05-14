@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -139,7 +138,7 @@ public class PlayerUI extends Activity
 
     private IntentReceiver intentHandler = new IntentReceiver(){
         public void onReceiveIntent(Context c, Intent i){
-            Log.v("INTENT", "PLAYERUI RECEIVED "+i.toString());
+            //Log.v("INTENT", "PLAYERUI RECEIVED "+i.toString());
             // call appropriate refresh methods
             if(i.getAction().equals(Music.Action.PLAY)){
                 playRefresh();
@@ -230,7 +229,7 @@ public class PlayerUI extends Activity
         }
         catch(SQLiteDiskIOException e)
         {
-            Log.v(TAG, e.getMessage());
+            //Log.v(TAG, e.getMessage());
             // user should be warned
         }
         
@@ -273,7 +272,7 @@ public class PlayerUI extends Activity
         // when displayed we want to be informed of service changes
         registerReceiver(intentHandler, intentF);
         progress.initializeProgress();
-        Log.v(TAG, "resume");
+        //Log.v(TAG, "resume");
         if(mService != null){
             resumeRefresh();
         }
@@ -383,7 +382,7 @@ public class PlayerUI extends Activity
         }
         catch(NullPointerException ex)
         {//imageOver or imageOverAnim not yet initialized
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }
     }
 
@@ -412,7 +411,7 @@ public class PlayerUI extends Activity
                     mService.stop();
                 }
                 catch (DeadObjectException ex) {
-                    Log.v(TAG, ex.toString());
+                    //Log.v(TAG, ex.toString());
                     // user should be warned
                 }
                 lecture.changeImageUsedTo(PLAY_IMG);
@@ -490,24 +489,24 @@ public class PlayerUI extends Activity
                 float gap =  ev.getRawX() - firstClickPosX;
                 /*move from the left to the right*/
                 if( gap > gapLong && next.isEnabled()){
-                    Log.v(TAG,"DROIT -->");
+                    //Log.v(TAG,"DROIT -->");
                     try{
                         mService.next();    
                     }
                     catch(DeadObjectException ex){
-                        Log.v(TAG, ex.toString());
+                        //Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
                     startTouchEventAnimation(R.drawable.next_notification);
                 }
                 /*move from the right to the left*/
                 if( gap < -1*gapLong && previous.isEnabled()){
-                    Log.v(TAG, "<--GAUCHE");
+                    //Log.v(TAG, "<--GAUCHE");
                     try{
                         mService.prev();
                     }
                     catch(DeadObjectException ex){
-                        Log.v(TAG, ex.toString());
+                        //Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
                     startTouchEventAnimation(R.drawable.prev_notification);
@@ -517,13 +516,13 @@ public class PlayerUI extends Activity
                 float gap =  ev.getRawY() - firstClickPosY;
                 /*move from the up to the down*/
                 if( gap > gapLong){
-                    Log.v(TAG,"Down -->");
+                    //Log.v(TAG,"Down -->");
                     displayPlaylist();
                 }
                 /*we can make on if loop,abs(gap) > gapLong, but if in the futur up->down and down->up are to different movement, each has its own loop*/
                 /*move from the down to the up*/
                 if( gap < -1*gapLong){
-                    Log.v(TAG, "<--UP");
+                    //Log.v(TAG, "<--UP");
                     displayPlaylist();
                 }       
             }
@@ -532,7 +531,7 @@ public class PlayerUI extends Activity
     }
 
     public boolean onKeyUp(int keycode, KeyEvent event){
-        //Log.v("event up", event.toString());
+        ////Log.v("event up", event.toString());
         switch(event.getKeyCode()){
             case KeyEvent.KEYCODE_DPAD_DOWN :
                 return true;
@@ -545,7 +544,7 @@ public class PlayerUI extends Activity
                         mService.prev();
                         //previous.setBackground(android.R.drawable.btn_default);
                     }catch(DeadObjectException doe){
-                        Log.v(TAG, doe.toString());
+                        //Log.v(TAG, doe.toString());
                     }
                 }
                 return true;
@@ -556,7 +555,7 @@ public class PlayerUI extends Activity
                         mService.next();
                         //next.setBackground(android.R.drawable.btn_default);
                     }catch(DeadObjectException doe){
-                        Log.v(TAG, doe.toString());
+                        //Log.v(TAG, doe.toString());
                     }
                 }
                 return true;
@@ -571,7 +570,7 @@ public class PlayerUI extends Activity
     }
 
     public boolean onKeyDown(int keycode, KeyEvent event){
-        //Log.v("event down", event.toString());
+        ////Log.v("event down", event.toString());
         switch(keycode){
             case KeyEvent.KEYCODE_DPAD_DOWN :
                 return true;
@@ -626,7 +625,7 @@ public class PlayerUI extends Activity
             try{
                 mService.next();
             }catch(DeadObjectException doe){
-                Log.v(TAG, doe.toString());
+                //Log.v(TAG, doe.toString());
             }
         }
     };
@@ -645,7 +644,7 @@ public class PlayerUI extends Activity
             try{
                 mService.prev();
             }catch(DeadObjectException doe){
-                Log.v(TAG, doe.toString());
+                //Log.v(TAG, doe.toString());
             }
         }
     };
@@ -691,7 +690,7 @@ public class PlayerUI extends Activity
             }
         }
         catch(DeadObjectException ex) {
-            Log.v(TAG,ex.toString());
+            //Log.v(TAG,ex.toString());
         }
     }
 
@@ -706,7 +705,7 @@ public class PlayerUI extends Activity
             int time = mService.getCurrentPosition();
             progress.setProgress(time);
         }catch( DeadObjectException doe){
-            Log.v(TAG, doe.toString());
+            //Log.v(TAG, doe.toString());
         }
     }
 
@@ -723,7 +722,7 @@ public class PlayerUI extends Activity
         try {
             maxTimer = mService.getDuration();
         } catch (DeadObjectException doe) {
-            Log.v(TAG, doe.toString());
+            //Log.v(TAG, doe.toString());
         }
         mTimeHandler.post(timerTask);
     }
@@ -787,7 +786,7 @@ public class PlayerUI extends Activity
                 }
             }
         }catch( DeadObjectException doe){
-            Log.v(TAG, doe.toString());
+            //Log.v(TAG, doe.toString());
         }
     }
 
@@ -847,7 +846,7 @@ public class PlayerUI extends Activity
                     break;
             }
         }catch(DeadObjectException doe){
-            Log.v(TAG, doe.toString());
+            //Log.v(TAG, doe.toString());
         }
     }
 

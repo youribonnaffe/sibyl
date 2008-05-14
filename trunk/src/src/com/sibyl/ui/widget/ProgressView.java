@@ -26,7 +26,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DateUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -149,7 +148,7 @@ public class ProgressView extends View {
     public void setProgress(int prog){
         progress = prog;
         invalidate();
-        Log.v("PROGRESS","setProgress:"+((Integer)prog).toString()+"/"+((Integer)progress).toString());
+        //Log.v("PROGRESS","setProgress:"+((Integer)prog).toString()+"/"+((Integer)progress).toString());
     }
         
     /*
@@ -178,7 +177,7 @@ public class ProgressView extends View {
                 if (progress < 0){
                     progress = 0;
                 }
-                Log.v("PROGRESS", "Clicked:"+ ((Integer)progress).toString());
+                //Log.v("PROGRESS", "Clicked:"+ ((Integer)progress).toString());
                 this.setProgress(progress);
                 if (listener != null){
                     listener.onProgressChanged(this, progress);

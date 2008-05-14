@@ -34,14 +34,12 @@
 		android:focusable="false"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:visibility="gone"
 		android:text="Normal"/>
 
     <Spinner android:id="@+id/shuMusic"
 		android:focusable="false"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:visibility="gone"
 		android:text="Normal"/>
 	
 	<View 
@@ -56,7 +54,6 @@
         android:focusable="false"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:text="Normal"/>
 		
 	<View 

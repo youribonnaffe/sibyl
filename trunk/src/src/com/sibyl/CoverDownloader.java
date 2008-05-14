@@ -34,7 +34,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import android.database.Cursor;
-import android.util.Log;
 
 /**
  * works with amazon for now
@@ -81,7 +80,7 @@ public class CoverDownloader {
 
                 // retrieve images from answer
                 String answer = ap.getResult();
-                Log.v("DL", q+" avant "+answer);
+                //Log.v("DL", q+" avant "+answer);
                 if(answer != null){
                     // save cover and add it to database
 
@@ -94,7 +93,7 @@ public class CoverDownloader {
                         }
                     }
 
-                    //Log.v(TAG, "anws "+answer);
+                    ////Log.v(TAG, "anws "+answer);
                     // get image
                     InputStream  in = new URL(answer).openStream();
                     // filename is image name + cover dir
@@ -108,7 +107,7 @@ public class CoverDownloader {
                     }
                     out.close();
                     in.close();
-                    Log.v(TAG, "SET cover "+albumId+" "+filename);
+                    //Log.v(TAG, "SET cover "+albumId+" "+filename);
                     
                     // save cover path to database
                     mdb.setCover(albumId, filename);
@@ -117,13 +116,13 @@ public class CoverDownloader {
                     return true;
                 }
             }catch(UnsupportedEncodingException uee){
-                Log.v(TAG, "characters problem "+ uee.toString());
+                //Log.v(TAG, "characters problem "+ uee.toString());
             }catch(SAXException saxe){
                 // shouldn't happen
             }catch(ParserConfigurationException pce){
                 // shouldn't happen
             }catch(IOException ioe){
-                Log.v(TAG, ioe.toString());
+                //Log.v(TAG, ioe.toString());
             }
         }
         // we haven't found any cover

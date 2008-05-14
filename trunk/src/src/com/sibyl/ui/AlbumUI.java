@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteDiskIOException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
@@ -124,7 +123,7 @@ public class AlbumUI extends ListActivity {
         setTitle(R.string.cover_manager_title);
         setContentView(R.layout.album);
         groupView = (LinearLayout) findViewById(R.id.group);
-        Log.v(TAG,"CoverUI is launched");
+        //Log.v(TAG,"CoverUI is launched");
         selectedAlbum = 0;
         try
         {
@@ -133,7 +132,7 @@ public class AlbumUI extends ListActivity {
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }
     }
 
@@ -176,7 +175,7 @@ public class AlbumUI extends ListActivity {
     protected void onActivityResult(int requestCode, int resultCode, String data, Bundle extras){
         switch(resultCode){
             case RESULT_OK :
-                //Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
+                ////Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
                 mdb.setCover(selectedAlbum, data);
                 listAlbum.requery(); //recover the cursor
                 break;
@@ -243,7 +242,7 @@ public class AlbumUI extends ListActivity {
         SimpleCursorAdapter rows = new SimpleCursorAdapter(this, R.layout.album_cover_row, listAlbum, res, to){
             // need to override this method to set default image if undefined
             public void setViewImage(ImageView v, String url){
-                Log.v(TAG, "SET IMAGE "+url);
+                //Log.v(TAG, "SET IMAGE "+url);
                 if(url == null || url.equals("")){
                     v.setImageResource(R.drawable.logo);
                 }else{
