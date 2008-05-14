@@ -33,7 +33,6 @@ import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.util.Log;
 
 //notes
 //optimize string concat and static ?
@@ -243,7 +242,7 @@ public class MusicDB {
         mDb.execSQL("BEGIN TRANSACTION");
         try{
             if(cv.containsKey(Music.ARTIST.NAME) && cv.get(Music.ARTIST.NAME).length() > 0){
-                Log.v("INSERTION ARTISTE", "-"+cv.get(Music.ARTIST.NAME).length()+"-");
+                //Log.v("INSERTION ARTISTE", "-"+cv.get(Music.ARTIST.NAME).length()+"-");
                 Cursor c = mDb.rawQuery("SELECT _id FROM artist WHERE artist_name='"+cv.get(Music.ARTIST.NAME)+"'" ,null);
                 if(c.next()){
                     artist = c.getInt(0);
@@ -278,7 +277,7 @@ public class MusicDB {
             }else{
                 genre = 1;
             }
-            Log.v("debug",cv.toString());
+            //Log.v("debug",cv.toString());
             // insert order in table song
             String title;
             if(cv.containsKey(Music.SONG.TITLE) && cv.get(Music.SONG.TITLE).length() > 0){
@@ -510,7 +509,7 @@ public class MusicDB {
             String id = c.getString(1);
             c.close();
             mDb.execSQL("UPDATE song SET count_played="+nb+" WHERE _id='"+id+"'");
-            //Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
+            ////Log.v("MusicDB","nb d'execution :"+nb+", chanson :"+id);
         }
     }
 

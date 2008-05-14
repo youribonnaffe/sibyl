@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
@@ -62,7 +61,7 @@ public class CoverUI extends Activity {
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        Log.v(TAG,"CoverUI is launched");
+        //Log.v(TAG,"CoverUI is launched");
         setTitle(R.string.cover_manager_album_title);
         setContentView(R.layout.cover);
         groupView = (LinearLayout) findViewById(R.id.group);
@@ -81,7 +80,7 @@ public class CoverUI extends Activity {
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }       
     }
 
@@ -114,7 +113,7 @@ public class CoverUI extends Activity {
     {
         public void onItemClick(AdapterView arg0, View arg1, int position, long id) {
             if( position >=0){
-                //Log.v(TAG, (String) imgAdapter.getItem(position));
+                ////Log.v(TAG, (String) imgAdapter.getItem(position));
                 setResult(RESULT_OK,  (String) imgAdapter.getItem(position));
             }
             else
@@ -161,7 +160,7 @@ public class CoverUI extends Activity {
         Cursor c = mdb.getDir();
         imgAdapter = new ImageAdapter(this);
         startManagingCursor(c);
-        Log.v(TAG, ">>>CoverUI::filldata ");
+        //Log.v(TAG, ">>>CoverUI::filldata ");
         boolean addCoverDir = true;
         while( c.next()){
             // for each directory, we check if the coverdir is in it
@@ -171,7 +170,7 @@ public class CoverUI extends Activity {
             for(String extension : EXT_TAB){
                 for(String file : Directory.scanFiles(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)), extension)){
                     imgAdapter.add(file);
-                    Log.v(TAG, "    "+file);
+                    //Log.v(TAG, "    "+file);
                 }
             }
         }
@@ -180,7 +179,7 @@ public class CoverUI extends Activity {
             for(String extension : EXT_TAB){
                 for(String file : Directory.scanFiles(Music.COVER_DIR, extension)){
                     imgAdapter.add(file);
-                    Log.v(TAG, "    "+file);
+                    //Log.v(TAG, "    "+file);
                 }
             }
         }

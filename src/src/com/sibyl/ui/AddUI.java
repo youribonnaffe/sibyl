@@ -25,7 +25,6 @@ import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -85,7 +84,7 @@ public class AddUI extends ListActivity
     {
         super.onCreate(icicle);
         setTitle(R.string.add_title);
-        Log.v(TAG,"AddUI start");
+        //Log.v(TAG,"AddUI start");
         setContentView(R.layout.add);
         LTRanim = AnimationUtils.loadAnimation(this, R.anim.ltrtranslation);
         RTLanim = AnimationUtils.loadAnimation(this, R.anim.rtltranslation);
@@ -95,7 +94,7 @@ public class AddUI extends ListActivity
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }   
         displayMainMenu(TRANSLATION_LEFT);
         // NO_MODIF means that we didn't modify the playlist
@@ -132,7 +131,7 @@ public class AddUI extends ListActivity
     /*display the main menu of AddUI. Where you can choose the adding mode: by artist, song, album,...*/
     private void displayMainMenu(int sense)
     {
-        Log.v(TAG, ">>> AddUI::displayMainMenu() called");
+        //Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         
         ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
         ArrayList<String> row;
@@ -166,7 +165,7 @@ public class AddUI extends ListActivity
 
     /*AddUI is refreshed in function of where the user is the menu. The position is know with positionMenu*/
     private void refreshMenu(int pos){
-        Log.v(TAG, ">>> AddUI::refreshMenu() called");
+        //Log.v(TAG, ">>> AddUI::refreshMenu() called");
         /*LinearLayout row = (LinearLayout) vu;
         TextView text = (TextView) row.findViewById(R.id.textfield);*/
         if( positionMenu == STATE.MAIN ){
@@ -216,7 +215,7 @@ public class AddUI extends ListActivity
 
     /*When a row of the main menu is selected, Addui is refreshed. And the new rows are added: list of albums, artists,... */
     private void showSubMenu(int sense){ /*CharSequence text){*/
-        Log.v(TAG, ">>> AddUI::showSubMenu() called");
+        //Log.v(TAG, ">>> AddUI::showSubMenu() called");
         if( sense == TRANSLATION_LEFT ) {
             getListView().startAnimation(RTLanim);
         }

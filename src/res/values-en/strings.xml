@@ -121,9 +121,9 @@
     <string name="error_core_service">The audio player isn't working properly, please try to relaunch the application.</string>
     
     <string name="easter_egg_title">Sibyl, à propos</string>
-    <string name="easter_egg_text1">By : \n Youri Bonnaffé, Sylvain Jeanne, Bertrand Mandrin, Ismael Merzaq</string>
+    <string name="easter_egg_text1">By : \nYouri Bonnaffé, Sylvain Jeanne, Bertrand Mandrin, Ismael Merzaq</string>
     <string name="easter_egg_text2">Started on december 2007</string>
-    <string name="easter_egg_text3">Thanks to ... le monsieur du logo</string>
+    <string name="easter_egg_text3">Thanks to : \nLoïc Martin\nBaptiste David (logo designer)</string>
     
     
     

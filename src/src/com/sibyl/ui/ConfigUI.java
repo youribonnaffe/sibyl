@@ -35,7 +35,6 @@ import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -115,8 +114,8 @@ public class ConfigUI extends Activity
         delDir = (Button) findViewById(R.id.delMusic);
         updateMusic = (Button) findViewById(R.id.updateMusic);
         dirVisible = false;
-        modeVisible = false;
-        animVisible = false;
+        modeVisible = true;
+        animVisible = true;
 
         listeMode = (ListView) findViewById(R.id.listConfigMode);
         listeLibrary = (ListView) findViewById(R.id.listConfigLibrary);
@@ -137,7 +136,7 @@ public class ConfigUI extends Activity
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }
         fillData();
     }
@@ -206,7 +205,7 @@ public class ConfigUI extends Activity
                 mService.setPlayMode(position);
             } catch (DeadObjectException doe)
             {
-                Log.v(TAG,doe.toString());
+                //Log.v(TAG,doe.toString());
             }
         }
         public void onNothingSelected(AdapterView arg0)
@@ -356,7 +355,7 @@ public class ConfigUI extends Activity
                 Thread t = new Thread (updateTask);
                 t.start();
             }catch(DeadObjectException doe){
-                Log.v(TAG, doe.toString());
+                //Log.v(TAG, doe.toString());
             }
         }
     };
@@ -408,16 +407,16 @@ public class ConfigUI extends Activity
                     }
                 }
 
-                //Log.v(TAG, "temps "+(System.currentTimeMillis()-t)); // Permet de calculer le temps d'ajout
+                ////Log.v(TAG, "temps "+(System.currentTimeMillis()-t)); // Permet de calculer le temps d'ajout
 
             }catch(SQLiteException sqle){
-                Log.v(TAG, sqle.toString());
+                //Log.v(TAG, sqle.toString());
                 // warn user
             }catch(FileNotFoundException fnfe){
-                Log.v(TAG, fnfe.toString());
+                //Log.v(TAG, fnfe.toString());
                 // warn user
             }catch(IOException ioe){
-                Log.v(TAG, ioe.toString());
+                //Log.v(TAG, ioe.toString());
                 // warn user
             }
         }
@@ -469,7 +468,7 @@ public class ConfigUI extends Activity
 
             } catch (DeadObjectException doe)
             { 
-                Log.v(TAG,doe.toString());
+                //Log.v(TAG,doe.toString());
             }
         }
 

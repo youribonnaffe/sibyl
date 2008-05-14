@@ -26,7 +26,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
@@ -72,7 +71,7 @@ public class DelDirUI extends ListActivity
         }
         catch(SQLiteDiskIOException ex)
         {
-            Log.v(TAG, ex.toString());
+            //Log.v(TAG, ex.toString());
         }   
         
         setListAdapter(new ArrayAdapter<String>(this,R.layout.del_dir_row,R.id.text1, mStrings));
