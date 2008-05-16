@@ -153,12 +153,12 @@ public class Sibylservice extends Service
                         idIcon,                             // the icon for the status bar
                         text,                               // the text to display in the ticker
                         System.currentTimeMillis(),         // the timestamp for the notification
-                        Music.APPNAME,                            // the title for the notification
+                        Music.APPNAME,                      // the title for the notification
                         text,                               // the details to display in the notification
-                        appIntent,                               // the contentIntent (see above)
-                        R.drawable.icon,                    // the app icon
-                        getText(R.string.app_name),         // the name of the app
-                        appIntent)); // the appIntent (see above)
+                        appIntent,                          // the contentIntent (see above)
+                        R.drawable.logo,                    // the app icon
+                        getText(R.string.titre),            // the name of the app
+                        appIntent));                        // the appIntent (see above)
 
     }
 
