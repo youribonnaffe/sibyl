@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ *
+ * Copyright (C) 2007-2008 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<resources>
+    <!--  UIs titles -->
+    <string name="options_title">Sibyl - Options</string>
+    <string name="playlist_title">Sibyl - Playlist</string>
+    <string name="add_title">Sibyl - Add to playlist</string>
+    <string name="cover_manager_title">Sibyl - Cover Manager</string>
+    <string name="cover_manager_album_title">Sibyl - Cover Manager</string>
+    <string name="add_dir_title">Sibyl - Add folder to library</string>
+    <string name="del_dir_title">Sibyl - Remove folder from library</string>
+    
+    <!--  PlayerUI -->
+    <string name="app_name">Sibyl, mobile your music</string>
+    <string name="short_text">lll</string>
+    <string name="medium_text">kkkoooppp</string>
+    <string name="long_text">aaadddeeevvvcccwww</string>
+    <string name="titre">Sibyl</string>
+    <string name="artiste">mobile your music</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">&gt;&gt;</string>
+    <string name="previous">&lt;&lt;</string>
+    
+    <!--  PlayListUI -->
+    <string name="playList_title">Playlist</string>
+    <string name="playList_empty">Playlist is empty</string>
+    <string name="menu_quit">Quit</string>
+    <string name="menu_playList">Playlist</string>
+    <string name="menu_option">Option</string>
+    <string name="sep_artiste_song">  -  </string>
+    <string name="menu_add">Add...</string>
+    <string name="menu_new">New...</string>
+    <string name="menu_back">Back</string>
+    <string name="menu_del">Del...</string>
+    <string name="playlistsep"> - </string>
+    <string name="dial_deldir">Do you want to Delete this directory ?</string>
+    
+    
+    
+    <!--  AddUI -->
+    <string name="add_artist">Artist</string>
+    <string name="add_album">Album</string>
+    <string name="add_song">Song</string>
+    <string name="add_style">Genre</string>
+    <string name="add_smart_playlist">Smart Playlist</string>
+    <string name="add_empty_artist">No artist</string>
+    <string name="add_empty_album">No album</string>
+    <string name="add_empty_song">No song</string>
+    <string name="add_empty_genre">No genre</string>
+    <string name="add_emptydb">Your library is empty, you should fill it first.</string>
+    
+
+
+
+    <!-- CONFIG -->
+	<string name="rep_no">No repeat</string>
+    <string name="rep_one">Repeat song</string>
+    <string name="rep_all">Repeat All</string>
+    <string name="dir">Directory : </string>
+    <string name="normal">Normal</string>
+    <string name="random">Shuffle</string>
+    <string name="dir_empty">Empty</string>
+    <string name="config_add_folder">Add folder</string>    
+    <string name="config_del_folder">Remove folder</string>
+    <string name="config_update">Update library</string>
+    <string name="config_mode">Modes...</string>
+    <string name="config_library">Library...</string>
+    <string name="config_anims">Cover Animations...</string>
+    <string name="config_covers">Covers...</string>
+    <string name="no_anim">No animation</string>
+    <string name="translation_anim">Translation</string>
+    <string name="rotation_anim">Rotation</string>
+        
+
+    <!-- PLAYLIST -->
+    <string name="playlist_random">Random songs</string>
+    <string name="playlist_less_played">Less played songs</string>
+    <string name="playlist_most_played">Most played songs</string>
+
+    
+    
+    <!-- META DATA, TAGS -->
+    <string name="tags_unknown">Unknown</string>
+    
+    
+    <!-- AlbumUI -->
+    <string name="alb_back">Back</string>
+    <string name="alb_manual">Manual</string>
+    <string name="alb_empty">Your librairy is empty.\n Fill it first</string>
+    
+    <!-- CoverUI -->
+    <string name="cov_title">Cover manager</string>
+    <string name="cov_back">Back</string>
+    <string name="cov_reset">Reset</string>  
+    <string name="cov_download">Download</string>
+        <!-- CoverUI - Dialog -->
+        <string name="download_cover_dialog_title">Download all covers</string>
+        <string name="download_cover_dialog_message">Sibyl player will now download the undefined covers from the internet. This may lead to unexpected expenses due to internet access cost.</string>  
+        <string name="download_cover_dialog_yes">Continue</string>
+        <string name="download_cover_dialog_no">Cancel</string>
+    
+    <!-- ERRORS : Some errors messages and titles -->
+    <string name="error_core_service_title">Audio player error</string>
+    <string name="error_core_service">The audio player isn't working properly, please try to relaunch the application.</string>
+    
+    <string name="easter_egg_title">Sibyl, à propos</string>
+    <string name="easter_egg_text1">By : \nYouri Bonnaffé, Sylvain Jeanne, Bertrand Mandrin, Ismael Merzaq</string>
+    <string name="easter_egg_text2">Started on december 2007</string>
+    <string name="easter_egg_text3">Thanks to : \nLoïc Martin\nBaptiste David (logo designer)</string>
+    
+    
+    
+</resources>

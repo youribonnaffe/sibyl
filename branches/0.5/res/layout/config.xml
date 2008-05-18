@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ *
+ * Copyright (C) 2007-2008 sibyl project
+ * http://code.google.com/p/sibyl/
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+ <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+ 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	
+	<ListView android:id="@+id/listConfigMode"
+		android:layout_width="fill_parent"
+		android:layout_height="26dp"/>		
+		
+	<Spinner android:id="@+id/repMusic"
+		android:focusable="false"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Normal"/>
+
+    <Spinner android:id="@+id/shuMusic"
+		android:focusable="false"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Normal"/>
+	
+	<View 
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+        	
+	<ListView android:id="@+id/listCoverAnim"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/text_config"/>      
+        
+    <Spinner android:id="@+id/covAnims"
+        android:focusable="false"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Normal"/>
+		
+	<View 
+		android:layout_width="fill_parent"
+		android:layout_height="10dp" /> 		
+		
+	<ListView android:id="@+id/listConfigLibrary"
+		android:layout_width="fill_parent"
+		android:layout_height="@dimen/text_config"/>
+ 
+	    <EditText android:id="@+id/musicData" 
+			android:maxLines="5" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:focusable="false"
+			android:scrollHorizontally="true"
+			android:visibility="gone"/>
+			
+		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		    
+		    <TableRow
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:gravity="center">
+				
+				<Button android:id="@+id/addMusic"
+					android:text="@string/config_add_folder"
+					android:focusable="true"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				<Button android:id="@+id/updateMusic"
+					android:text="@string/config_update"
+					android:focusable="false"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				<Button android:id="@+id/delMusic"
+					android:text="@string/config_del_folder"
+					android:focusable="true"
+			    	android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:visibility="gone"/>
+				    
+			</TableRow>
+		</TableLayout>
+		
+	<View 
+		android:layout_width="fill_parent"
+		android:layout_height="10dp" />
+		
+    <ListView android:id="@+id/listCoverManager"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/text_config"/>
+	
+</LinearLayout>
+</ScrollView>
