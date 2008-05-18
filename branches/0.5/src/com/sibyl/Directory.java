@@ -5,8 +5,6 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
-import android.util.Log;
-
 /**
  * Small utility class to scan recursively into directory and search for files 
  * matching an extension
