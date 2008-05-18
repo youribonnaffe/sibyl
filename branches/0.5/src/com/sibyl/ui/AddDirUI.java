@@ -50,7 +50,7 @@ public class AddDirUI extends ListActivity
 {
     private static final int ADD_ID = Menu.FIRST; // Elément du ménu permettant l'ajout d'un répertoire
     private static final int BACK_ID = Menu.FIRST +1; // Elément du ménu permettant l'arret de l'activité
-    private static final String TAG = "ADD_DIR"; // TAG servant au débugage
+    //private static final String TAG = "ADD_DIR"; // TAG servant au débugage
      
     private String parent;  // répertoire parent
     private String path;    // répertoire courant
@@ -118,7 +118,7 @@ public class AddDirUI extends ListActivity
             }else{
                 item = path+item;
             }
-            Log.v(TAG, item);
+            //Log.v(TAG, item);
             File f = new File(item);
             if(f.isDirectory())
             {
@@ -155,7 +155,7 @@ public class AddDirUI extends ListActivity
             row.add("..");
             rows.add(row);
         }
-        Log.v(TAG, " "+path+" "+parent+" "+dir.getAbsoluteFile()+" "+dir.getAbsolutePath() );
+        //Log.v(TAG, " "+path+" "+parent+" "+dir.getAbsoluteFile()+" "+dir.getAbsolutePath() );
         
         File[] listeFile = dir.listFiles();
         if (listeFile != null)

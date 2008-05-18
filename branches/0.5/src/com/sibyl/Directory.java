@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
+import android.util.Log;
+
 /**
  * Small utility class to scan recursively into directory and search for files 
  * matching an extension
@@ -33,14 +35,18 @@ public class Directory {
 
     private static void searchIn(File dir, String extension, ArrayList<String> files){
         // list files matching extension
-        for(File f : dir.listFiles(new ExtensionFilter(extension))){
-            files.add(f.getAbsolutePath());            
+        File[] listFiles = dir.listFiles(new ExtensionFilter(extension));
+        if (listFiles !=null )
+        {
+            for(File f : listFiles)
+            {
+                files.add(f.getAbsolutePath());            
+            }
+            for(File f: dir.listFiles(new DirectoryFilter())){
+                searchIn(f, extension, files);
+            }
         }
 
-        // go in each directories
-        for(File f: dir.listFiles(new DirectoryFilter())){
-            searchIn(f, extension, files);
-        }
     }
 
     /**
