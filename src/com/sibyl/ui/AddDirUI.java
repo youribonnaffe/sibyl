@@ -26,7 +26,6 @@ import android.database.ArrayListCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Menu.Item;
