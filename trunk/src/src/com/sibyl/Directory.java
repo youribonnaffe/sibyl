@@ -33,13 +33,16 @@ public class Directory {
 
     private static void searchIn(File dir, String extension, ArrayList<String> files){
         // list files matching extension
-        for(File f : dir.listFiles(new ExtensionFilter(extension))){
-            files.add(f.getAbsolutePath());            
-        }
-
-        // go in each directories
-        for(File f: dir.listFiles(new DirectoryFilter())){
-            searchIn(f, extension, files);
+        File[] listFiles = dir.listFiles(new ExtensionFilter(extension));
+        if (listFiles !=null )
+        {
+            for(File f : listFiles)
+            {
+                files.add(f.getAbsolutePath());            
+            }
+            for(File f: dir.listFiles(new DirectoryFilter())){
+                searchIn(f, extension, files);
+            }
         }
     }
 
