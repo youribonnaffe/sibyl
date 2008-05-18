@@ -45,7 +45,7 @@ import com.sibyl.ui.animation.ActivityTransition;
 public class CoverUI extends Activity {
 
     private MusicDB mdb;    //the database
-    private static final String TAG = "CoverUI"; //tag for the ui
+    //private static final String TAG = "CoverUI"; //tag for the ui
     //menu constant
     private static final int BACK_ID = Menu.FIRST;
     private static final int RESET_ID = Menu.FIRST+1;

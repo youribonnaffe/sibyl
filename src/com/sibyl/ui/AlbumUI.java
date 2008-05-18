@@ -52,7 +52,7 @@ import com.sibyl.ui.animation.ActivityTransition;
  */
 public class AlbumUI extends ListActivity {
 
-    private static final String TAG = "ALBUMUI";
+    //private static final String TAG = "ALBUMUI";
     //constants for the cursor
     static private final String[] res = {"album_name","cover_url"}; 
     static private final int[] to = {R.id.album, R.id.img};

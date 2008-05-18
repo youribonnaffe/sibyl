@@ -58,7 +58,7 @@ public class PlayListUI extends ListActivity
     private static final int ADD_ID = Menu.FIRST +1;
     private static final int NEW_ID = Menu.FIRST +2;
 
-    private static final String TAG = "PLAYLIST";
+    //private static final String TAG = "PLAYLIST";
     private static final int ADD_UI = 1;
 
     private Animation outAnimation;

@@ -74,7 +74,7 @@ public class PlayerUI extends Activity
     private static final int PAUSE_IMG = 2;
     
     // debug
-    private static final String TAG = "PLAYERUI";
+    //private static final String TAG = "PLAYERUI";
 
     // views of the ui
     private TextView artiste;

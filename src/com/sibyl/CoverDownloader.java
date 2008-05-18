@@ -42,7 +42,7 @@ import android.database.Cursor;
  */
 public class CoverDownloader {
 
-    private static final String TAG = "CoverDownloader";
+    //private static final String TAG = "CoverDownloader";
 
     private static final String QUERY_AMAZON = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService" +
     "&AWSAccessKeyId=0RX30HTGPKA2ZDK3RWG2" +

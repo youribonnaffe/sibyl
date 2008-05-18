@@ -71,7 +71,7 @@ import com.sibyl.Sibylservice;
 public class ConfigUI extends Activity
 {
     private static final int BACK_ID = Menu.FIRST; // Elément du ménu permettant l'arret de l'activité
-    private static final String TAG = "CONFIG"; // Tag servant au débugage
+    //private static final String TAG = "CONFIG"; // Tag servant au débugage
     private static final long TIME_LEAP = 500;
 
     private ISibylservice mService = null;  //core service s'occupant de la lecture
@@ -373,7 +373,7 @@ public class ConfigUI extends Activity
      */
     private class UpdateTask implements Runnable 
     {
-        private static final String TAG = "UPDATETASK"; /** TAG servant au débugage */
+        //private static final String TAG = "UPDATETASK"; /** TAG servant au débugage */
         private MusicDB mDB; /** Base de donnée */
 
         /**

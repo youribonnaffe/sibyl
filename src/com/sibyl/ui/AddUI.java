@@ -45,7 +45,7 @@ public class AddUI extends ListActivity
 {
     private static final int BACK_ID = Menu.FIRST;
     private static final int ID = 2; /*position of the column in the cursor*/
-    private static final String TAG = "AddUI";
+    //private static final String TAG = "AddUI";
     private MusicDB mdb;    //the database
 
     private Cursor mCursor = null;

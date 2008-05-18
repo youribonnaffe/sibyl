@@ -47,7 +47,7 @@ public class DelDirUI extends ListActivity
 
     private static final int DEL_ID = Menu.FIRST; // Elément du ménu permettant la suppression d'un répertoire
     private static final int BACK_ID = Menu.FIRST +1; // Elément du ménu permettant l'arret de l'activité
-    private static final String TAG = "DEL_DIR"; // TAG servant au débugage
+    //private static final String TAG = "DEL_DIR"; // TAG servant au débugage
 
     private MusicDB mdb;    //the database
     private ArrayList<String> mStrings; // Liste des répertoires de musiques
