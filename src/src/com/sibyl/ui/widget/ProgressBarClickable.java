@@ -1,7 +1,5 @@
 package com.sibyl.ui.widget;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -17,12 +15,12 @@ public class ProgressBarClickable extends ProgressBar {
         void onProgressChanged(View v, int progress);
     }
 
-    public ProgressBarClickable(Context context, AttributeSet attrs, Map inflateParams, int defStyle) {
-        super(context, attrs, inflateParams, defStyle);
+    public ProgressBarClickable(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
-    public ProgressBarClickable(Context context, AttributeSet attrs, Map inflateParams) {
-        super(context, attrs, inflateParams, android.R.attr.progressBarStyleHorizontal);
+    public ProgressBarClickable(Context context, AttributeSet attrs) {
+        super(context, attrs, android.R.attr.progressBarStyleHorizontal);
     }
     
     public ProgressBarClickable(Context context) {

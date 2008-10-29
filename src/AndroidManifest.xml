@@ -5,7 +5,7 @@
         <service android:name=".Sibylservice" android:process=":remote">
         </service>
 
-        <activity android:theme="@android:style/Theme.Dark" android:multiprocess="false" android:name=".ui.PlayerUI">
+        <activity android:multiprocess="false" android:name=".ui.PlayerUI"><!--  android:theme="@android:style/Theme.Dark" -->
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

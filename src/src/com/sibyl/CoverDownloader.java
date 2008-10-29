@@ -63,7 +63,7 @@ public class CoverDownloader {
         Cursor c = mdb.getAlbumInfo(albumId);
 
         // parse every (album, artist)
-        while(c.next()){
+        while(c.moveToNext()){
             try{
                 // build request, search for album
                 String q = QUERY_AMAZON + "&Title="+ URLEncoder.encode(c.getString(c.getColumnIndex(Music.ALBUM.NAME)), "UTF-8");

@@ -17,11 +17,12 @@
         android:id="@+id/gallery"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="fill_parent"
-	    android:verticalSpacing="10"
-	    android:horizontalSpacing="10"
 	    android:numColumns="auto_fit"
-	    android:columnWidth="90"
 	    android:stretchMode="columnWidth"
 	    android:gravity="center"/>
+	    <!-- 
+        android:verticalSpacing="10"
+        android:horizontalSpacing="10"
+        android:columnWidth="90" -->
 	    
 </LinearLayout>       

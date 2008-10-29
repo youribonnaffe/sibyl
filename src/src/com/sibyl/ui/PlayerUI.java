@@ -23,20 +23,20 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentReceiver;
+import android.content.BroadcastReceiver;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.DeadObjectException;
+import android.os.RemoteException;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Menu.Item;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -122,7 +122,7 @@ public class PlayerUI extends Activity
                     timer = mService.getCurrentPosition(); // seems to avoid ANR
                 }
             }
-            catch(DeadObjectException ex){
+            catch(RemoteException ex){
                 // old value will be kept, if the song can't be played anymore
                 // an error should be thrown by the service (or not)
             }
@@ -136,8 +136,8 @@ public class PlayerUI extends Activity
         }
     };
 
-    private IntentReceiver intentHandler = new IntentReceiver(){
-        public void onReceiveIntent(Context c, Intent i){
+    private BroadcastReceiver intentHandler = new BroadcastReceiver(){
+        public void onReceive(Context c, Intent i){
             //Log.v("INTENT", "PLAYERUI RECEIVED "+i.toString());
             // call appropriate refresh methods
             if(i.getAction().equals(Music.Action.PLAY)){
@@ -301,7 +301,7 @@ public class PlayerUI extends Activity
      */
     private void displayPlaylist() 
     {
-        startSubActivity(new Intent(this, PlayListUI.class), 0);
+        startActivity(new Intent(this, PlayListUI.class));
     }
 
     /**
@@ -309,7 +309,7 @@ public class PlayerUI extends Activity
      */
     private void displayConfig() 
     {
-        startSubActivity(new Intent(this, ConfigUI.class), 0);
+        startActivity(new Intent(this, ConfigUI.class));
     }
 
     /**
@@ -393,24 +393,24 @@ public class PlayerUI extends Activity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, PLAYLIST_ID, R.string.menu_playList);
-        menu.add(0, OPTION_ID, R.string.menu_option);
-        menu.add(0, QUIT_ID, R.string.menu_quit);
+        menu.add(0, PLAYLIST_ID, Menu.NONE, R.string.menu_playList);
+        menu.add(0, OPTION_ID, Menu.NONE, R.string.menu_option);
+        menu.add(0, QUIT_ID, Menu.NONE, R.string.menu_quit);
         return true;
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
             case QUIT_ID:
                 try 
                 {
                     mService.stop();
                 }
-                catch (DeadObjectException ex) {
+                catch (RemoteException ex) {
                     //Log.v(TAG, ex.toString());
                     // user should be warned
                 }
@@ -458,7 +458,7 @@ public class PlayerUI extends Activity
                 
 
             }
-            catch(DeadObjectException ex){}
+            catch(RemoteException ex){}
         }
     };
 
@@ -493,7 +493,7 @@ public class PlayerUI extends Activity
                     try{
                         mService.next();    
                     }
-                    catch(DeadObjectException ex){
+                    catch(RemoteException ex){
                         //Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
@@ -505,7 +505,7 @@ public class PlayerUI extends Activity
                     try{
                         mService.prev();
                     }
-                    catch(DeadObjectException ex){
+                    catch(RemoteException ex){
                         //Log.v(TAG, ex.toString());
                     }
                     //showing image to inform the user we have recognized its move
@@ -543,7 +543,7 @@ public class PlayerUI extends Activity
                     try{
                         mService.prev();
                         //previous.setBackground(android.R.drawable.btn_default);
-                    }catch(DeadObjectException doe){
+                    }catch(RemoteException doe){
                         //Log.v(TAG, doe.toString());
                     }
                 }
@@ -554,7 +554,7 @@ public class PlayerUI extends Activity
                     try{
                         mService.next();
                         //next.setBackground(android.R.drawable.btn_default);
-                    }catch(DeadObjectException doe){
+                    }catch(RemoteException doe){
                         //Log.v(TAG, doe.toString());
                     }
                 }
@@ -624,7 +624,7 @@ public class PlayerUI extends Activity
                 
             try{
                 mService.next();
-            }catch(DeadObjectException doe){
+            }catch(RemoteException doe){
                 //Log.v(TAG, doe.toString());
             }
         }
@@ -643,7 +643,7 @@ public class PlayerUI extends Activity
             
             try{
                 mService.prev();
-            }catch(DeadObjectException doe){
+            }catch(RemoteException doe){
                 //Log.v(TAG, doe.toString());
             }
         }
@@ -653,14 +653,14 @@ public class PlayerUI extends Activity
     private class imageOverAnimListener implements Animation.AnimationListener 
     {
 
-        public void onAnimationEnd() {
+        public void onAnimationEnd(Animation a) {
             imageOver.setVisibility(View.INVISIBLE);
         }
 
-        public void onAnimationRepeat() {
+        public void onAnimationRepeat(Animation a) {
         }
 
-        public void onAnimationStart() {
+        public void onAnimationStart(Animation a) {
         }
         
     }
@@ -689,7 +689,7 @@ public class PlayerUI extends Activity
                 }
             }
         }
-        catch(DeadObjectException ex) {
+        catch(RemoteException ex) {
             //Log.v(TAG,ex.toString());
         }
     }
@@ -704,7 +704,7 @@ public class PlayerUI extends Activity
         try{
             int time = mService.getCurrentPosition();
             progress.setProgress(time);
-        }catch( DeadObjectException doe){
+        }catch( RemoteException doe){
             //Log.v(TAG, doe.toString());
         }
     }
@@ -721,7 +721,7 @@ public class PlayerUI extends Activity
         mTimeHandler.removeCallbacks(timerTask);
         try {
             maxTimer = mService.getDuration();
-        } catch (DeadObjectException doe) {
+        } catch (RemoteException doe) {
             //Log.v(TAG, doe.toString());
         }
         mTimeHandler.post(timerTask);
@@ -785,7 +785,7 @@ public class PlayerUI extends Activity
                     next.setEnabled(true);
                 }
             }
-        }catch( DeadObjectException doe){
+        }catch( RemoteException doe){
             //Log.v(TAG, doe.toString());
         }
     }
@@ -845,14 +845,13 @@ public class PlayerUI extends Activity
                     noSongRefresh();
                     break;
             }
-        }catch(DeadObjectException doe){
+        }catch(RemoteException doe){
             //Log.v(TAG, doe.toString());
         }
     }
 
     @Override
     protected void onStart() {
-        // TODO Auto-generated method stub
         super.onStart();
         progress.initializeProgress();
     }

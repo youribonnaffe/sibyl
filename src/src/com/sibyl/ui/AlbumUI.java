@@ -30,7 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -86,12 +86,12 @@ public class AlbumUI extends ListActivity {
 
         public CoverTask(Cursor listAlbum){
             // copy album ids into array
-            listAlbum.moveTo(0);
-            albums = new int[listAlbum.count()];
+            listAlbum.moveToPosition(0);
+            albums = new int[listAlbum.getCount()];
             int i = 0;
             while(i<albums.length){
                 albums[i++] = listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID));
-                listAlbum.next();
+                listAlbum.moveToNext();
             }
         }
 
@@ -194,15 +194,15 @@ public class AlbumUI extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.alb_back);
-        menu.add(0, DOWNLOAD_ID, R.string.cov_download);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.alb_back);
+        menu.add(0, DOWNLOAD_ID, Menu.NONE, R.string.cov_download);
         return true;
     }
 
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
             case BACK_ID:
                 finish();
@@ -252,15 +252,15 @@ public class AlbumUI extends ListActivity {
         };
         
         // retrieve artist names
-        artists = new String[listAlbum.count()];
+        artists = new String[listAlbum.getCount()];
         int i = 0;
-        while(listAlbum.next()){
+        while(listAlbum.moveToNext()){
             String artist = new String();
             Cursor c = mdb.getArtistFromAlbum(listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
-            if(c.first()){
+            if(c.moveToFirst()){
                 artist+=c.getString(c.getColumnIndex(Music.ARTIST.NAME));
             }
-            while(c.next()){
+            while(c.moveToNext()){
                 artist+=", "+c.getString(c.getColumnIndex(Music.ARTIST.NAME));
             }
             artists[i++] = artist;
@@ -271,7 +271,7 @@ public class AlbumUI extends ListActivity {
         rows.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 if(columnIndex == cursor.getColumnIndex(Music.ALBUM.NAME)){
-                    ((TextView)view.getRootView().findViewById(R.id.artist)).setText(artists[cursor.position()]);
+                    ((TextView)view.getRootView().findViewById(R.id.artist)).setText(artists[cursor.getPosition()]);
                 }
                 return false;
             }
@@ -288,12 +288,12 @@ public class AlbumUI extends ListActivity {
     private void displayCoverUI(int selectedRow) 
     {
         if( selectedRow >= 0){
-            listAlbum.moveTo(selectedRow);
+            listAlbum.moveToPosition(selectedRow);
             selectedAlbum = listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID));
             Intent i = new Intent(this, CoverUI.class);
             i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID)));
             i.putExtra(CoverUI.ALBUM_NAME, listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
-            startSubActivity(i, 0);
+            startActivity(i);
         }
     }
 
