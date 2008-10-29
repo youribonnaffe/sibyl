@@ -21,23 +21,24 @@ package com.sibyl.ui;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentReceiver;
 import android.content.ServiceConnection;
-import android.database.ArrayListCursor;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -91,8 +92,8 @@ public class PlayListUI extends ListActivity
 
 
     private IntentFilter intentF;
-    private IntentReceiver intentHandler = new IntentReceiver(){
-        public void onReceiveIntent(Context c, Intent i){
+    private BroadcastReceiver intentHandler = new BroadcastReceiver(){
+        public void onReceive(Context c, Intent i){
             // we are interessed if a new song is played
             if(i.getAction().equals(Music.Action.PLAY)){
                 fillData();
@@ -230,7 +231,7 @@ public class PlayListUI extends ListActivity
             try{
                 mService.playlistChange();
             }
-            catch(DeadObjectException ex){
+            catch(RemoteException ex){
                 //Log.v(TAG, ex.toString());
             }
         }
@@ -256,14 +257,14 @@ public class PlayListUI extends ListActivity
             ArrayList<String> row;
             int index = mService.getCurrentSongIndex()-1;
             int playerState = mService.getState();
-            while(c.next())
+            while(c.moveToNext())
             {
                 row = new ArrayList<String>();
                 // display icon if is playing and this song is played
                 if( ( playerState == Music.State.PAUSED || playerState == Music.State.PLAYING )
-                        && mService!= null && index == c.position()){
+                        && mService!= null && index == c.getPosition()){
                     icon = R.drawable.play_white;
-                    songPlayed = c.position();
+                    songPlayed = c.getPosition();
                 }
                 else{
                     icon = R.drawable.puce;
@@ -274,10 +275,11 @@ public class PlayListUI extends ListActivity
                 rows.add(row);
             }
         }
-        catch(DeadObjectException ex){
+        catch(RemoteException ex){
             //Log.v(TAG, ex.toString());
         }
-        pl = new ArrayListCursor(colName,rows);        
+        pl = new MatrixCursor(colName);
+        ((MatrixCursor)pl).addRow(rows);     
         startManagingCursor(pl);
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.playlist_row,pl,colName,to);
         c.close();
@@ -297,33 +299,33 @@ public class PlayListUI extends ListActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.menu_back);
-        menu.add(0, ADD_ID, R.string.menu_add);
-        menu.add(0, NEW_ID, R.string.menu_new);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.menu_back);
+        menu.add(0, ADD_ID, Menu.NONE, R.string.menu_add);
+        menu.add(0, NEW_ID, Menu.NONE, R.string.menu_new);
         return true;
     }
 
     /*when a menu is selected*/
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
         Intent i = null;
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
             case ADD_ID:
                 i = new Intent(this, AddUI.class);
-                startSubActivity(i, ADD_UI);
+                startActivityForResult(i, ADD_UI);
                 break;
             case NEW_ID:
                 try 
                 {
                     mService.clear();
-                } catch (DeadObjectException e) {
+                } catch (RemoteException e) {
                     //Log.v(TAG, e.toString());
                     // warn user
                 }
                 i = new Intent(this, AddUI.class);
-                startSubActivity(i, ADD_UI);
+                startActivityForResult(i, ADD_UI);
                 break;
             case BACK_ID:
                 finish();
@@ -337,7 +339,7 @@ public class PlayListUI extends ListActivity
         position ++;
         try {
             mService.playSongPlaylist(position);
-        } catch (DeadObjectException e) {
+        } catch (RemoteException e) {
             //Log.v(TAG, e.toString());
         }
     }

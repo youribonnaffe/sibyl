@@ -21,14 +21,14 @@ package com.sibyl.ui;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
-import android.database.ArrayListCursor;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -111,15 +111,15 @@ public class AddUI extends ListActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.menu_back);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.menu_back);
         return true;
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
             case BACK_ID:
                 finish();
@@ -142,7 +142,8 @@ public class AddUI extends ListActivity
             rows.add(row);
         }
         
-        ArrayListCursor listMenu = new ArrayListCursor(colName,rows);
+        MatrixCursor listMenu = new MatrixCursor(colName);
+        ((MatrixCursor)listMenu).addRow(rows);
         startManagingCursor(listMenu);
         int[] to = {R.id.textfield,R.id.iconAdd};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_row,listMenu,colName,to); 
@@ -190,7 +191,7 @@ public class AddUI extends ListActivity
                 mdb.insertPlaylist(sp);
             }
             else{
-                mCursor.moveTo(pos);
+                mCursor.moveToPosition(pos);
                 if(positionMenu == STATE.ARTIST){
                     mdb.insertPlaylist(Music.SONG.ARTIST, mCursor.getString(ID));
                 }
@@ -248,7 +249,7 @@ public class AddUI extends ListActivity
             case R.string.add_smart_playlist:
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.add_row, R.id.textfield);
                 for( int i = 0; i < nbFieldSMP; i++){
-                    adapter.addObject(getString(fieldSMP[i])+" ("+Music.SmartPlaylist.SIZE+")");
+                    adapter.add(getString(fieldSMP[i])+" ("+Music.SmartPlaylist.SIZE+")");
                 }
 
                 setListAdapter(adapter);
@@ -258,7 +259,7 @@ public class AddUI extends ListActivity
 
         /*if the cursor is empty, we adjust the text in function of the submenu*/
         startManagingCursor(mCursor);
-        if( mCursor.count() == 0 ){
+        if( mCursor.getCount() == 0 ){
             TextView emptyText = (TextView) findViewById(android.R.id.empty);
             switch(positionMenu){
                 case STATE.ARTIST : 

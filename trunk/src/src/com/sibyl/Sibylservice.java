@@ -29,13 +29,13 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentReceiver;
+import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.DeadObjectException;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 public class Sibylservice extends Service
 {
@@ -50,13 +50,13 @@ public class Sibylservice extends Service
     private int currentSong;
     private NotificationManager nm;
 
-    private IntentReceiver callFilter = new IntentReceiver() {
+    private BroadcastReceiver callFilter = new BroadcastReceiver() {
         private boolean wasPlaying = false;
         private static final String CALL_IN_1 = "RINGING";
         private static final String CALL_IN_2 = "OFFHOOK";
         private static final String CALL_OUT = "IDLE";
         private static final String PHONE_STATE = "state";
-        public void onReceiveIntent(Context arg0, Intent arg1) {
+        public void onReceive(Context arg0, Intent arg1) {
             //Log.v("CALL", arg1.toString());
             try{
                 String state = arg1.getExtras().getString(PHONE_STATE);
@@ -72,7 +72,7 @@ public class Sibylservice extends Service
                     }
                     wasPlaying = false;
                 }
-            }catch(DeadObjectException doe){
+            }catch(RemoteException re){
                 //Log.v("callFilter", doe.toString());
             }
         }
@@ -80,7 +80,7 @@ public class Sibylservice extends Service
     
     /** creation of the service */
     @Override
-    protected void onCreate()
+    public void onCreate()
     {        
         /* initialization of the state and mode of the service */
         playerState=Music.State.STOPPED;
@@ -125,7 +125,7 @@ public class Sibylservice extends Service
                 playerState = Music.State.PAUSED;
             }
 
-            registerReceiver(callFilter, new IntentFilter(Intent.PHONE_STATE_CHANGED_ACTION));
+            registerReceiver(callFilter, new IntentFilter(Intent.ACTION_ANSWER));
         }catch (SQLiteDiskIOException e){
             //Log.v("SibylService", e.getMessage());
             // what should we do ? updateNotification ?
@@ -143,27 +143,28 @@ public class Sibylservice extends Service
      */
     public void updateNotification(int idIcon, CharSequence text)
     {
-        Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
-        nm.notify(
-                R.layout.notification,                  // we use a string id because it is a unique
+        //Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
+       /* int timeMilli = 3000;
+        nm.notify(R.layout.notification,                  // we use a string id because it is a unique
                 // number.  we use it later to cancel the
                 // notification
-                new Notification(
-                        this,                               // our context
-                        idIcon,                             // the icon for the status bar
-                        text,                               // the text to display in the ticker
-                        System.currentTimeMillis(),         // the timestamp for the notification
-                        Music.APPNAME,                      // the title for the notification
-                        text,                               // the details to display in the notification
-                        appIntent,                          // the contentIntent (see above)
-                        R.drawable.logo,                    // the app icon
-                        getText(R.string.titre),            // the name of the app
-                        appIntent));                        // the appIntent (see above)
+                new Notification(idIcon, text, timeMilli));*/
+//                new Notification(
+//                        this,                               // our context
+//                        idIcon,                             // the icon for the status bar
+//                        text,                               // the text to display in the ticker
+//                        System.currentTimeMillis(),         // the timestamp for the notification
+//                        Music.APPNAME,                      // the title for the notification
+//                        text,                               // the details to display in the notification
+//                        appIntent,                          // the contentIntent (see above)
+//                        R.drawable.logo,                    // the app icon
+//                        getText(R.string.titre),            // the name of the app
+//                        appIntent));                        // the appIntent (see above)
 
     }
 
     @Override
-    protected void onDestroy()
+    public void onDestroy()
     {
         mp.stop();
         mp.release();
@@ -235,7 +236,7 @@ public class Sibylservice extends Service
                     // end of playlist, stop playing
                     playerState = Music.State.END_PLAYLIST_REACHED;
                     //currentSong = 0;
-                    broadcastIntent(new Intent(Music.Action.NO_SONG));
+                    sendBroadcast(new Intent(Music.Action.NO_SONG));
                     return false;
                 }
             }
@@ -249,7 +250,7 @@ public class Sibylservice extends Service
         {
             intentType = Music.Action.PLAY;
         }
-        broadcastIntent(new Intent(intentType));
+        sendBroadcast(new Intent(intentType));
 
         // Updating notification
         String [] songInfo = mdb.getSongInfoFromCP(currentSong);
@@ -396,7 +397,7 @@ public class Sibylservice extends Service
             playerState=Music.State.PAUSED;
             updateNotification(R.drawable.pause,getResources().getText(R.string.pause));
             // warn ui that we paused music playing
-            broadcastIntent(new Intent(Music.Action.PAUSE));
+            sendBroadcast(new Intent(Music.Action.PAUSE));
         }
 
         public int getState() {

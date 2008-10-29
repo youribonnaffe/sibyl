@@ -18,14 +18,12 @@
 
 package com.sibyl.ui.widget;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.DateUtils;
+//incompatible SDK1: import android.util.DateUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -64,8 +62,8 @@ public class ProgressView extends View {
     /*
      * Initialize the view.
      */
-    public ProgressView(Context context, AttributeSet attr, Map inflateParams){
-        super(context, attr, inflateParams);
+    public ProgressView(Context context, AttributeSet attr){
+        super(context, attr);
         progress = 0;
         total = 1; //not 0 (divide by 0)
 
@@ -105,8 +103,8 @@ public class ProgressView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(width != 0){
-            String elaps = DateUtils.formatElapsedTime(progress/1000);
-            String tot = DateUtils.formatElapsedTime(total/1000);
+            String elaps = "";//incompatible SDK1: DateUtils.formatElapsedTime(progress/1000);
+            String tot = "";//incompatible SDK1: DateUtils.formatElapsedTime(total/1000);
             //background and border
             //canvas.drawRect(fullView,ptFull );
             canvas.drawARGB(255, 255, 210, 80); 

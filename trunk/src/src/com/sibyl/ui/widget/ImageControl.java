@@ -18,8 +18,6 @@
 
 package com.sibyl.ui.widget;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -61,8 +59,8 @@ public class ImageControl extends ImageView {
      * @param attrs
      * @param inflateParams
      */
-    public ImageControl(Context context, AttributeSet attrs, Map inflateParams) {
-        super(context, attrs, inflateParams);
+    public ImageControl(Context context, AttributeSet attrs) {
+        super(context, attrs);
         init();
     }
 
@@ -72,8 +70,8 @@ public class ImageControl extends ImageView {
      * @param inflateParams
      * @param defStyle
      */
-    public ImageControl(Context context, AttributeSet attrs, Map inflateParams, int defStyle) {
-        super(context, attrs, inflateParams, defStyle);
+    public ImageControl(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
         init();
     }
     

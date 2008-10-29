@@ -61,6 +61,12 @@ public class MusicDB {
     private static final int NB_PREDEFINED_GENRE = 149;
 
     private static class MusicDBHelper extends SQLiteOpenHelper{
+        public MusicDBHelper(Context context, String name,
+                CursorFactory factory, int version) {
+            super(context, name, factory, version);
+            usedC = context;
+        }
+
         private Context usedC;
         @Override
         public void onCreate(SQLiteDatabase mDb) {
@@ -176,10 +182,15 @@ public class MusicDB {
             onCreate(mDb);
         }
 
-        public SQLiteDatabase openDatabase(Context context, String name, CursorFactory factory, int newVersion){
-            usedC = context;
-            return super.openDatabase(context, name, factory, newVersion);
+        public SQLiteDatabase getWritableDatabase() 
+        {
+            return super.getWritableDatabase() ;
+            
         }
+//        public SQLiteDatabase openDatabase(Context context, String name, CursorFactory factory, int newVersion){
+//            usedC = context;
+//            return super.openDatabase(context, name, factory, newVersion);
+//        }
     }
 
     /**
@@ -189,7 +200,7 @@ public class MusicDB {
      */
     public MusicDB( Context c ) throws SQLiteDiskIOException { 
         // exceptions ??
-        mDb = (new MusicDBHelper()).openDatabase(c, DB_NAME, null, DB_VERSION);
+        mDb = (new MusicDBHelper(c, DB_NAME, null, DB_VERSION)).getWritableDatabase();
         if( mDb == null ){
             throw new SQLiteDiskIOException("Error when creating database");
         }
@@ -244,7 +255,7 @@ public class MusicDB {
             if(cv.containsKey(Music.ARTIST.NAME) && cv.get(Music.ARTIST.NAME).length() > 0){
                 //Log.v("INSERTION ARTISTE", "-"+cv.get(Music.ARTIST.NAME).length()+"-");
                 Cursor c = mDb.rawQuery("SELECT _id FROM artist WHERE artist_name='"+cv.get(Music.ARTIST.NAME)+"'" ,null);
-                if(c.next()){
+                if(c.moveToNext()){
                     artist = c.getInt(0);
                 }else{
                     mDb.execSQL("INSERT INTO artist(artist_name) VALUES('"+cv.get(Music.ARTIST.NAME)+"')");
@@ -256,7 +267,7 @@ public class MusicDB {
 
             if(cv.containsKey(Music.ALBUM.NAME) && cv.get(Music.ALBUM.NAME).length() > 0){
                 Cursor c = mDb.rawQuery("SELECT _id FROM album WHERE album_name='"+cv.get(Music.ALBUM.NAME)+"'" ,null);
-                if(c.next()){
+                if(c.moveToNext()){
                     album = c.getInt(0);
                 }else{
                     mDb.execSQL("INSERT INTO album(album_name) VALUES('"+cv.get(Music.ALBUM.NAME)+"')");
@@ -268,7 +279,7 @@ public class MusicDB {
 
             if(cv.containsKey(Music.GENRE.NAME) && cv.get(Music.GENRE.NAME).length() > 0){
                 Cursor c = mDb.rawQuery("SELECT _id FROM genre WHERE genre_name='"+cv.get(Music.GENRE.NAME)+"'" ,null);
-                if(c.next()){
+                if(c.moveToNext()){
                     genre = c.getInt(0);
                 }else{
                     mDb.execSQL("INSERT INTO genre(genre_name) VALUES('"+cv.get(Music.GENRE.NAME)+"')");
@@ -364,7 +375,7 @@ public class MusicDB {
     public Cursor query(boolean distinct, String table, String[] columns, 
             String selection, String[] selectionArgs, 
             String groupBy, String having, String orderBy){
-        return mDb.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy);
+        return mDb.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, null);
     }
 
     /**
@@ -374,7 +385,7 @@ public class MusicDB {
      */
     public String getSong(int pos){
         Cursor c = mDb.rawQuery("SELECT url FROM song, current_playlist WHERE pos="+pos+" AND song._id=current_playlist.id", null);
-        if(!c.first()){
+        if(!c.moveToFirst()){
             c.close();
             return null;
         }
@@ -446,7 +457,7 @@ public class MusicDB {
     {
         Cursor c = mDb.rawQuery("SELECT title, artist_name, album.cover_url FROM song, current_playlist, artist,album "
                 +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist._id and song.album = album._id", null);
-        if(!c.first()){
+        if(!c.moveToFirst()){
             c.close();
             return null;
         }
@@ -470,7 +481,7 @@ public class MusicDB {
     public void insertDir(String dir)
     {
         Cursor c = mDb.rawQuery("SELECT dir FROM directory WHERE dir='"+dir+"'",null);
-        if (c.count() == 0)
+        if (c.getCount() == 0)
         {
             mDb.execSQL("INSERT INTO directory(dir) VALUES('"+dir+"')");
         }
@@ -490,10 +501,10 @@ public class MusicDB {
     public void clearDB()
     {
         Cursor c = mDb.rawQuery("SELECT cover_url FROM album WHERE cover_url<>'' AND cover_url NOT NULL", null);
-        if(c.first()){
+        if(c.moveToFirst()){
             do{
                 new File(c.getString(0)).delete();
-            }while(c.next());
+            }while(c.moveToNext());
         }
         c.close();
         mDb.execSQL("DELETE FROM song");
@@ -502,7 +513,7 @@ public class MusicDB {
     public void countUp(int i)
     {
         Cursor c = mDb.rawQuery("SELECT count_played, song._id _id FROM song, current_playlist WHERE song._id=current_playlist.id and current_playlist.pos='"+i+"'",null);
-        if(c.first())
+        if(c.moveToFirst())
         {
             int nb = c.getInt(0);
             nb++;
@@ -522,7 +533,7 @@ public class MusicDB {
     {
         int size = -1;
         Cursor c = mDb.rawQuery("SELECT COUNT(id) FROM current_playlist" ,null);
-        if(c.first())
+        if(c.moveToFirst())
         {
             size = c.getInt(0);
         }
@@ -593,7 +604,7 @@ public class MusicDB {
             		"WHERE cover_url=(" +
             		    "SELECT cover_url FROM album WHERE "+albumId+"=album._id"+
 		    		") AND cover_url NOT NULL AND cover_url<>''", null);
-            if(c.count() == 1 && c.first()){
+            if(c.getCount() == 1 && c.moveToFirst()){
                 // delete only if the cover isn't used anymore
                 String url = c.getString(0);
                 if(url.contains(Music.COVER_DIR)){
@@ -625,7 +636,7 @@ public class MusicDB {
      */
     public String getAlbumCover(int albumId){
         Cursor c = mDb.rawQuery("SELECT cover_url FROM album where cover_url<>'' AND cover_url NOT NULL AND _id > 1 AND _id="+albumId, null);
-        if(c.first())
+        if(c.moveToFirst())
         {
             String s = c.getString(0);
             c.close();

@@ -19,8 +19,6 @@
 package com.sibyl.ui.widget;
 
 
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -68,15 +66,15 @@ public class AnimatedCover extends ImageView {
         initWidget();
     }
     
-    public AnimatedCover(Context context, AttributeSet attrs, Map inflateParams)
+    public AnimatedCover(Context context, AttributeSet attrs)
     {
-        super(context, attrs, inflateParams);
+        super(context, attrs);
         initWidget();
     }
     
-    public AnimatedCover(Context context, AttributeSet attrs, Map inflateParams, int defStyle)
+    public AnimatedCover(Context context, AttributeSet attrs, int defStyle)
     {
-        super(context, attrs, inflateParams, defStyle);
+        super(context, attrs, defStyle);
         initWidget();
     }
     
@@ -167,17 +165,17 @@ public class AnimatedCover extends ImageView {
             
         }
         
-        public void onAnimationEnd()
+        public void onAnimationEnd(Animation a)
         {
             animHandler.post(new EndAnimation());
         }
         
-        public void onAnimationRepeat()
+        public void onAnimationRepeat(Animation a)
         {
             
         }
         
-        public void onAnimationStart()
+        public void onAnimationStart(Animation a)
         {
             
         }

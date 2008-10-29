@@ -27,8 +27,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Menu.Item;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -84,7 +84,7 @@ public class DelDirUI extends ListActivity
     {
         ArrayList<String> listDir = mStrings;
         Cursor c = mdb.getDir();
-        while (c.next())
+        while (c.moveToNext())
         {
             listDir.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
         }
@@ -98,8 +98,8 @@ public class DelDirUI extends ListActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, DEL_ID, R.string.menu_del);
-        menu.add(0, BACK_ID, R.string.menu_back);
+        menu.add(0, DEL_ID, Menu.NONE, R.string.menu_del);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.menu_back);
         return true;
     }
     
@@ -108,10 +108,10 @@ public class DelDirUI extends ListActivity
      * Gère les actions mises sur les éléments du menu
      */
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
         case DEL_ID:
             int i = getSelectedItemPosition();

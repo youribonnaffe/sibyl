@@ -19,12 +19,13 @@
 package com.sibyl.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Menu.Item;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
@@ -114,7 +115,7 @@ public class CoverUI extends Activity {
         public void onItemClick(AdapterView arg0, View arg1, int position, long id) {
             if( position >=0){
                 ////Log.v(TAG, (String) imgAdapter.getItem(position));
-                setResult(RESULT_OK,  (String) imgAdapter.getItem(position));
+                setResult(RESULT_OK, new Intent( (String) imgAdapter.getItem(position)));//warning foireux
             }
             else
             {
@@ -127,8 +128,8 @@ public class CoverUI extends Activity {
 
 
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) {
-        switch(item.getId()){
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch(item.getItemId()){
             case BACK_ID:
                 setResult(RESULT_CANCELED);
                 finish();
@@ -148,8 +149,8 @@ public class CoverUI extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.cov_back);
-        menu.add(0, RESET_ID, R.string.cov_reset);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.cov_back);
+        menu.add(0, RESET_ID, Menu.NONE, R.string.cov_reset);
         return true;
     }
 
@@ -162,7 +163,7 @@ public class CoverUI extends Activity {
         startManagingCursor(c);
         //Log.v(TAG, ">>>CoverUI::filldata ");
         boolean addCoverDir = true;
-        while( c.next()){
+        while( c.moveToNext()){
             // for each directory, we check if the coverdir is in it
             if(Music.COVER_DIR.contains(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)))){
                 addCoverDir = false;

@@ -33,13 +33,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.os.DeadObjectException;
+import android.os.RemoteException;
 import android.os.IBinder;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewInflate;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -188,7 +188,7 @@ public class ConfigUI extends Activity
             try
             {
                 mService.setLoopMode(position);
-            } catch (DeadObjectException e) { }
+            } catch (RemoteException e) { }
         }
 
         public void onNothingSelected(AdapterView arg0)
@@ -203,7 +203,7 @@ public class ConfigUI extends Activity
             try
             {
                 mService.setPlayMode(position);
-            } catch (DeadObjectException doe)
+            } catch (RemoteException doe)
             {
                 //Log.v(TAG,doe.toString());
             }
@@ -291,7 +291,7 @@ public class ConfigUI extends Activity
         listFile = new ArrayList<String>();
         Cursor c = mdb.getDir();
         String str ="";
-        while (c.next())
+        while (c.moveToNext())
         {
             listFile.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
             str += c.getString(c.getColumnIndex(Music.DIRECTORY.DIR))+'\n';
@@ -306,7 +306,7 @@ public class ConfigUI extends Activity
     private void displayAddDir() 
     {
         Intent i = new Intent(this, AddDirUI.class);
-        startSubActivity(i, 0);
+        startActivity(i);
     }
 
     /**
@@ -315,7 +315,7 @@ public class ConfigUI extends Activity
     private void displayDelDir() 
     {
         Intent i = new Intent(this, DelDirUI.class);
-        startSubActivity(i, 0);
+        startActivity(i);
     }
 
     /**
@@ -354,7 +354,7 @@ public class ConfigUI extends Activity
                 UpdateTask updateTask = new UpdateTask(mdb);
                 Thread t = new Thread (updateTask);
                 t.start();
-            }catch(DeadObjectException doe){
+            }catch(RemoteException doe){
                 //Log.v(TAG, doe.toString());
             }
         }
@@ -362,7 +362,7 @@ public class ConfigUI extends Activity
 
     private void displayAlbumUI()
     {
-        startSubActivity(new Intent(this, AlbumUI.class), 0);
+        startActivity(new Intent(this, AlbumUI.class));
     }
     /**
      * Classe gérant la mise a jour de la collection de musiques
@@ -466,7 +466,7 @@ public class ConfigUI extends Activity
                 repeatMusic.setSelection(mService.getLooping());
                 playMode.setSelection(mService.getPlayMode());
 
-            } catch (DeadObjectException doe)
+            } catch (RemoteException doe)
             { 
                 //Log.v(TAG,doe.toString());
             }
@@ -490,7 +490,7 @@ public class ConfigUI extends Activity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, BACK_ID, R.string.menu_back);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.menu_back);
         return true;
     }
 
@@ -509,10 +509,10 @@ public class ConfigUI extends Activity
      * Gère les actions mises sur les éléments du menu
      */
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
             case BACK_ID:
                 finish();
@@ -525,8 +525,8 @@ public class ConfigUI extends Activity
         if(event.getAction() == MotionEvent.ACTION_DOWN
                 && (System.currentTimeMillis()-timeLastTouch) < TIME_LEAP){
             // retrieve viewflipper
-            ViewInflate inflate = (ViewInflate) getSystemService(Context.INFLATE_SERVICE);
-            ViewFlipper vf = (ViewFlipper)((LinearLayout)inflate.inflate(R.layout.easter_egg, null, null)).findViewById(R.id.easter_egg_vf);
+            LayoutInflater inflate = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ViewFlipper vf = (ViewFlipper)((LinearLayout)inflate.inflate(R.layout.easter_egg, null)).findViewById(R.id.easter_egg_vf);
             // set animations
             vf.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
             vf.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));

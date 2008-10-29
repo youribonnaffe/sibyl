@@ -22,14 +22,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
-import android.database.ArrayListCursor;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -185,7 +185,8 @@ public class AddDirUI extends ListActivity
                 }
             }
         }
-        c = new ArrayListCursor(colName,rows);
+        c = new MatrixCursor(colName);
+        ((MatrixCursor)c).addRow(rows);
         startManagingCursor(c);
         int[] to = {R.id.imgFile,R.id.file};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_dir_row,c,colName,to);
@@ -201,8 +202,8 @@ public class AddDirUI extends ListActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, ADD_ID, R.string.menu_add);
-        menu.add(0, BACK_ID, R.string.menu_back);
+        menu.add(0, ADD_ID, Menu.NONE, R.string.menu_add);
+        menu.add(0, BACK_ID, Menu.NONE, R.string.menu_back);
         return true;
     }
 
@@ -211,11 +212,11 @@ public class AddDirUI extends ListActivity
      * Gère les actions mises sur les éléments du menu
      */
     @Override
-    public boolean onMenuItemSelected(int featureId, Item item) 
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
         super.onMenuItemSelected(featureId, item);
         
-        switch(item.getId()) 
+        switch(item.getItemId()) 
         {
         case ADD_ID:
             mdb.insertDir(path);

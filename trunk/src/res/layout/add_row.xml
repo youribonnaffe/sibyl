@@ -37,10 +37,10 @@
                      android:textSize="@dimen/text_small"
                      android:textStyle="bold"
                      android:paddingLeft="10dp"
-                     android:textAlign="end"
                      android:lines="1"
                      android:layout_width="fill_parent"
-                     android:layout_height="wrap_content"/>
+                     android:layout_height="wrap_content"/><!-- 
+                     android:textAlign="end" -->
                 <ImageView android:id="@+id/iconAdd" 
                     android:adjustViewBounds="true"
                     android:padding="5dp" 

@@ -28,7 +28,7 @@
           android:layout_width="fill_parent" 
           android:textSize="@dimen/text_huge"
           android:layout_height="fill_parent"
-          android:textAlign="center"/>
+          /><!--  android:textAlign="center" -->
    <View         
         android:layout_width="fill_parent"
         android:layout_height="10dp"/>
