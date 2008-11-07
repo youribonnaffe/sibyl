@@ -20,6 +20,9 @@ package com.sibyl.ui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -31,6 +34,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -55,12 +59,12 @@ public class AddDirUI extends ListActivity
     private String parent;  // répertoire parent
     private String path;    // répertoire courant
     private MusicDB mdb;    //the database
-    Cursor c;
+
     /* TODO sachant qu'on l'utilise effectivement que dans une 
      * seule méthode, est il judicieux d'en faire une variable à ce 
      * niveau, ou une simple variable locale suffirait*/
     
-    private ArrayList<ArrayList> rows;
+    private ArrayList<Map<String, String>> rows;
 
     /**
      * Called when the activity is first created.
@@ -96,7 +100,6 @@ public class AddDirUI extends ListActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        c.close();
     }
 
     /**
@@ -140,20 +143,24 @@ public class AddDirUI extends ListActivity
     private void fillBD ()
     {
         String[] colName = {"image","file"};
-        ArrayList<String> row;
+        //ArrayList<String> row;
         
-        this.rows = new ArrayList<ArrayList>();
-        ArrayList<ArrayList> rows = this.rows;
+        this.rows = new ArrayList<Map<String, String>>();
+        //ArrayList<Map<String, String>> rows = new ArrayList<Map<String, String>>();// = this.rows;
         
         File dir = new File(path);
         String parent = dir.getParent();
         if(parent != null)
         {
             this.parent = parent;
-            row = new ArrayList<String>();
-            row.add(""+R.drawable.folder);
-            row.add("..");
-            rows.add(row);
+//            row = new ArrayList<String>();
+//            row.add(""+R.drawable.folder);
+//            row.add("..");
+//            rows.add(row);
+            Map<String, String> curMap = new HashMap<String, String>();
+            rows.add(curMap);
+            curMap.put(colName[0], ""+R.drawable.folder);
+            curMap.put(colName[1], "..");
         }
         Log.v(TAG, " "+path+" "+parent+" "+dir.getAbsoluteFile()+" "+dir.getAbsolutePath() );
         
@@ -164,10 +171,14 @@ public class AddDirUI extends ListActivity
             {
                 if (f.isDirectory())
                 {
-                    row = new ArrayList<String>();
-                    row.add(""+R.drawable.folder);
-                    row.add(f.getName());
-                    rows.add(row);
+//                    row = new ArrayList<String>();
+//                    row.add(""+R.drawable.folder);
+//                    row.add(f.getName());
+//                    rows.add(row);
+                    Map<String, String> curMap = new HashMap<String, String>();
+                    rows.add(curMap);
+                    curMap.put(colName[0], ""+R.drawable.folder);
+                    curMap.put(colName[1], f.getName());
                 }
                 else
                 {
@@ -175,21 +186,24 @@ public class AddDirUI extends ListActivity
                     {
                         if(f.getName().endsWith(s))
                         {
-                            row = new ArrayList<String>();
-                            row.add(""+R.drawable.audio);
-                            row.add(f.getName());
-                            rows.add(row);
+//                            row = new ArrayList<String>();
+//                            row.add(""+R.drawable.audio);
+//                            row.add(f.getName());
+//                            rows.add(row);
+                            Map<String, String> curMap = new HashMap<String, String>();
+                            rows.add(curMap);
+                            curMap.put(colName[0], ""+R.drawable.audio);
+                            curMap.put(colName[1], f.getName());
                             break;
                         }   
                     }
                 }
             }
         }
-        c = new MatrixCursor(colName);
-        ((MatrixCursor)c).addRow(rows);
-        startManagingCursor(c);
+        
         int[] to = {R.id.imgFile,R.id.file};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_dir_row,c,colName,to);
+        SimpleAdapter adapter = new SimpleAdapter(this.getApplicationContext(), rows, 
+                R.layout.add_dir_row,colName,to);
         setListAdapter(adapter);
         ((TextView)findViewById(R.id.add_dir_location)).setText(getText(R.string.dir)+" "+dir.getAbsolutePath());
 

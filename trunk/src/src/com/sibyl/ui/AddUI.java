@@ -19,6 +19,8 @@
 package com.sibyl.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -34,6 +36,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -133,20 +136,22 @@ public class AddUI extends ListActivity
     {
         //Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         
-        ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
+        ArrayList<Map<String, String>> rows = new ArrayList<Map<String, String>>();
         ArrayList<String> row;
         for( int i = 0; i < nbField; i++){ //add all strings to the adapter
-            row = new ArrayList<String>();
-            row.add(getString(field[i]));
-            row.add(""+R.drawable.arrow);
-            rows.add(row);
+//            row = new ArrayList<String>();
+//            row.add(getString(field[i]));
+//            row.add(""+R.drawable.arrow);
+//            rows.add(row);
+            Map<String, String> curMap = new HashMap<String, String>();
+            rows.add(curMap);
+            curMap.put(colName[0], getString(field[i]));
+            curMap.put(colName[1], ""+R.drawable.arrow);
         }
         
-        MatrixCursor listMenu = new MatrixCursor(colName);
-        ((MatrixCursor)listMenu).addRow(rows);
-        startManagingCursor(listMenu);
         int[] to = {R.id.textfield,R.id.iconAdd};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.add_row,listMenu,colName,to); 
+        SimpleAdapter adapter = new SimpleAdapter(this.getApplicationContext(), rows,
+                R.layout.add_row,colName,to); 
         setListAdapter(adapter);
         getListView().setSelection(positionRow);
         if( sense == TRANSLATION_LEFT) {
