@@ -25,6 +25,7 @@ import java.util.Stack;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -144,11 +145,20 @@ public class Sibylservice extends Service
     public void updateNotification(int idIcon, CharSequence text)
     {
         //Intent appIntent = new Intent(this, com.sibyl.ui.PlayerUI.class);
-       /* int timeMilli = 3000;
+        String title ="notification";
+        Notification note = new Notification(idIcon, text, System.currentTimeMillis());
+        
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, Sibylservice.class), 0);
+
+        // Set the info for the views that show in the notification panel.
+        note.setLatestEventInfo(this, title, text, contentIntent);
+
+        //nm.cancelAll();
         nm.notify(R.layout.notification,                  // we use a string id because it is a unique
                 // number.  we use it later to cancel the
                 // notification
-                new Notification(idIcon, text, timeMilli));*/
+                note);
 //                new Notification(
 //                        this,                               // our context
 //                        idIcon,                             // the icon for the status bar

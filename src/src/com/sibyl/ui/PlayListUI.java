@@ -19,6 +19,8 @@
 package com.sibyl.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
@@ -43,6 +45,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -250,7 +253,7 @@ public class PlayListUI extends ListActivity
         String[] colName = {"iconPl","text1","text2"};
         int[] to = {R.id.iconPl,R.id.text1, R.id.text2};
 
-        ArrayList<ArrayList> rows = new ArrayList<ArrayList>();
+        ArrayList<Map<String, String>> rows = new ArrayList<Map<String, String>>();
         songPlayed = 0;
         try
         {
@@ -269,19 +272,23 @@ public class PlayListUI extends ListActivity
                 else{
                     icon = R.drawable.puce;
                 }
-                row.add(""+icon);
-                row.add(c.getString(0));
-                row.add(c.getString(1));
-                rows.add(row);
+//                row.add(""+icon);
+//                row.add(c.getString(0));
+//                row.add(c.getString(1));
+//                rows.add(row);
+                Map<String, String> curMap = new HashMap<String, String>();
+                rows.add(curMap);
+                curMap.put(colName[0], ""+icon);
+                curMap.put(colName[1], c.getString(0));
+                curMap.put(colName[2], c.getString(1));
             }
         }
         catch(RemoteException ex){
             //Log.v(TAG, ex.toString());
         }
-        pl = new MatrixCursor(colName);
-        ((MatrixCursor)pl).addRow(rows);     
-        startManagingCursor(pl);
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.playlist_row,pl,colName,to);
+        
+        SimpleAdapter adapter = new SimpleAdapter(this.getApplicationContext(), rows,
+                R.layout.playlist_row,colName,to);
         c.close();
         setListAdapter(adapter);
         setSelection(songPlayed);
