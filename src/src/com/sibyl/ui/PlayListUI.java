@@ -30,10 +30,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
-import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -46,7 +44,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -74,8 +71,6 @@ public class PlayListUI extends ListActivity
 
     //the database
     private MusicDB mdb;    
-
-    private Cursor pl;
 
     // Animation task
     private Runnable animTask = new Runnable(){
@@ -220,7 +215,6 @@ public class PlayListUI extends ListActivity
     protected void onDestroy() 
     {
         super.onDestroy();
-        pl.close();
         unbindService(mConnection);        
     }
 
