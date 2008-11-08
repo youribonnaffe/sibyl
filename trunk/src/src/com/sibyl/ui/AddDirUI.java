@@ -21,21 +21,17 @@ package com.sibyl.ui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.app.ListActivity;
-import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.sibyl.Music;
