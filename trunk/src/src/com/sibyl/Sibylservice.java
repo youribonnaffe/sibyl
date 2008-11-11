@@ -27,10 +27,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.media.MediaPlayer;
@@ -176,7 +176,8 @@ public class Sibylservice extends Service
     @Override
     public void onDestroy()
     {
-        mp.stop();
+        // >>>>>>>>>>>> BUG : l'arret fait planter la déconnexion du service <<<<<<
+        //mp.stop();
         mp.release();
         nm.cancel(R.layout.notification);
         // save preferences
@@ -186,6 +187,7 @@ public class Sibylservice extends Service
         prefs.putInt("playMode", playMode);
         prefs.commit();
         unregisterReceiver(callFilter);
+        
     }
 
     /**

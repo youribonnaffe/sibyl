@@ -189,7 +189,7 @@ public class PlayerUI extends Activity
 
             //remplacant du NotificationManager/notifyWithText
             //Toast.makeText(PlayerUI.this, "Deconnexion du service", 
-              //      Toast.LENGTH_SHORT).show(); 
+            //        Toast.LENGTH_SHORT).show(); 
 
             //as we are disconnected from the service, user can't play music anymore
             //so we disable the buttons
@@ -240,6 +240,7 @@ public class PlayerUI extends Activity
     protected void onDestroy() 
     {
         unbindService(mConnection);
+        Log.v(TAG,">>>>>>>>>>DESTRUCTION");
         super.onDestroy();
     }
 
