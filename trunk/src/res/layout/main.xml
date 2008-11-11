@@ -33,7 +33,7 @@
 			xmlns:android="http://schemas.android.com/apk/res/android"
 			android:orientation="vertical" 
 			android:layout_gravity="center"
-			android:layout_width="wrap_content" 
+			android:layout_width="fill_parent" 
 			android:layout_weight="1.0"
 			android:layout_height="fill_parent">
 
@@ -54,48 +54,45 @@
 
 			<TextView 
 			    android:id="@+id/artiste"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" 
 				android:textSize="@dimen/text_big"
 				android:textStyle="italic" 
 				android:singleLine="true"
 				android:text="@string/artiste" 
 				android:padding="10dp"
-				android:layout_gravity="center"  />
-				<!-- 
-                android:textAlign="center" -->
+				android:layout_gravity="center" />
 
 			<com.sibyl.ui.widget.AnimatedCover 
 			    android:id="@+id/cover"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" 
 				android:layout_gravity="center"
-				android:adjustViewBounds="true" 
-				android:maxHeight="200dp"
-				android:maxWidth="200dp" />
+                android:adjustViewBounds="true" 
+                android:maxHeight="200dp"
+                android:maxWidth="200dp" />
 				
 		</LinearLayout>
 
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:orientation="vertical" 
-			android:layout_gravity="bottom"
 			android:layout_width="fill_parent" 
 			android:layout_weight="0.0"
 			android:layout_height="wrap_content">
 
 			<com.sibyl.ui.widget.ProgressView 
 			    android:id="@+id/progress"
-				android:layout_width="wrap_content" 
-				android:layout_height="25dp"
-				android:layout_gravity="bottom|center"/>
+				android:layout_width="fill_parent" 
+				android:layout_height="25dp"/>
+				
             <View  xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="5px"/>
             
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal"
-				android:layout_gravity="center|bottom"
 				android:layout_width="wrap_content"
+                android:layout_gravity="center"
 				android:layout_height="wrap_content">
 
 				
@@ -104,21 +101,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/prevbtn"
-                    android:layout_gravity="center" 
                     android:paddingBottom="10dp"/>
                 <com.sibyl.ui.widget.ImageControl 
                     android:id="@+id/play" 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/playbtn"
-                    android:layout_gravity="center"
                     android:paddingBottom="10dp" />
                 <com.sibyl.ui.widget.ImageControl 
                     android:id="@+id/next" 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/nextbtn"
-                    android:layout_gravity="center"
                     android:paddingBottom="10dp" />
 
 			</LinearLayout>
