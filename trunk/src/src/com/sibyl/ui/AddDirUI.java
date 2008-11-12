@@ -96,6 +96,8 @@ public class AddDirUI extends ListActivity
     protected void onDestroy()
     {
         super.onDestroy();
+        
+        mdb.close();
     }
 
     /**

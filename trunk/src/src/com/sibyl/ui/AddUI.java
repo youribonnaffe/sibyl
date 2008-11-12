@@ -106,7 +106,9 @@ public class AddUI extends ListActivity
     @Override
     protected void onDestroy() 
     {
-        super.onDestroy();     
+        super.onDestroy();
+        mdb.close();
+        mCursor.close();
     }
 
     @Override

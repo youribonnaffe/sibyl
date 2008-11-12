@@ -86,6 +86,13 @@ public class CoverUI extends Activity {
     }
 
     @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mdb.close();
+    }
+    
+    @Override
     protected void onResume() 
     {
         super.onResume();

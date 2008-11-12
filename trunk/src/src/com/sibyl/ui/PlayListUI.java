@@ -37,8 +37,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.View;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -193,13 +193,15 @@ public class PlayListUI extends ListActivity
         return super.onKeyUp(keyCode, event);
     }
 
+    @Override
     protected void onResume() {
         // register intent handler, so we will be aware of service changes
+        super.onResume();
+        
         registerReceiver(intentHandler, intentF);
         if( mService != null){
             fillData();
         }
-        super.onResume();
     }
 
     /**
@@ -215,7 +217,8 @@ public class PlayListUI extends ListActivity
     protected void onDestroy() 
     {
         super.onDestroy();
-        unbindService(mConnection);        
+        unbindService(mConnection);
+        mdb.close();
     }
 
     /**

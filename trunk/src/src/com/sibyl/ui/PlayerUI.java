@@ -239,9 +239,9 @@ public class PlayerUI extends Activity
 
     protected void onDestroy() 
     {
+        super.onDestroy();
         unbindService(mConnection);
         mdb.close();
-        super.onDestroy();
     }
 
     /**

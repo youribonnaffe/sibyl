@@ -502,6 +502,7 @@ public class ConfigUI extends Activity
     {
         super.onDestroy();
         unbindService(mConnection);
+        mdb.close();
     }
 
     /**
