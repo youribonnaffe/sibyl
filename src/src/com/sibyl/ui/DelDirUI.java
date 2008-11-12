@@ -77,6 +77,13 @@ public class DelDirUI extends ListActivity
         setListAdapter(new ArrayAdapter<String>(this,R.layout.del_dir_row,R.id.text1, mStrings));
     }
     
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mdb.close();
+    }
+    
     /**
      * Met a jour la liste des répertoires contenant des musiques
      */

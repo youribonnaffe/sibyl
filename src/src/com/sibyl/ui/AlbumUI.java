@@ -160,10 +160,13 @@ public class AlbumUI extends ListActivity {
 
     protected void onDestroy(){
         super.onDestroy();
+        
         if( coverThread != null ){
             coverThread.interrupt();
         }
         listAlbum.close();
+        
+        mdb.close();
     }
 
     /* ----------------------- ACTIVITY EVENTS -------------------------------*/
