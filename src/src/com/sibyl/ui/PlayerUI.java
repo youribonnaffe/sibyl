@@ -231,7 +231,7 @@ public class PlayerUI extends Activity
         }
         catch(SQLiteDiskIOException e)
         {
-            //Log.v(TAG, e.getMessage());
+            Log.v(TAG, e.getMessage());
             // user should be warned
         }
         
@@ -240,7 +240,7 @@ public class PlayerUI extends Activity
     protected void onDestroy() 
     {
         unbindService(mConnection);
-        Log.v(TAG,">>>>>>>>>>DESTRUCTION");
+        mdb.close();
         super.onDestroy();
     }
 
@@ -371,7 +371,6 @@ public class PlayerUI extends Activity
      */
     private void launchService()    
     {
-        Log.v(TAG, ">>>>> launchService");
         bindService(new Intent(PlayerUI.this,
                 Sibylservice.class), mConnection, Context.BIND_AUTO_CREATE);
     }
@@ -386,7 +385,7 @@ public class PlayerUI extends Activity
         }
         catch(NullPointerException ex)
         {//imageOver or imageOverAnim not yet initialized
-            //Log.v(TAG, ex.toString());
+            Log.v(TAG, ex.toString());
         }
     }
 

@@ -37,10 +37,12 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class Sibylservice extends Service
 {
-
+    private static String TAG = "SIBYL SERVICE";
+    
     private MediaPlayer mp;
     private MusicDB mdb;
     private int playerState;
@@ -74,7 +76,7 @@ public class Sibylservice extends Service
                     wasPlaying = false;
                 }
             }catch(RemoteException re){
-                //Log.v("callFilter", doe.toString());
+                Log.v("callFilter", re.toString());
             }
         }
     };
@@ -121,6 +123,10 @@ public class Sibylservice extends Service
                 currentSong = 0;
                 playerState = Music.State.END_PLAYLIST_REACHED;
             }else{
+                if(currentSong==0)
+                {
+                    currentSong=1;
+                }
                 // load current song
                 preparePlaying();
                 playerState = Music.State.PAUSED;
@@ -176,8 +182,7 @@ public class Sibylservice extends Service
     @Override
     public void onDestroy()
     {
-        // >>>>>>>>>>>> BUG : l'arret fait planter la déconnexion du service <<<<<<
-        //mp.stop();
+        mp.stop();
         mp.release();
         nm.cancel(R.layout.notification);
         // save preferences
@@ -206,10 +211,10 @@ public class Sibylservice extends Service
         }
         catch ( IOException ioe) 
         {
-            //Log.v(TAG, ioe.toString());
+            Log.v(TAG, ioe.toString());
         }
         catch (IllegalArgumentException iae){
-            //Log.v(TAG, iae.toString());
+            Log.v(TAG, iae.toString());
         }
     }
 
