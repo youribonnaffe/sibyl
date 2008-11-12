@@ -68,8 +68,8 @@ public class Music {
     public static enum Table { 
         SONG, ARTIST, GENRE, ALBUM, CURRENT_PLAYLIST, DIR; 
     }
-    public static final String MUSIC_DIR = "/data/music";
-    public static final String COVER_DIR = "/data/music/covers/";
+    public static final String MUSIC_DIR = "/sdcard/";
+    public static final String COVER_DIR = "/sdcard/covers/";
 
     public static final String[] SONGS = { SONG.ID, SONG.URL, SONG.TITLE,
         SONG.LAST_PLAYED, SONG.COUNT_PLAYED, SONG.TRACK, SONG.ARTIST,

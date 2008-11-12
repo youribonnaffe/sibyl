@@ -205,6 +205,11 @@ public class MusicDB {
             throw new SQLiteDiskIOException("Error when creating database");
         }
     }
+    
+    public void close()
+    {
+        mDb.close();
+    }
 
     /**
      * insert songs in the database where urls are the absolute filenames of them
