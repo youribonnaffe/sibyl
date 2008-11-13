@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -195,8 +196,8 @@ public class PlayListUI extends ListActivity
 
     @Override
     protected void onResume() {
-        // register intent handler, so we will be aware of service changes
         super.onResume();
+        // register intent handler, so we will be aware of service changes
         
         registerReceiver(intentHandler, intentF);
         if( mService != null){
@@ -209,16 +210,16 @@ public class PlayListUI extends ListActivity
      */
     protected void onPause() 
     {
-        super.onPause();
         // unregister intents
         unregisterReceiver(intentHandler);
+        super.onPause();
     }
 
     protected void onDestroy() 
     {
-        super.onDestroy();
         unbindService(mConnection);
         mdb.close();
+        super.onDestroy();
     }
 
     /**
@@ -286,6 +287,7 @@ public class PlayListUI extends ListActivity
         
         SimpleAdapter adapter = new SimpleAdapter(this.getApplicationContext(), rows,
                 R.layout.playlist_row,colName,to);
+        stopManagingCursor(c);
         c.close();
         setListAdapter(adapter);
         setSelection(songPlayed);
