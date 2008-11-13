@@ -500,9 +500,9 @@ public class ConfigUI extends Activity
     @Override
     protected void onDestroy() 
     {
-        super.onDestroy();
         unbindService(mConnection);
         mdb.close();
+        super.onDestroy();
     }
 
     /**

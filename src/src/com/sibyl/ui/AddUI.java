@@ -108,6 +108,7 @@ public class AddUI extends ListActivity
     {
         if(mCursor != null) mCursor.close();
         mdb.close();
+        
         super.onDestroy();
     }
 
