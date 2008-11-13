@@ -206,6 +206,7 @@ public class Sibylservice extends Service
         {
             mp.reset();
             // since it is always called with currentSong parameter has been removed
+            Log.v("Sibyl", "SibylService: preparePlaying: "+mdb.getSong(currentSong));
             mp.setDataSource(mdb.getSong(currentSong));
             mp.prepare();
         }
