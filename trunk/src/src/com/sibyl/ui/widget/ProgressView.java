@@ -18,12 +18,16 @@
 
 package com.sibyl.ui.widget;
 
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-//incompatible SDK1: import android.util.DateUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -103,8 +107,10 @@ public class ProgressView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(width != 0){
-            String elaps = "";//incompatible SDK1: DateUtils.formatElapsedTime(progress/1000);
-            String tot = "";//incompatible SDK1: DateUtils.formatElapsedTime(total/1000);
+            // TODO : Améliorer ca, notamment éviter de recalculer recreer tot a chaque fois (il ne change pas)
+            // une musique d'une durée d'une heure apparaitra comme faisant 60mn
+            String elaps = String.format("%02d:%02d", (progress/60000), ((progress/1000)%60));
+            String tot = String.format("%02d:%02d", (total/60000), ((total/1000)%60));
             //background and border
             //canvas.drawRect(fullView,ptFull );
             canvas.drawARGB(255, 255, 210, 80); 
