@@ -33,13 +33,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDiskIOException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.MenuItem;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -128,7 +129,7 @@ public class ConfigUI extends Activity
 
         coverAnims = (Spinner) findViewById(R.id.covAnims);
 
-        /* connexion à la base de données */
+        /* connexion a la base de donnees */
         try
         {
             mdb = new MusicDB(this);
@@ -136,7 +137,7 @@ public class ConfigUI extends Activity
         }
         catch(SQLiteDiskIOException ex)
         {
-            //Log.v(TAG, ex.toString());
+            Log.v(TAG, ex.toString());
         }
         fillData();
     }
@@ -355,7 +356,7 @@ public class ConfigUI extends Activity
                 Thread t = new Thread (updateTask);
                 t.start();
             }catch(RemoteException doe){
-                //Log.v(TAG, doe.toString());
+                Log.v(TAG, doe.toString());
             }
         }
     };
@@ -402,6 +403,7 @@ public class ConfigUI extends Activity
                 for(String ext : Music.SUPPORTED_FILE_FORMAT){
                     for(String file : Directory.scanFiles(path, ext))
                     { 
+                        
                         //ugly string .mp3
                         mdb.insert(file);                
                     }
@@ -410,13 +412,13 @@ public class ConfigUI extends Activity
                 ////Log.v(TAG, "temps "+(System.currentTimeMillis()-t)); // Permet de calculer le temps d'ajout
 
             }catch(SQLiteException sqle){
-                //Log.v(TAG, sqle.toString());
+                Log.v(TAG, sqle.toString());
                 // warn user
             }catch(FileNotFoundException fnfe){
-                //Log.v(TAG, fnfe.toString());
+                Log.v(TAG, fnfe.toString());
                 // warn user
             }catch(IOException ioe){
-                //Log.v(TAG, ioe.toString());
+                Log.v(TAG, ioe.toString());
                 // warn user
             }
         }
@@ -426,7 +428,10 @@ public class ConfigUI extends Activity
          */
         public void run() 
         {
-            /* TODO Peut ne pas être judicieux de faire ainsi (on vide tout et on remet tout) */
+            /* TODO 
+             * Peut ne pas etre judicieux de faire ainsi 
+             * (on vide tout et on remet tout) 
+             */
             mDB.clearDB(); 
             for(int i=0; i<listFile.size(); i++)
             {
@@ -468,7 +473,7 @@ public class ConfigUI extends Activity
 
             } catch (RemoteException doe)
             { 
-                //Log.v(TAG,doe.toString());
+                Log.v(TAG,doe.toString());
             }
         }
 

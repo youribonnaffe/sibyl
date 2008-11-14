@@ -240,7 +240,7 @@ public class MusicDB {
         String ext = url.substring(url.lastIndexOf('.'));
         HashMap<String, String> cv;
         if( ext.equals(".mp3")){
-            cv = new ID3TagReader(url).getValues();
+            cv =(new ID3TagReader(url)).getValues();
         }else if( ext.equals(".ogg")){
             cv = new OggTagReader(url).getValues();
         }else{

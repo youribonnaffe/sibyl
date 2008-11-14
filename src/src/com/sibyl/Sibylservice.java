@@ -108,7 +108,7 @@ public class Sibylservice extends Service
         {
             songHistory.push(currentSong);
         }
-
+        
         /* creating MediaPlayer to play music */
         mp = new MediaPlayer();
         mp.setOnCompletionListener(endSongListener);
@@ -182,7 +182,11 @@ public class Sibylservice extends Service
     @Override
     public void onDestroy()
     {
-        mp.stop();
+        if(playerState!=Music.State.STOPPED)
+        {
+            mp.stop();
+        }
+        
         mp.release();
         nm.cancel(R.layout.notification);
         // save preferences
@@ -209,6 +213,7 @@ public class Sibylservice extends Service
             Log.v("Sibyl", "SibylService: preparePlaying: "+mdb.getSong(currentSong));
             mp.setDataSource(mdb.getSong(currentSong));
             mp.prepare();
+            playerState=Music.State.PAUSED;
         }
         catch ( IOException ioe) 
         {
@@ -241,7 +246,11 @@ public class Sibylservice extends Service
             int plSize = mdb.getPlaylistSize();
             if(currentSong <= plSize){
                 // changing song
-                mp.stop();
+                if(playerState!=Music.State.STOPPED)
+                {
+                    mp.stop();
+                    playerState=Music.State.STOPPED;
+                }
                 // filename OK so preparing playing of this file
                 preparePlaying();
                 // next will be to start playing the song
@@ -289,8 +298,11 @@ public class Sibylservice extends Service
      */
     protected void stop()
     {
-        mp.stop();
-        playerState=Music.State.STOPPED;
+        if(playerState!=Music.State.STOPPED)
+        {
+            mp.stop();
+        	playerState=Music.State.STOPPED;
+        }
     }
 
     /**
@@ -399,15 +411,21 @@ public class Sibylservice extends Service
         }
 
         public void clear() {
-            mp.stop();
+            if(playerState!=Music.State.STOPPED)
+            {
+                mp.stop();
+            }
             mdb.clearPlaylist();
             playerState=Music.State.END_PLAYLIST_REACHED;
             currentSong = 0; /*initialize currentSong for the next launch of the service*/
         }
 
         public void stop() {
-            mp.stop();
-            playerState=Music.State.STOPPED;
+            if(playerState!=Music.State.STOPPED)
+            {
+                mp.stop();
+                playerState=Music.State.STOPPED;
+            }
         }
 
         public void pause() {
