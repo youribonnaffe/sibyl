@@ -1,4 +1,5 @@
 #summary Liste des choses à faire avant la présentation
+#labels Deprecated
 
 ==TODO:==
   * AddUI :
