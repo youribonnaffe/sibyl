@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Gallery;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 
@@ -37,9 +37,10 @@ public class ImageAdapter extends BaseAdapter {
 
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView i = new ImageView(mContext);
+            i.setLayoutParams(new GridView.LayoutParams(90, 90));
+            i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            i.setAdjustViewBounds(true);
             i.setImageDrawable(Drawable.createFromPath(listImg.get(position)));
-            i.setScaleType(ImageView.ScaleType.FIT_XY);
-            i.setLayoutParams(new Gallery.LayoutParams(90, 90));
             return i;
         }
 
