@@ -41,7 +41,7 @@ import com.sibyl.R;
 import com.sibyl.ui.animation.ActivityTransition;
 
 /*
- * display all the cover available. The cover choosen is given to Album and associated with the current album
+ * display all the cover available. The cover chosen is given to Album and associated with the current album
  */
 public class CoverUI extends Activity {
 
@@ -167,7 +167,7 @@ public class CoverUI extends Activity {
     private void fillData(){
         Cursor c = mdb.getDir();
         imgAdapter = new ImageAdapter(this);
-        startManagingCursor(c);
+        // startManagingCursor(c); => usefull?
         //Log.v(TAG, ">>>CoverUI::filldata ");
         boolean addCoverDir = true;
         while( c.moveToNext()){
@@ -191,7 +191,7 @@ public class CoverUI extends Activity {
                 }
             }
         }
-        c.close();        
+        c.close();   
         gallery.setAdapter(imgAdapter);        
     }
 
