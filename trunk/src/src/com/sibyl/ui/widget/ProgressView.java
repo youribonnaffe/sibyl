@@ -58,7 +58,7 @@ public class ProgressView extends View {
     private final static int size = 20;
     private int width;
     private int height;
-    private final String sep = "/";
+    private final static String sep = "/";
 
     private OnProgressChangeListener listener;
     private static final int padding = 1; //width of the border

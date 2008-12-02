@@ -377,15 +377,11 @@ public class PlayerUI extends Activity
     
     private void startTouchEventAnimation(int imageRes)
     {
-        try
-        {
+        if(imageOver != null && imageOverAnim != null)
+        {        
             imageOver.setImageResource(imageRes);
             imageOver.setVisibility(View.VISIBLE);
             imageOver.startAnimation(imageOverAnim);
-        }
-        catch(NullPointerException ex)
-        {//imageOver or imageOverAnim not yet initialized
-            Log.v(TAG, ex.toString());
         }
     }
 
@@ -661,9 +657,11 @@ public class PlayerUI extends Activity
         }
 
         public void onAnimationRepeat(Animation a) {
+            //nothing to do
         }
 
         public void onAnimationStart(Animation a) {
+            //nothing to do
         }
         
     }

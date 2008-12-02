@@ -96,8 +96,6 @@ public class AlbumUI extends ListActivity {
         }
 
         public void run(){
-            // position in the list
-            int pos = 0;
             for(int album : albums){
                 if(Thread.interrupted()){
                     // stop thread
@@ -109,8 +107,6 @@ public class AlbumUI extends ListActivity {
                         // refresh cover in list
                         coverTaskHandler.post(new CoverUpdate());
                     }
-                    // next item in the list
-                    pos ++;
                 }
             }
         }
@@ -259,7 +255,7 @@ public class AlbumUI extends ListActivity {
         artists = new String[listAlbum.getCount()];
         int i = 0;
         while(listAlbum.moveToNext()){
-            String artist = new String();
+            String artist = "";
             Cursor c = mdb.getArtistFromAlbum(listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
             if(c.moveToFirst()){
                 artist+=c.getString(c.getColumnIndex(Music.ARTIST.NAME));

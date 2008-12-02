@@ -172,12 +172,12 @@ public class AnimatedCover extends ImageView {
         
         public void onAnimationRepeat(Animation a)
         {
-            
+          //nothing to do
         }
         
         public void onAnimationStart(Animation a)
         {
-            
+          //nothing to do
         }
     }
     
