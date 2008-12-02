@@ -139,12 +139,7 @@ public class AddUI extends ListActivity
         //Log.v(TAG, ">>> AddUI::displayMainMenu() called");
         
         ArrayList<Map<String, String>> rows = new ArrayList<Map<String, String>>();
-        ArrayList<String> row;
         for( int i = 0; i < nbField; i++){ //add all strings to the adapter
-//            row = new ArrayList<String>();
-//            row.add(getString(field[i]));
-//            row.add(""+R.drawable.arrow);
-//            rows.add(row);
             Map<String, String> curMap = new HashMap<String, String>();
             rows.add(curMap);
             curMap.put(colName[0], getString(field[i]));

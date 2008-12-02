@@ -255,12 +255,10 @@ public class PlayListUI extends ListActivity
         songPlayed = 0;
         try
         {
-            ArrayList<String> row;
             int index = mService.getCurrentSongIndex()-1;
             int playerState = mService.getState();
             while(c.moveToNext())
             {
-                row = new ArrayList<String>();
                 // display icon if is playing and this song is played
                 if( ( playerState == Music.State.PAUSED || playerState == Music.State.PLAYING )
                         && mService!= null && index == c.getPosition()){
@@ -270,10 +268,6 @@ public class PlayListUI extends ListActivity
                 else{
                     icon = R.drawable.puce;
                 }
-//                row.add(""+icon);
-//                row.add(c.getString(0));
-//                row.add(c.getString(1));
-//                rows.add(row);
                 Map<String, String> curMap = new HashMap<String, String>();
                 rows.add(curMap);
                 curMap.put(colName[0], ""+icon);
