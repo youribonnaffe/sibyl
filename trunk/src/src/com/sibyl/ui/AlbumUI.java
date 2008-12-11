@@ -59,6 +59,8 @@ public class AlbumUI extends ListActivity {
     //constant menu
     private static final int BACK_ID = Menu.FIRST;
     private static final int DOWNLOAD_ID = Menu.FIRST+1;
+    
+    private static final int GET_COVER_NAME = 0;
 
     private LinearLayout groupView;
     private MusicDB mdb;    //the database
@@ -172,18 +174,22 @@ public class AlbumUI extends ListActivity {
      *
      * @see android.app.Activity#onActivityResult(int, int, java.lang.String, android.os.Bundle)
      */
-    protected void onActivityResult(int requestCode, int resultCode, String data, Bundle extras){
-        switch(resultCode){
-            case RESULT_OK :
-                ////Log.v(TAG, "selected"+((Integer) selectedAlbum).toString());
-                mdb.setCover(selectedAlbum, data);
-                listAlbum.requery(); //recover the cursor
-                break;
-            case RESULT_FIRST_USER :
-                // reset image
-                mdb.deleteCover(selectedAlbum);
-                listAlbum.requery(); //recover the cursor
-                break;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        //Log.v(TAG, "ActivityResult = " + ((Integer)resultCode).toString());
+        if(requestCode == GET_COVER_NAME)
+        {
+            switch(resultCode){
+                case RESULT_OK :
+                    //Log.v(TAG, "onActivityResult->OK: "+data.getStringExtra("covername"));
+                    mdb.setCover(selectedAlbum, data.getStringExtra("covername"));//to be improved
+                    listAlbum.requery(); //recover the cursor
+                    break;
+                case RESULT_FIRST_USER :
+                    // reset image
+                    mdb.deleteCover(selectedAlbum);
+                    listAlbum.requery(); //recover the cursor
+                    break;
+            }
         }
     }
 
@@ -293,7 +299,7 @@ public class AlbumUI extends ListActivity {
             Intent i = new Intent(this, CoverUI.class);
             i.putExtra(CoverUI.ALBUM_ID, listAlbum.getInt(listAlbum.getColumnIndex(Music.ALBUM.ID)));
             i.putExtra(CoverUI.ALBUM_NAME, listAlbum.getString(listAlbum.getColumnIndex(Music.ALBUM.NAME)));
-            startActivity(i);
+            startActivityForResult(i, GET_COVER_NAME);
         }
     }
 
