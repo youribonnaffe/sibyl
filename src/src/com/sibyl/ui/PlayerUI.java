@@ -44,7 +44,6 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sibyl.ISibylservice;
 import com.sibyl.Music;
@@ -171,8 +170,8 @@ public class PlayerUI extends Activity
             mService = ISibylservice.Stub.asInterface((IBinder)service);
 
             //DEBUG remplacant du NotificationManager/notifyWithText
-            Toast.makeText(PlayerUI.this, "Connexion au service effectuee Not null?"+(mService!=null), 
-                    Toast.LENGTH_SHORT).show();
+            //Toast.makeText(PlayerUI.this, "Connexion au service effectuee Not null?"+(mService!=null), 
+            //        Toast.LENGTH_SHORT).show();
 
             //now that we are connected to the service, user can click on buttons
             //to start playing music

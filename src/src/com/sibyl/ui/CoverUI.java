@@ -121,8 +121,10 @@ public class CoverUI extends Activity {
     {
         public void onItemClick(AdapterView arg0, View arg1, int position, long id) {
             if( position >=0){
-                ////Log.v(TAG, (String) imgAdapter.getItem(position));
-                setResult(RESULT_OK, new Intent( (String) imgAdapter.getItem(position)));//warning foireux
+                //Log.v(TAG, (String) imgAdapter.getItem(position));
+                Intent result = new Intent();
+                result.putExtra("covername", (String) imgAdapter.getItem(position));//to be improved
+                setResult(RESULT_OK, result);
             }
             else
             {

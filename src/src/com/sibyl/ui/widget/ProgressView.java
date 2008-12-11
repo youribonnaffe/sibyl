@@ -18,11 +18,6 @@
 
 package com.sibyl.ui.widget;
 
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
