@@ -1,3 +1,5 @@
+#summary Readme
+
 Sibyl, mobile your music
 Music player for ANDROID
 
