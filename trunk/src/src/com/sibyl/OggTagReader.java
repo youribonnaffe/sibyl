@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * http://www.wotsit.org/list.asp?search=ogg&button=GO!
@@ -100,7 +101,7 @@ public class OggTagReader extends TagReader{
         f.close();
     }
     
-    public HashMap<String, String> getValues(){
+    public Map<String, String> getValues(){
         return cv;
     }
 

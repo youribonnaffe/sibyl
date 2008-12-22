@@ -1,6 +1,7 @@
 package com.sibyl.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -13,7 +14,7 @@ import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<String> listImg;
+    private List<String> listImg;
     
         public ImageAdapter(Context c) {
             mContext = c;

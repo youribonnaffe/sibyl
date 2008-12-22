@@ -19,6 +19,7 @@
 package com.sibyl.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -50,7 +51,7 @@ public class DelDirUI extends ListActivity
     private static final String TAG = "DEL_DIR"; // TAG servant au débugage
 
     private MusicDB mdb;    //the database
-    private ArrayList<String> mStrings; // Liste des répertoires de musiques
+    private List<String> mStrings; // Liste des répertoires de musiques
     
     /**
      * Called when the activity is first created.
@@ -89,11 +90,10 @@ public class DelDirUI extends ListActivity
      */
     private void fillBD ()
     {
-        ArrayList<String> listDir = mStrings;
         Cursor c = mdb.getDir();
         while (c.moveToNext())
         {
-            listDir.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
+            mStrings.add(c.getString(c.getColumnIndex(Music.DIRECTORY.DIR)));
         }
         c.close();
     }

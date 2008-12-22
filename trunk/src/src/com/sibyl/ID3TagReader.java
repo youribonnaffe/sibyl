@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 //string replace optimiser
 public class ID3TagReader extends TagReader{
@@ -267,7 +268,7 @@ public class ID3TagReader extends TagReader{
         cv.put(Music.GENRE.ID, Integer.toString(t>0 && t<147 ? t : 1));
     }
 
-    public HashMap<String, String> getValues(){
+    public Map<String, String> getValues(){
         return cv;
     }
 

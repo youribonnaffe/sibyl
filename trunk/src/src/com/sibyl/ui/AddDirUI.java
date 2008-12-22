@@ -21,6 +21,7 @@ package com.sibyl.ui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.ListActivity;
@@ -55,12 +56,6 @@ public class AddDirUI extends ListActivity
     private String parent;  // répertoire parent
     private String path;    // répertoire courant
     private MusicDB mdb;    //the database
-
-    /* TODO sachant qu'on l'utilise effectivement que dans une 
-     * seule méthode, est il judicieux d'en faire une variable à ce 
-     * niveau, ou une simple variable locale suffirait*/
-    
-    private ArrayList<Map<String, String>> rows;
 
     /**
      * Called when the activity is first created.
@@ -106,7 +101,7 @@ public class AddDirUI extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) 
     {
-        String item = (String) rows.get(position).get(1);
+        String item = ((Map<String, String>)getListAdapter().getItem(position)).get(1);
         if(item == "..")
         {
             path = parent;
@@ -141,20 +136,14 @@ public class AddDirUI extends ListActivity
     private void fillBD ()
     {
         String[] colName = {"image","file"};
-        //ArrayList<String> row;
         
-        this.rows = new ArrayList<Map<String, String>>();
-        //ArrayList<Map<String, String>> rows = new ArrayList<Map<String, String>>();// = this.rows;
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
         
         File dir = new File(path);
         String parent = dir.getParent();
         if(parent != null)
         {
             this.parent = parent;
-//            row = new ArrayList<String>();
-//            row.add(""+R.drawable.folder);
-//            row.add("..");
-//            rows.add(row);
             Map<String, String> curMap = new HashMap<String, String>();
             rows.add(curMap);
             curMap.put(colName[0], ""+R.drawable.folder);
@@ -169,10 +158,6 @@ public class AddDirUI extends ListActivity
             {
                 if (f.isDirectory())
                 {
-//                    row = new ArrayList<String>();
-//                    row.add(""+R.drawable.folder);
-//                    row.add(f.getName());
-//                    rows.add(row);
                     Map<String, String> curMap = new HashMap<String, String>();
                     rows.add(curMap);
                     curMap.put(colName[0], ""+R.drawable.folder);
@@ -184,10 +169,6 @@ public class AddDirUI extends ListActivity
                     {
                         if(f.getName().endsWith(s))
                         {
-//                            row = new ArrayList<String>();
-//                            row.add(""+R.drawable.audio);
-//                            row.add(f.getName());
-//                            rows.add(row);
                             Map<String, String> curMap = new HashMap<String, String>();
                             rows.add(curMap);
                             curMap.put(colName[0], ""+R.drawable.audio);
