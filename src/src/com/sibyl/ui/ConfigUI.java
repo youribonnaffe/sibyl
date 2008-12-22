@@ -21,6 +21,7 @@ package com.sibyl.ui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -87,7 +88,7 @@ public class ConfigUI extends Activity
     private Spinner playMode;
     private Spinner coverAnims;
 
-    private ArrayList<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
+    private List<String> listFile; // liste des répertoires de musiques /* TODO Utilité de l'objet ?*/
     private MusicDB mdb;    //the database
 
     private ListView listeMode;
@@ -194,6 +195,7 @@ public class ConfigUI extends Activity
 
         public void onNothingSelected(AdapterView arg0)
         {
+            /* nothing to do */
         }
     };
 
@@ -211,6 +213,7 @@ public class ConfigUI extends Activity
         }
         public void onNothingSelected(AdapterView arg0)
         {
+            /* nothing to do */
         } 
     };
 
@@ -225,6 +228,7 @@ public class ConfigUI extends Activity
         }
         public void onNothingSelected(AdapterView arg0)
         {
+            /* nothing to do */
         } 
     };
 

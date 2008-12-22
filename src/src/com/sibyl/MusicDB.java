@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
@@ -238,7 +237,7 @@ public class MusicDB {
     public void insert(String url) throws FileNotFoundException, IOException, SQLiteException{
         // read tags
         String ext = url.substring(url.lastIndexOf('.'));
-        HashMap<String, String> cv;
+        Map<String, String> cv;
         if( ext.equals(".mp3")){
             cv =(new ID3TagReader(url)).getValues();
         }else if( ext.equals(".ogg")){
@@ -460,13 +459,16 @@ public class MusicDB {
 
     public String[] getSongInfoFromCP(int i)
     {
+        String str[];
         Cursor c = mDb.rawQuery("SELECT title, artist_name, album.cover_url FROM song, current_playlist, artist,album "
                 +"WHERE pos="+i+" AND song._id=current_playlist.id and song.artist=artist._id and song.album = album._id", null);
         if(!c.moveToFirst()){
-            c.close();
-            return null;
+            str = new String[] { null, null, null };
         }
-        String str[] = {c.getString(0), c.getString(1), c.getString(2)};
+        else
+        {
+            str = new String[] {c.getString(0), c.getString(1), c.getString(2)};
+        }
         c.close();
         return str;
     }

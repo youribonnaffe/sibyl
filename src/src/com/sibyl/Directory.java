@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Small utility class to scan recursively into directory and search for files 
@@ -31,7 +32,7 @@ public class Directory {
         }
     }
 
-    private static void searchIn(File dir, String extension, ArrayList<String> files){
+    private static void searchIn(File dir, String extension, List<String> files){
         // list files matching extension
         File[] listFiles = dir.listFiles(new ExtensionFilter(extension));
         if (listFiles !=null )
@@ -52,7 +53,7 @@ public class Directory {
      * @param extension the file extension
      * @return
      */
-    public static ArrayList<String> scanFiles(String path, String extension){
+    public static List<String> scanFiles(String path, String extension){
         ArrayList<String> files = new ArrayList<String>();
         File directory = new File(path);
         // go in each directories

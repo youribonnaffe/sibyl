@@ -456,7 +456,10 @@ public class PlayerUI extends Activity
                 
 
             }
-            catch(RemoteException ex){}
+            catch(RemoteException ex)
+            {
+                
+            }
         }
     };
 
@@ -651,16 +654,19 @@ public class PlayerUI extends Activity
     private class imageOverAnimListener implements Animation.AnimationListener 
     {
 
-        public void onAnimationEnd(Animation a) {
+        public void onAnimationEnd(Animation a) 
+        {
             imageOver.setVisibility(View.INVISIBLE);
         }
 
-        public void onAnimationRepeat(Animation a) {
-            //nothing to do
+        public void onAnimationRepeat(Animation a) 
+        {
+            /* nothing to do */
         }
 
-        public void onAnimationStart(Animation a) {
-            //nothing to do
+        public void onAnimationStart(Animation a) 
+        {
+            /* nothing to do */
         }
         
     }

@@ -20,11 +20,12 @@ package com.sibyl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Map;
 
 public abstract class TagReader {
 
-    protected HashMap<String, String> cv;
+    protected Map<String, String> cv; /* defining cv as a map as the class is abstract (and 
+       so not instancianted). In the children classes, it will be instanciated as a Hashmap */
     
     // columns you'll find in the hashmap
     protected static final String[] cols = { Music.ALBUM.NAME, Music.GENRE.NAME, Music.SONG.TITLE, Music.SONG.TRACK, Music.ARTIST.NAME};
@@ -41,6 +42,6 @@ public abstract class TagReader {
         }
     }
 
-    public abstract HashMap<String, String> getValues();
+    public abstract Map<String, String> getValues();
 
 }

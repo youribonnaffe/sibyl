@@ -172,7 +172,10 @@ public class PlayListUI extends ListActivity
                     mHandler.postDelayed(animTask,500);
                 }
             }
-            public void onNothingSelected(AdapterView parent){}
+            public void onNothingSelected(AdapterView parent)
+            {
+                /* nothing to do */
+            }
         });
 
         try

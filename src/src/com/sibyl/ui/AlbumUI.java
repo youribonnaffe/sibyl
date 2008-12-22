@@ -138,22 +138,23 @@ public class AlbumUI extends ListActivity {
     protected void onResume() 
     {
         super.onResume();
-        final ActivityTransition trans = new ActivityTransition( true );
-        trans.setDuration(500);
-        trans.setFillAfter(true);
-        trans.setInterpolator(new AccelerateInterpolator());
-        groupView.startAnimation(trans);
+        runActivityTransition(true);
     }
-
+    
     @Override
     protected void onPause() 
     {
-        final ActivityTransition trans = new ActivityTransition( false );
+        runActivityTransition(false);
+        super.onPause();
+    }
+    
+    protected void runActivityTransition(boolean reverse)
+    {
+        final ActivityTransition trans = new ActivityTransition( reverse );
         trans.setDuration(500);
         trans.setFillAfter(true);
-        trans.setInterpolator(new DecelerateInterpolator());
+        trans.setInterpolator(reverse ? new AccelerateInterpolator(): new DecelerateInterpolator());
         groupView.startAnimation(trans);
-        super.onPause();
     }
 
     protected void onDestroy(){
