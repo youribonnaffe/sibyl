@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sibyl">
-    <application android:icon="@drawable/logo" android:label="Sibyl">
-        <service android:name=".Sibylservice" android:process=":remote">
-        </service>
+	package="com.sibyl" android:versionCode="1" android:versionName="1.0">
+	<application android:icon="@drawable/logo" android:label="@string/app_name">
+		<activity android:multiprocess="false" android:name=".ui.PlayerUI">
+			<!--
+				android:theme="@android:style/Theme.Dark"
+			-->
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 
-        <activity android:multiprocess="false" android:name=".ui.PlayerUI"><!--  android:theme="@android:style/Theme.Dark" -->
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
-        
-        <activity android:name=".ui.PlayListUI" android:label="@string/app_name">
-        </activity>
+		<service android:enabled="true" android:exported="false"
+			android:icon="@drawable/play" android:label="Sibyl service"
+			android:name=".Sibylservice">
+		</service>
 
-        <activity android:name=".ui.AddUI" android:label="@string/app_name">
-        </activity>
+		<activity android:name=".ui.PlayListUI" android:label="@string/app_name">
+		</activity>
 
-        <activity android:name=".ui.ConfigUI" android:label="@string/app_name">
-        </activity>
+		<activity android:name=".ui.AddUI" android:label="@string/app_name">
+		</activity>
 
-        <activity android:name=".ui.AddDirUI">
-        </activity>
+		<activity android:name=".ui.ConfigUI" android:label="@string/app_name">
+		</activity>
 
-        <activity android:name=".ui.DelDirUI" android:label="@string/app_name">
-        </activity>
-        
-        <activity android:name=".ui.CoverUI" android:label="@string/app_name">
-        </activity>
-        
-        <activity android:name=".ui.AlbumUI">       
-        </activity>
-        
-    </application>
+		<activity android:name=".ui.AddDirUI">
+		</activity>
+
+		<activity android:name=".ui.DelDirUI" android:label="@string/app_name">
+		</activity>
+
+		<activity android:name=".ui.CoverUI" android:label="@string/app_name">
+		</activity>
+
+		<activity android:name=".ui.AlbumUI">
+		</activity>
+	</application>
+	<uses-sdk android:minSdkVersion="3" />
 </manifest> 
