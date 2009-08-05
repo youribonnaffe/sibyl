@@ -1,138 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- *
- * Copyright (C) 2007-2008 sibyl project
- * http://code.google.com/p/sibyl/
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- -->
-
+	<!--
+		* * Copyright (C) 2007-2008 sibyl project *
+		http://code.google.com/p/sibyl/ * * Licensed under the Apache License,
+		Version 2.0 (the "License"); * you may not use this file except in
+		compliance with the License. * You may obtain a copy of the License at
+		* * http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+		applicable law or agreed to in writing, software * distributed under
+		the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES
+		OR CONDITIONS OF ANY KIND, either express or implied. * See the
+		License for the specific language governing permissions and *
+		limitations under the License.
+	-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" 
-	android:layout_height="fill_parent"
-	android:layout_gravity="center" 
-	android:gravity="center">
-
-	<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical" 
-		android:layout_width="fill_parent"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:layout_gravity="center" android:gravity="center">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
-
-		<LinearLayout
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:orientation="vertical" 
-			android:layout_gravity="center"
-			android:layout_width="fill_parent" 
-			android:layout_weight="1.0"
-			android:layout_height="fill_parent">
-
-			<View 
-			    android:layout_width="fill_parent"
-				android:layout_height="10dp" />
-
-
-			<TextView 
-			    android:id="@+id/titre"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-				android:minHeight="40dp"
-				android:textSize="@dimen/text_huge" 
-				android:singleLine="true"
-				android:text="@string/titre" 
-				android:layout_gravity="center" />
-
-			<TextView 
-			    android:id="@+id/artiste"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-				android:textSize="@dimen/text_big"
-				android:textStyle="italic" 
-				android:singleLine="true"
-				android:text="@string/artiste" 
-				android:padding="10dp"
-				android:layout_gravity="center" />
-
-			<com.sibyl.ui.widget.AnimatedCover 
-			    android:id="@+id/cover"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-				android:layout_gravity="center"
-                android:adjustViewBounds="true" 
-                android:maxHeight="200dp"
-                android:maxWidth="200dp" />
-				
-		</LinearLayout>
-
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:orientation="vertical" 
-			android:layout_width="fill_parent" 
-			android:layout_weight="0.0"
-			android:layout_height="wrap_content">
+			android:orientation="vertical" android:layout_gravity="center"
+			android:layout_width="fill_parent" android:layout_weight="1.0"
+			android:layout_height="fill_parent">
+			<View android:layout_width="fill_parent" android:layout_height="10dp" />
 
-			<com.sibyl.ui.widget.ProgressView 
-			    android:id="@+id/progress"
-				android:layout_width="fill_parent" 
-				android:layout_height="25dp"/>
-				
-            <View  xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="5px"/>
-            
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:orientation="horizontal"
-				android:layout_width="wrap_content"
-                android:layout_gravity="center"
-				android:layout_height="wrap_content">
 
-				
-		        <com.sibyl.ui.widget.ImageControl 
-                    android:id="@+id/prev" 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/prevbtn"
-                    android:paddingBottom="10dp"/>
-                <com.sibyl.ui.widget.ImageControl 
-                    android:id="@+id/play" 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/playbtn"
-                    android:paddingBottom="10dp" />
-                <com.sibyl.ui.widget.ImageControl 
-                    android:id="@+id/next" 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/nextbtn"
-                    android:paddingBottom="10dp" />
+			<TextView android:id="@+id/titre" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:minHeight="40dp"
+				android:textSize="@dimen/text_huge" android:singleLine="true"
+				android:text="@string/titre" android:layout_gravity="center" />
 
-			</LinearLayout>
+			<TextView android:id="@+id/artiste" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textSize="@dimen/text_big"
+				android:textStyle="italic" android:singleLine="true" android:text="@string/artiste"
+				android:padding="10dp" android:layout_gravity="center" />
 
+			<com.sibyl.ui.widget.AnimatedCover
+				android:id="@+id/cover" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:layout_gravity="center"
+				android:adjustViewBounds="true" android:maxHeight="200dp"
+				android:maxWidth="200dp" />
 		</LinearLayout>
-
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="vertical" android:layout_width="fill_parent"
+			android:layout_weight="0.0" android:layout_height="wrap_content">
+			<com.sibyl.ui.widget.ProgressView
+				android:id="@+id/progress" android:layout_width="fill_parent"
+				android:layout_height="25dp" />
+			<View xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="5px" />
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_gravity="center" android:layout_height="wrap_content">
+				<com.sibyl.ui.widget.ImageControl
+					android:id="@+id/prev" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:src="@drawable/prevbtn"
+					android:paddingBottom="10dp" />
+				<com.sibyl.ui.widget.ImageControl
+					android:id="@+id/play" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:src="@drawable/playbtn"
+					android:paddingBottom="10dp" />
+				<com.sibyl.ui.widget.ImageControl
+					android:id="@+id/next" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:src="@drawable/nextbtn"
+					android:paddingBottom="10dp" />
+			</LinearLayout>
+		</LinearLayout>
 	</LinearLayout>
-	
-	<LinearLayout 
-	    android:orientation="vertical"
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:gravity="center" >
-		
-		<ImageView 
-		    android:id="@+id/imageover"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center" />
-			
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:gravity="center">
+		<ImageView android:id="@+id/imageover" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_gravity="center" />
 	</LinearLayout>
-	
 </FrameLayout>
